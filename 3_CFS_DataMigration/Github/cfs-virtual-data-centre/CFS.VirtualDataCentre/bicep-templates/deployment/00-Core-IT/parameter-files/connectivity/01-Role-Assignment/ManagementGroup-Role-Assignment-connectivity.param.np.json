@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleAssignmentArray": {
+            "value": [
+                {
+                    "managementGroupId": "mg-np-connectivity-001",
+                    "ObjectId":  "affa1959-25ed-4f0e-8187-643e7529ef8c",
+                    "DisplayName":  "SG-AA-OPS-conn-owner"
+                },
+                {
+                    "managementGroupId": "mg-np-connectivity-001",
+                    "ObjectId":  "8c954b72-6042-4d30-8a29-ddd05bfb1202",
+                    "DisplayName":  "SG-AA-OPS-conn-reader"
+                },
+                {
+                    "managementGroupId": "mg-np-connectivity-001",
+                    "ObjectId":  "9be4043f-30a7-464f-af3c-f2986d514eb3",
+                    "DisplayName":  "SG-AA-OPS-conn-contributor"
+                }
+            ]
+        }
+    }
+}

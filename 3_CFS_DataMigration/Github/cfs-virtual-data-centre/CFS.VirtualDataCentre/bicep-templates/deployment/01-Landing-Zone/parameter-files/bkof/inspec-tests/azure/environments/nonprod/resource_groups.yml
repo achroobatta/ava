@@ -1,0 +1,45 @@
+# Template Format
+#- name: rg-np-edc-bkof-comp-001
+#  location: australiaeast
+  
+# Australia East
+- name: AzureBackupRG_australiaeast_1
+  location: australiaeast
+
+- name: rg-np-edc-bkof-comp-001
+  location: australiaeast
+
+- name: rg-np-edc-bkof-kv-001
+  location: australiaeast
+
+- name: rg-np-edc-bkof-netw-001
+  location: australiaeast
+
+- name: rg-np-edc-bkof-rsv-001
+  location: australiaeast
+
+- name: rg-np-edc-bkof-sec-001
+  location: australiaeast
+
+- name: rg-np-edc-bkof-stor-001
+  location: australiaeast
+
+# Australia South East
+
+- name: AzureBackupRG_australiasoutheast_1
+  location: australiasoutheast
+
+- name: rg-np-sdc-bkof-comp-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-bkof-kv-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-bkof-netw-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-bkof-rsv-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-bkof-stor-001
+  location: australiasoutheast

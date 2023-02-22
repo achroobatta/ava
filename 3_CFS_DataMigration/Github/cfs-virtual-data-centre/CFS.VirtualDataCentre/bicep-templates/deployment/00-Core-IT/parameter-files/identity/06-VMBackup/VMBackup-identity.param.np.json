@@ -1,0 +1,94 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "Identity",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "DC001"
+                            },
+                            {
+                                "vmName": "DC002"
+                            },
+                            {
+                                "vmName": "AAD001"
+                            },
+                            {
+                                "vmName": "PKI001"
+                            },
+                            {
+                                "vmName": "PKI002"
+                            },
+                            {
+                                "vmName": "EX001"
+                            },
+                            {
+                                "vmName": "IQS001"
+                            },
+                            {
+                                "vmName": "IQS002"
+                            },
+                            {
+                                "vmName": "IQS003"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "Identity",
+                        "vmRGcomponent": "pki",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "RT001"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "Identity",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "DC001"
+                            },
+                            {
+                                "vmName": "DC002"
+                            },
+                            {
+                                "vmName": "AAD001"
+                            },
+                            {
+                                "vmName": "EX001"
+                            },
+                            {
+                                "vmName": "IQS001"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
+

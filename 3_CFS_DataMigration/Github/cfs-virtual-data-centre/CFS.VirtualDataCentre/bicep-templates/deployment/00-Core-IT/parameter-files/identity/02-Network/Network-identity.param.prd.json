@@ -1,0 +1,190 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "addressSpaces": [ 
+                            "10.20.2.0/24" 
+                        ],
+                        "customDnsServers": [
+                            "10.20.0.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-prd-edc-identity-001",
+                              "location": "australiaeast",
+                              "service": "identity",
+                              "instance" : "1",
+                              "addressPrefix": "10.20.2.0/25",
+                              "networkSecurityGroup": "nsg-prd-edc-identity-001",
+                              "routeTable": "rt-prd-edc-identity-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-prd-edc-identity-002",
+                              "location": "australiaeast",
+                              "service": "identity",
+                              "instance" : "2",
+                              "addressPrefix": "10.20.2.128/26",
+                              "networkSecurityGroup": "nsg-prd-edc-identity-002",
+                              "routeTable": "rt-prd-edc-identity-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                            "name": "sub-prd-edc-identity-003",
+                            "location": "australiaeast",
+                            "service": "identity",
+                            "instance" : "3",
+                            "addressPrefix": "10.20.2.192/26",
+                            "networkSecurityGroup": "nsg-prd-edc-identity-003",
+                            "routeTable": "rt-prd-edc-identity-003",
+                            "routes": [],
+                            "serviceEndpoints": [
+                              {
+                                  "service": "Microsoft.Storage",
+                                  "locations": [
+                                      "australiaeast",
+                                      "australiasoutheast"
+                                  ]
+                                }
+                            ],
+                            "delegations": [],
+                            "securityRules": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "addressSpaces": [ 
+                            "10.30.2.0/24" 
+                        ],
+                        "customDnsServers": [
+                            "10.30.0.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-prd-sdc-identity-001",
+                              "location": "australiasoutheast",
+                              "service": "identity",
+                              "instance" : "1",
+                              "addressPrefix": "10.30.2.0/25",
+                              "networkSecurityGroup": "nsg-prd-sdc-identity-001",
+                              "routeTable": "rt-prd-sdc-identity-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-prd-sdc-identity-002",
+                              "location": "australiasoutheast",
+                              "service": "identity",
+                              "instance" : "2",
+                              "addressPrefix": "10.30.2.128/26",
+                              "networkSecurityGroup": "nsg-prd-sdc-identity-002",
+                              "routeTable": "rt-prd-sdc-identity-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                            "name": "sub-prd-sdc-identity-003",
+                            "location": "australiasoutheast",
+                            "service": "identity",
+                            "instance" : "3",
+                            "addressPrefix": "10.30.2.192/26",
+                            "networkSecurityGroup": "nsg-prd-sdc-identity-003",
+                            "routeTable": "rt-prd-sdc-identity-003",
+                            "routes": [],
+                            "serviceEndpoints": [
+                              {
+                                  "service": "Microsoft.Storage",
+                                  "locations": [
+                                      "australiaeast",
+                                      "australiasoutheast"
+                                  ]
+                                }
+                            ],
+                            "delegations": [],
+                            "securityRules": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

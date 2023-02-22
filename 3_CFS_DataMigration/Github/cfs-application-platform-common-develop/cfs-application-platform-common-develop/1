@@ -1,0 +1,12 @@
+trigger build
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: Panganiban <alyze.s.p.panganiban@accenture.com>
+#
+# On branch feature/Microsoft.Management
+# Your branch is up to date with 'origin/feature/Microsoft.Management'.
+#
+# Changes to be committed:
+#	new file:   modules/Microsoft.Subscription/aliases/createNewSubscription.bicep
+#

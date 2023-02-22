@@ -1,0 +1,25 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    dependsOn: ''
+    landingZoneServiceConnection: ''
+    vmRgName: ''
+    vmName: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  dependsOn: ${{ parameters.dependsOn}}
+
+  steps:
+  - task: AzureCLI@2
+    displayName: Delete Azure VM
+    inputs:
+      azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az vm delete --resource-group ${{ parameters.vmRgName }} --name ${{ parameters.vmName }} --yes'

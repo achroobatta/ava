@@ -1,0 +1,16 @@
+# Australia East
+- name: consoleyjx6jtb5aiws6
+  resource_group: rg-np-edc-hub-fn-001
+
+- name: stonpedchub004
+  resource_group: rg-np-edc-hub-stor-001
+
+- name: storvpnlogs
+  resource_group: rg-np-edc-hub-stor-001
+
+# Australia South East
+- name: consolep6olr7ytujnc2
+  resource_group: rg-np-sdc-hub-fn-001
+
+- name: stonpsdchub004
+  resource_group: rg-np-sdc-hub-stor-001

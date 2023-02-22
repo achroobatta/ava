@@ -1,0 +1,618 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: vm_instances
+    displayName: VM instances (Must be a Valid YMAL list) - instance number will be appended to VM Name (e.g. VMPRDEDCGH001)
+    type: object
+    default:
+     - 1
+     - 2
+
+  - name: agentRunnerType
+    displayName: Agent/Runner Type
+    type: string
+    default: "Not Selected"
+    values:
+     - "Azure DevOps Agent (default)"
+     - "Azure DevOps Agent (test-pool)"
+     - "GitHub Runner (default)"
+     - "GitHub Runner (test-runner-group)"
+     - "Not Selected"
+
+  # Install tools
+  - name: installToolsOnAgent
+    displayName: Install Tools on Runners/Agents?
+    type: string
+    default: "Not Selected"
+    values:
+     - "Install Tools"
+     - "Do Not Install Tools"
+     - "Not Selected"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+variables:
+  - group: var-service-principle-secrets
+  - group: var-azure-platform
+  - group: var-workspace
+  - group: var-selfhosted-agents-runners
+  - group: var-domain-join-password
+
+  #workspaces are in edc only
+  - name: workspaceLocationPrefix
+    value: "edc"
+
+ # Artifact Package Feed Value
+  - name: artifactFeed
+
+    # deployment to any tenant's agents/runners can be from the main branch for the pipeline yaml
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+     value: "core-it/cfs-infra-release"
+    # deployment to any tenant's agents/runners can be from the develop branch for the pipeline yaml
+    ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+     value: "core-it/cfs-infra-ci"
+    # deployment to the Test Pool/Runner Group can be from a feature branch for the pipeline yaml
+    # allow deployment to Test Pool/Runner Group from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+    ${{ elseif and( contains(parameters.agentRunnerType, 'test'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+     value: "core-it/cfs-infra-pr-develop"
+    #branch and/or Test Pool/Runner Group are not valid -> do not pull any artifact, just let the pipeline error out
+    ${{ else }}:
+     value: "not-valid"
+
+ # Artifact Package Definition Value
+  - name: artifactDefinition
+    value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+  - name: artifactVersion
+    value: ${{ parameters.artifactVersion }}
+
+ # ADO Agent Pool / GH Runner Group
+  - name: PoolRunnerGroup
+    ${{ if contains(parameters.agentRunnerType, 'test') }}: #test pool
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: 'Windows-NP-Test'
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: 'Windows-PRD-Test'
+      ${{ else }}:
+        value: 'not-valid'
+    ${{ else }}: #mainstream pool
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: 'Windows-NP'
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: 'Windows-PRD'
+      ${{ else }}:
+        value: 'not-valid'
+
+  # Azure DevOps Environments
+  - name: AzureDevOpsEnvironments
+    value: ${{ parameters.deployEnvironment }}
+
+  - name: component
+    ${{ if contains(parameters.agentRunnerType, 'GitHub Runner') }}:
+      value: 'GH'
+    ${{ elseif contains(parameters.agentRunnerType, 'Azure DevOps Agent') }}:
+      value: 'ADO'
+
+  - name: osIdentifier
+    value: 'W'
+
+  - name: isTestPoolRunnerGroupSuffix
+    ${{ if contains(parameters.agentRunnerType, 'test') }}:
+      value: 'T'
+    ${{ else }}:
+      value: ''
+
+  - name: isTestPoolRunnerGroup
+    ${{ if contains(parameters.agentRunnerType, 'test') }}:
+      value: 'true'
+    ${{ else }}:
+      value: 'false'
+
+  # Azure DevOps Service Connection Name
+  - name: AzureEnvironmentPrefix
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "np"
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "prd"
+
+  # Security Subscription ID
+  - name: securitySubscriptionId
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(sc-subsc-np-security-sid)
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(sc-subsc-prd-security-sid)
+
+  # Azure DevOps Operations Service Connection Name
+  - name: operationsSubscServiceConnection
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "sc-subsc-np-operations-001"
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "sc-subsc-prd-operations-001"
+
+  # Operations Subscription ID
+  - name: operationsSubscriptionId
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(sc-subsc-np-operations-sid)
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(sc-subsc-prd-operations-sid)
+
+  # gitHubOrgRunnerRegistrationPAT - always the prd value from the libary
+  - name: gitHubOrgRunnerRegistrationPAT
+    value: $(GITHUB-ORG-RUNNER-REGISTRATION-PAT)
+
+  # githubOrgUri - always the prd value from the libary
+  - name: githubOrgUri
+    value: $(GITHUB-ORG-URL)
+
+  # adoOrgAgentRegistrationPAT - always the prd value from the libary
+  - name: adoOrgAgentRegistrationPAT
+    value: $(ADO-ORG-AGENT-REGISTRATION-PAT)
+
+  # adoOrgUri - always the prd value from the libary
+  - name: adoOrgUri
+    value: $(ADO-ORG-URL)
+
+  # Domain Join Password
+  - name: domainJoinPassword
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "$(np-domain-join-password)"
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "$(prd-domain-join-password)"
+
+  # Azure DevOps AustraliaEastOffsetSymbol
+  - name: AustraliaEastOffsetSymbol
+    ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+    ${{ else }}:
+     value: "PT10H"
+
+  # Azure Owner 
+  - name: Owner
+    value: ""
+
+  # Azure Cost Center Code
+  - name: costCenterCode
+    value: ""
+
+  # Azure CLI Deployment Names Dynamically Applied Per Stage
+  - name: deploymentName
+    value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+  # Azure Resource Location
+  - name: resourceLocation
+    value: "australiaeast"
+
+stages:                         
+
+  - stage: GitHubProdCheckStage
+    displayName: GitHubProdCheckStage
+    condition: and(not(eq('${{ parameters.deployEnvironment }}', 'Production')), contains('${{ parameters.agentRunnerType }}', 'GitHub Runner'))
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: GitHubProdCheckJob
+      displayName: GitHub Prod Check job
+
+      steps:
+
+      - task: PowerShell@2
+        displayName: GitHub Prod Check
+        inputs:
+          targetType: inline
+          script: |
+              Write-Error 'GitHub Runners are deployed only in the Production tenant.'
+              Exit 1
+
+  - stage: AgentRunnerTypeCheckStage
+    displayName: Agent/Runner Type check stage
+    condition: and(not(contains('${{ parameters.agentRunnerType }}', 'Azure DevOps Agent')), not(contains('${{ parameters.agentRunnerType }}', 'GitHub Runner')))
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: AgentRunnerTypeCheckJob
+      displayName: Agent/Runner Type check job
+
+      steps:
+
+      - task: PowerShell@2
+        displayName: Agent/Runner Type check
+        inputs:
+          targetType: inline
+          script: |
+              Write-Error "Agent/Runner Type not valid: '${{ parameters.agentRunnerType }}'"
+              Exit 1
+
+  - stage: InstallToolsParameterCheckStage
+    displayName: Install Tools Parameter check stage
+    condition: and(not(eq('${{ parameters.installToolsOnAgent }}', 'Install Tools')), not(eq('${{ parameters.installToolsOnAgent }}', 'Do Not Install Tools')))
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: InstallToolsParameterCheckJob
+      displayName: Install Tools Parameter check job
+
+      steps:
+
+      - task: PowerShell@2
+        displayName: Install Tools Parameter check
+        inputs:
+          targetType: inline
+          script: |
+              Write-Error "'Install Tools on Runners/Agents?' Parameter not valid: '${{ parameters.installToolsOnAgent }}'"
+              Exit 1
+
+
+  - ${{ each vm_instance in parameters.vm_instances }}:
+    - stage: DeployAgentsRunnersStage_${{ variables.AzureEnvironmentPrefix }}_${{ variables.component }}${{ variables.osIdentifier }}${{ variables.isTestPoolRunnerGroupSuffix }}_${{ vm_instance }}
+      displayName: DeployAgentsRunners_${{ variables.AzureEnvironmentPrefix }}_${{ variables.component }}${{ variables.osIdentifier }}${{ variables.isTestPoolRunnerGroupSuffix }}_${{ vm_instance }}
+      #stage is available only when
+      # * installToolsOnAgent is not 'Not Selected'; and
+      # * ADO-np or ADO-prd or GitHub-prd
+      #
+      #i.e.:
+      #and(
+      #    not(eq('${{ parameters.installToolsOnAgent }}', 'Not Selected'))
+      #    or(
+      #        contains('${{ parameters.agentRunnerType }}', 'Azure DevOps Agent'), 
+      #        and(
+      #            eq('${{ parameters.deployEnvironment }}', 'Production'), 
+      #            contains('${{ parameters.agentRunnerType }}', 'GitHub Runner')
+      #        )
+      #    )
+      #)
+      condition: and(not(eq('${{ parameters.installToolsOnAgent }}', 'Not Selected')), or(contains('${{ parameters.agentRunnerType }}', 'Azure DevOps Agent'), and(eq('${{ parameters.deployEnvironment }}', 'Production'), contains('${{ parameters.agentRunnerType }}', 'GitHub Runner'))))
+      pool:
+        vmImage: windows-latest
+
+      #dependsOn: [DeployKeyvault]
+      dependsOn: []
+      jobs:
+      - deployment: DeployAgentsRunners
+        timeoutInMinutes: 120 #2 hours to run all its tasks
+        workspace:
+          clean: all
+
+        environment: $(AzureDevOpsEnvironments)
+        strategy:
+          runOnce:
+            deploy:
+                steps:
+
+                  # Download build artifacts 
+                  - task: DownloadPackage@1
+                    displayName: DownloadArtifacts
+                    inputs:
+                      packageType: 'nuget'
+                      feed: '$(artifactFeed)'
+                      definition: '$(artifactDefinition)'
+                      version: '$(artifactVersion)'
+                      extract: true
+                      downloadPath: '$(System.ArtifactsDirectory)'
+
+                  # Start VM if stopped
+                  - task: AzureCLI@2
+                    displayName: Start VM ${{ vm_instance }}
+                    name: StartVMTask
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      # using variable set from the 'CheckVmTask' task in the same job
+                      # variable use syntax: $(<TaskName>.<variableName>)
+                      inlineScript: |
+                                    $servicePrefix='oper'
+                                    $locationPrefix='edc'
+                                    if ('$(isTestPoolRunnerGroup)' -eq 'true')
+                                    {
+                                      $instanceSuffix='T${{ vm_instance }}'
+                                    }
+                                    else
+                                    {
+                                      $instanceSuffix=(${{ vm_instance }}).ToString("00#")
+                                    }
+                                    $vmName="VM$(AzureEnvironmentPrefix)$($locationPrefix)$(component)".ToUpper() + "$(osIdentifier)" + "$($instanceSuffix)"
+                                    $rgName="rg-$(AzureEnvironmentPrefix)-$($locationPrefix)-$($servicePrefix)".ToLower() + "-$(component)-$(osIdentifier)" + "$($instanceSuffix)"
+                                    "vmName='$vmName'"
+                                    "rgName='$rgName'"
+                                    $(System.ArtifactsDirectory)\$(scripts)\start-vm-if-stopped.ps1 -rgName "$rgName" -vmName "$vmName"
+
+                  # Deploy Self Hosted Agent/Runner VM in Azure
+                  - task: AzureCLI@2
+                    displayName: Deploy Agents Runners Task
+                    name: DeployAgentsRunnersTask
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      # Setting the variable : eg: echo "##vso[task.setvariable variable=<var_name>;isoutput=true]somevalue"
+                      inlineScript: |
+                                    "Setting input Variables"
+                                    $servicePrefix='oper'
+                                    $locationPrefix='edc'
+                                    $keyEncryptionUrl = "az keyvault key list-versions --vault-name kv-$(AzureEnvironmentPrefix)-$($locationPrefix)-$($servicePrefix)-001 --name keyEncrypt --query [].kid --output tsv"
+                                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                                    "Cleaning input variables"
+                                    Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                                    Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                                    Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                                    "Starting az deployment"
+                                    $output = $(az deployment sub create --location '$(resourceLocation)' `
+                                    --name $(deploymentName) `
+                                    --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-GHagentandADOrunner\deployAgentRunner.bicep `
+                                    --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-GHagentandADOrunner\agentRunner-$($locationPrefix).param.$(AzureEnvironmentPrefix).json `
+                                    --parameters vmInstanceNumber='${{ vm_instance }}' `
+                                    --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                                    --parameters workspaceId=$WorkspaceIdOutput `
+                                    --parameters workspaceKey=$WorkspaceKeyOutput `
+                                    --parameters domainPassword='$(domainJoinPassword)' `
+                                    --parameters owner='$(Owner)' `
+                                    --parameters costCenter='$(costCenterCode)' `
+                                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                                    --parameters rg_component=$(component) `
+                                    --parameters isTestPoolOrGroup='$(isTestPoolRunnerGroup)' `
+                                    --output json)
+                                    $output = $output | ConvertFrom-Json
+                                    $vmOutput = $output.properties.outputs.vmOutput.value
+                                    echo "##vso[task.setvariable variable=vmOutputJson;isoutput=true]$($vmOutput|ConvertTo-Json -Compress)"
+
+                  # GitHub: Install Self Hosted Agent/Runner Application on VM
+                  - task: AzureCLI@2
+                    displayName: Register GitHub Runner
+                    name: RegisterGitHubRunner
+                    condition: and(succeeded(), contains('${{ parameters.agentRunnerType }}', 'GitHub Runner'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      # using variable set from other task in same job
+                      # variable use syntax: $(<TaskName>.<variableName>)
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Registering GitHub runner '$($vm.vmName)' ##"                                    
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name "$($vm.vmName)" -g "$($vm.rgName)" `
+                                    --scripts @Github-SelfHost.ps1 `
+                                    --parameters "GitHubOrgRunnerRegistrationPAT=$(gitHubOrgRunnerRegistrationPAT)" `
+                                                 "OrgURL=$(githubOrgUri)" `
+                                                 "RunnerGroup=$(PoolRunnerGroup)" `
+                                                 "RunnerName=$($vm.vmName)"
+
+                  # ADO: Install ADO Self Hosted Agent Application on VM
+                  - task: AzureCLI@2
+                    displayName: Register ADO Agent
+                    name: RegisterADOAgent
+                    condition: and(succeeded(), contains('${{ parameters.agentRunnerType }}', 'Azure DevOps Agent'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      # using variable set from other task in same job
+                      # variable use syntax: $(<TaskName>.<variableName>)
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Registering ADO agent on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name "$($vm.vmName)" -g "$($vm.rgName)" `
+                                    --scripts @ADO-SelfHost.ps1 `
+                                    --parameters "SERVERURL=$(adoOrgUri)" `
+                                                 "AdoOrgAgentRegistrationPAT=$(adoOrgAgentRegistrationPAT)" `
+                                                 "PoolName=$(PoolRunnerGroup)" `
+                                                 "AgentName=$($vm.vmName)"
+
+                  # Install WinGet on VM
+                  - task: AzureCLI@2
+                    displayName: Install Winget
+                    name: InstallWinget
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing winget on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name "$($vm.vmName)" -g "$($vm.rgName)" `
+                                    --scripts @Install-winget.ps1
+
+                  # Install Git using Winget
+                  - task: AzureCLI@2
+                    displayName: Install Git SCM
+                    name: InstallGitSCM
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing Git on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Install-tools.ps1 `
+                                    --parameters "AppID=Git.Git"
+
+                  # Install Az CLI using Winget
+                  - task: AzureCLI@2
+                    displayName: Install Azure CLI
+                    name: InstallAzureCLI
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing AzureCLI on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Install-tools.ps1 `
+                                    --parameters "AppID=Microsoft.AzureCLI"
+
+                  # Install Powershell 7 using Winget
+                  - task: AzureCLI@2
+                    displayName: Install Powershell 7
+                    name: InstallPowershell7
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing Powershell on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Install-tools.ps1 `
+                                    --parameters "AppID=Microsoft.PowerShell"
+
+                  # Install Dotnet 6 using Winget
+                  - task: AzureCLI@2
+                    displayName: Install DotNet
+                    name: InstallDotNet
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing Dotnet on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Install-tools.ps1 `
+                                    --parameters "AppID=Microsoft.dotnet"
+
+                  # Install "Az" powershell module.
+                  - task: AzureCLI@2
+                    displayName: Install Az Powershell Module
+                    name: InstallAzPowershellModule
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing 'Az' Powershell Module on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Install-Powershell-Module.ps1 `
+                                    --parameters "moduleName=Az"
+
+                  # Install bicep using winget.
+                  - task: AzureCLI@2
+                    displayName: Install Bicep
+                    name: InstallBicep
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Installing Bicep on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Install-tools.ps1 `
+                                    --parameters "AppID=Microsoft.Bicep"
+
+                  # Update PATH environment variable
+                  - task: AzureCLI@2
+                    displayName: Update Path ACL and PATH environment variable
+                    name: UpdatePathACLAndPathEnvironmentVariable
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    "## Updating Path ACL and PATH environment variable on '$($vm.vmName)' ##"
+                                    az vm run-command invoke --command-id RunPowerShellScript `
+                                    --name $($vm.vmName) -g $($vm.rgName) `
+                                    --scripts @Path-ACL-and-update-Path-Environment-Variable.ps1
+
+                  # Restart Computer after installing all tools with Winget
+                  - task: AzureCLI@2
+                    displayName: Restart Computer After Tools Installed Using Winget
+                    name: RestartComputerAfterToolsInstalledUsingWinget
+                    condition: and(succeeded(), eq('${{ parameters.installToolsOnAgent }}', 'Install Tools'))
+                    inputs:
+                      azureSubscription: $(operationsSubscServiceConnection)
+                      scriptType: 'pscore'
+                      scriptLocation: 'inlineScript'
+                      workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                      inlineScript: |
+                                    'DeployAgentsRunnersTask.vmOutputJson output'
+                                    '$(DeployAgentsRunnersTask.vmOutputJson)'
+                                    $vm='$(DeployAgentsRunnersTask.vmOutputJson)' | ConvertFrom-Json
+                                    $currentState=((az vm show --resource-group "$($vm.rgName)" --name "$($vm.vmName)" --show-details)|ConvertFrom-Json).powerState
+                                    "restarting vm '$($vm.vmName)' : currentState=$currentState"
+                                    az vm restart --resource-group "$($vm.rgName)" --name "$($vm.vmName)"

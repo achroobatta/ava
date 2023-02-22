@@ -1,0 +1,101 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fwd",
+                        "serviceAbbrv": "fwd",
+                        "appName": "CFS Wrap Data",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ "10.44.0.0/16" ],
+                        "customDnsServers": [
+                            "10.40.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-edc-fwd-001",
+                              "location": "australiaeast",
+                              "service": "fwd",
+                              "instance" : "1",
+                              "addressPrefix": "10.44.0.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-fwd-001",
+                              "routeTable": "rt-np-edc-fwd-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.KeyVault",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fwd",
+                        "serviceAbbrv": "fwd",
+                        "appName": "CFS Wrap Data",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ "10.64.0.0/16" ],
+                        "customDnsServers": [
+                            "10.60.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-sdc-fwd-001",
+                              "location": "australiasoutheast",
+                              "service": "fwd",
+                              "instance" : "1",
+                              "addressPrefix": "10.64.0.0/24",
+                              "networkSecurityGroup": "nsg-np-sdc-fwd-001",
+                              "routeTable": "rt-np-sdc-fwd-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

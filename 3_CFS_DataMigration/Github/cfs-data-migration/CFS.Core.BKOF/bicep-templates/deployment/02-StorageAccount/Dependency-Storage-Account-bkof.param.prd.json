@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "location2": "australiasoutheast",
+                        "component": "dm",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "stoprefix": "depsto",
+                        "locationAbbrv": "edc",
+                        "instance": 1,
+                        "virtualNetworkName_RG":"vnet-prd-edc-bkof-001",
+                        "virtualNetworksubnetName":"sub-prd-edc-bkof-dm-vmsub-003",
+                        "virtualNetworkResourceGroup": "rg-prd-edc-bkof-netw-001",
+                        "virtualNetworkName":"vnet-prd-edc-bkof-001",
+                        "subnetName":"sub-prd-edc-bkof-dm-com-002",
+                        "virtualNetwork2ResourceGroup": "rg-prd-sdc-bkof-netw-001",
+                        "virtualNetwork2Name":"vnet-prd-sdc-bkof-001",
+                        "subnet2Name":"sub-prd-sdc-bkof-dm-com-002",
+                        "rgname": "rg-prd-edc-bkof-dm-001",
+                        "rgname2": "rg-prd-sdc-bkof-dm-001",
+                        "storageAccountName": "depstoprdedcbkofdm001",
+                        "containerPrefix": "powershell",
+                        "privateDnsZoneName": "privatelink.blob.core.windows.net",
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "depstoprdedcbkofdm001",
+                                "performance": "Standard_RAGRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Deny",
+                                "action" : "Allow",
+                                "allowBlobPublicAccess": false,
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

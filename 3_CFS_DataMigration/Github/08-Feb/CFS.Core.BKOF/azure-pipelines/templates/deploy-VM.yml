@@ -1,0 +1,129 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: keyVaultName
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+- name: vmName
+  type: string
+
+- name: vmLocation
+  type: string
+
+- name: deploymentName
+  type: string
+
+- name: owner
+  type: string
+
+- name: costCenterCode
+  type: string
+
+- name: appName
+  type: string
+
+- name: AustraliaEastOffsetSymbol
+  type: string
+
+- name: AzureEnvironmentPrefix
+  type: string
+
+- name: adminP
+  type: string
+
+- name: domainPassword
+  type: string
+
+- name: fileSize
+  type: string
+
+- name: privateEndpointNameForStorage
+  type: string
+
+- name: diagStorageAcctName
+  type: string
+
+- name: ultraSSDEnabled
+  type: string
+
+- name: workspaceLocationPrefix
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Virtual Machine in ${{ parameters.serviceId }} Subscription
+
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Values of Variables"
+                    echo '*******************************************************************************'
+                    echo 'serviceId: ${{ parameters.serviceId }}'
+                    echo 'serviceConnection: ${{ parameters.serviceConnection }}'
+                    echo 'deploymentType: ${{ parameters.deploymentType }}'
+                    echo 'keyVaultName: ${{ parameters.keyVaultName }}'
+                    echo 'securitySubscriptionId: ${{ parameters.securitySubscriptionId }}'
+                    echo 'vmName: ${{ parameters.vmName }}'
+                    echo 'vmLocation: ${{ parameters.vmLocation }}'
+                    echo 'deploymentName: ${{ parameters.deploymentName }}'
+                    echo 'owner: ${{ parameters.owner }}'
+                    echo 'costCenterCode: ${{ parameters.costCenterCode }}'
+                    echo 'appName: ${{ parameters.appName }}'
+                    echo 'AustraliaEastOffsetSymbol: ${{ parameters.AustraliaEastOffsetSymbol }}'
+                    echo 'AzureEnvironmentPrefix: ${{ parameters.AzureEnvironmentPrefix }}'
+                    echo 'adminP: ${{ parameters.adminP }}'
+                    echo 'domainPassword: ${{ parameters.domainPassword }}'
+                    echo 'fileSize: ${{ parameters.fileSize }}'
+                    echo 'privateEndpointNameForStorage: ${{ parameters.privateEndpointNameForStorage }}'
+                    echo 'diagStorageAcctName: ${{ parameters.diagStorageAcctName }}'
+                    echo 'ultraSSDEnabled: ${{ parameters.ultraSSDEnabled }}'
+                    echo 'workspaceLocationPrefix: ${{ parameters.workspaceLocationPrefix }}'
+                    echo '*******************************************************************************'
+
+                    "Setting input Variables"
+                    $keyEncryptionUrl = "az keyvault key list-versions --vault-name ${{ parameters.keyVaultName }} --name keyEncrypt --query [].kid --output tsv"
+                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query customerId -o tsv"
+                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query primarySharedKey --output tsv"
+
+                    "Cleaning input variables"
+                    Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                    Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                    Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                    echo 'Computer name:' ${{ parameters.vmName }}
+
+                    az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.vmLocation }} `
+                    --name ${{ parameters.deploymentName }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-VM.bicep `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\06-VM\vm-${{ parameters.serviceId }}.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                    --parameters workspaceId=$WorkspaceIdOutput `
+                    --parameters workspaceKey=$WorkspaceKeyOutput `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters environmentPrefix='${{ parameters.AzureEnvironmentPrefix }}' `
+                    --parameters adminPassword='${{ parameters.adminP }}' `
+                    --parameters domainPassword='${{ parameters.domainPassword }}' `
+                    --parameters fileSize='${{ parameters.fileSize }}' `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters diagStorageAcctName='${{ parameters.diagStorageAcctName }}' `
+                    --parameters privateEndpointNameForStorage='${{ parameters.privateEndpointNameForStorage }}' `
+                    --parameters resourceLocation='${{ parameters.vmLocation }}' `
+                    --parameters dmVmName='${{ parameters.vmName }}' `
+                    --parameters ultraSSDEnabled='${{ parameters.ultraSSDEnabled }}'

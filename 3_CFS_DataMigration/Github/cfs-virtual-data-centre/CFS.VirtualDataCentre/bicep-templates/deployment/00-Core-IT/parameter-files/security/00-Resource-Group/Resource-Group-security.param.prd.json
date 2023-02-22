@@ -1,0 +1,101 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "sec",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "2",
+                    "component": "comp",
+                    "serviceAbbrv": "sec",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "sec",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "sec",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "sec",
+                    "appName": "Security"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "sec",
+                    "appName": "LogAnalyticsWorkspace"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "sec",
+                    "appName": "Security"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "sec",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "2",
+                    "component": "comp",
+                    "serviceAbbrv": "sec",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "sec",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "sec",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "sec",
+                    "appName": "Security"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "sec",
+                    "appName": "LogAnalyticsWorkspace"
+                }
+            ]
+        }
+    }
+}

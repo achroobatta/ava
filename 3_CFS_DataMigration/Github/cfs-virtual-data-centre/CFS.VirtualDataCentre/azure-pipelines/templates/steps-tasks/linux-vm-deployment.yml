@@ -1,0 +1,150 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: vmServiceName
+  type: string
+
+- name: subscriptionServiceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+- name: taskNumber
+  type: string
+
+- name: vmOSType
+  type: string
+
+- name: vmLocation
+  type: string
+
+- name: securityServiceConnection
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy ${{ parameters.vmServiceName }} Virtual Machine in ${{ parameters.subscriptionServiceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Setting input Variables"
+                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                    "Cleaning input variables"
+                    Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                    Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                    "Starting az deployment"
+                    az deployment sub $(deploymentType) --location 'australiaeast' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(vm-deployment-templates)\deploy-${{ parameters.vmOSType }}-VM.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(vm-parameter-files)\${{ parameters.taskNumber }}-deploy-${{ parameters.vmServiceName }}\${{ parameters.vmServiceName }}-${{ parameters.vmLocation }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters workspaceId=$WorkspaceIdOutput `
+                    --parameters workspaceKey=$WorkspaceKeyOutput `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+# get service account secrets from keyvault (currently for discovery and qualys)
+  - task: AzureCLI@2
+    displayName : Get Service Accounts Secrets From KeyVault
+    name : GetServiceAccountsSecretsFromKeyVault
+    inputs:
+      azureSubscription: ${{ parameters.securityServiceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    if ('${{ parameters.deploymentType }}' -ne 'create') {
+                      "deploymentType chosen was not 'create' - nothing to do"
+                      Exit 0
+                    }
+                    
+                    $discoverySecret=(az keyvault secret show --name "discovery-linux" --vault-name "kv-$(AzureEnvironmentPrefix)-edc-security-001" --query "value")
+                    $qualysSecret=(az keyvault secret show --name "qualys-linux" --vault-name "kv-$(AzureEnvironmentPrefix)-edc-security-001" --query "value")
+                    
+                    echo "##vso[task.setvariable variable=discoverySecret;isoutput=true]$($discoverySecret)"
+                    echo "##vso[task.setvariable variable=qualysSecret;isoutput=true]$($qualysSecret)"
+
+  - task: AzureCLI@2
+    displayName : Create Or Update Sudoers on ${{ parameters.vmServiceName }} Virtual Machine in ${{ parameters.subscriptionServiceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    if ('${{ parameters.deploymentType }}' -ne 'create') {
+                      "deploymentType chosen was not 'create' - nothing to do"
+                      Exit 0
+                    }
+                    
+                    $vmParameterFilePath='$(System.ArtifactsDirectory)\$(vm-parameter-files)\${{ parameters.taskNumber }}-deploy-${{ parameters.vmServiceName }}\${{ parameters.vmServiceName }}-${{ parameters.vmLocation }}.param.$(AzureEnvironmentPrefix).json'
+                    $discoverySecret='$(GetServiceAccountsSecretsFromKeyVault.discoverySecret)'
+                    $qualysSecret='$(GetServiceAccountsSecretsFromKeyVault.qualysSecret)'
+                    
+                    if ( ! ($discoverySecret) ) {
+                      Write-Error "discoverySecret variable is empty"
+                      Exit 1
+                    }
+                    
+                    if ( ! ($qualysSecret) ) {
+                      Write-Error "qualysSecret variable is empty"
+                      Exit 1
+                    }
+                    
+                    $vmParameters=(Get-Content -Path "$vmParameterFilePath"|ConvertFrom-Json)
+                    
+                    if ( ! ($vmParameters -And $vmParameters.parameters -And $vmParameters.parameters.vmObject -And $vmParameters.parameters.vmObject.value -And $vmParameters.parameters.vmObject.value.vmValues)) {
+                      Write-Error "error parsing parameter file '$vmParameterFilePath'"
+                      Exit 1
+                    }
+                    
+                    $VmDetails = $vmParameters.parameters.vmObject.value.vmValues
+                    
+                    foreach ($vm in $VmDetails)
+                    {
+                      $environmentPrefix='$(AzureEnvironmentPrefix)'
+                      $environmentPrefixUpper=$environmentPrefix.ToUpper()
+                      $vmRgLocationPrefix=(($vm.vmRgLocation -eq 'australiaeast') ? 'edc' : 'sdc')
+                      $vmRgLocationPrefixUpper=$vmRgLocationPrefix.ToUpper()
+                      $vmRgServiceAbbrv=$vm.vmRgServiceAbbrv
+                      $vmRgComponent=$vm.vmRgComponent
+                      $vmRgInstance=$vm.vmRgInstance
+                      $vmService=$vm.vmService
+                      $vmInstancePrefix=$vm.vmInstancePrefix
+                      $vmInstance=$vm.vmInstance
+                      
+                      $rgName="rg-$($environmentPrefix)-$($vmRgLocationPrefix)-$($vmRgServiceAbbrv)-$($vmRgComponent)-00$($vmRgInstance)"
+                      $vmName="VM$($environmentPrefixUpper)$($vmRgLocationPrefixUpper)$($vmService)$($vmInstancePrefix)$($vmInstance)"
+                      
+                      "`$rgName='$rgName'"
+                      "`$vmName='$vmName'"
+                      
+                      "Time: $((Get-Date).ToString("o"))"
+                      az vm run-command invoke --command-id RunShellScript `
+                        --name "$vmName" -g "$rgName" `
+                        --scripts @$(System.ArtifactsDirectory)\content\scripts\sudoers_servicenowdiscovery.bash `
+                        --parameters $discoverySecret
+                      
+                      "Time: $((Get-Date).ToString("o"))"
+                      az vm run-command invoke --command-id RunShellScript `
+                        --name "$vmName" -g "$rgName" `
+                        --scripts @$(System.ArtifactsDirectory)\content\scripts\sudoers_qualys.bash `
+                        --parameters $qualysSecret
+                      
+                      "Time: $((Get-Date).ToString("o"))"
+                      "============================`r`n`r`n"
+                    }
+
+   

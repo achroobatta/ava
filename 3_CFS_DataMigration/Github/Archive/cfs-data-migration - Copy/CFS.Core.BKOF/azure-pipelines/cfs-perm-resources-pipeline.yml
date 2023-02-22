@@ -1,0 +1,417 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment 
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  # Set to True to enable daylight saving time
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+  
+  # Set to True to use what-if deployment
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: var-service-principle-secrets
+ - group: var-azure-tenant-id
+
+ # Subscription Service ID
+ - name: subscriptionServiceId       
+   value: "bkof"
+
+ # Subscription ID
+ - name: subscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+       value: $(subsc-np-backoffice-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+       value: $(sc-subsc-prd-backoffice-sid) 
+
+# Azure DevOps Environment Prefix
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+# Subscription Service Name
+ - name: subscriptionServiceName
+   value: "CFSCO Management Group" 
+
+# Azure DevOps Service Connection Name
+ - name: serviceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "sc-subsc-np-bkof-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+        value: "sc-subsc-prd-bkof-001"
+
+# # Workspaces are in EDC (Australiaeast) only
+#  - name: workspaceLocationPrefix
+#    value: "edc"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-data-migration-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-data-migration"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-data-migration-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: "not-valid"
+
+# Template Directory
+ - name: templateDirectory
+   value: '$(System.DefaultWorkingDirectory)\CFS.VirtualDataCentre\bicep-templates\deployment'
+
+# Parameter Directory
+ - name: parameterDirectory
+   value: '$(System.ArtifactsDirectory)\parameter-files'
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+  # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Connectivity Subscription ID
+ - name: connectivitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-connectivity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-connectivity-sid)
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: connectivitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-connectivity-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-connectivity-001"
+
+    
+stages:
+
+ # Deploy RT and NSG
+  - stage: DeployRTandNSG
+    displayName: DeployRTandNSG
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    jobs:
+    - deployment: DeployRTandNSG
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/deploy-RTandNSG.yml
+              parameters:                
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(subscriptionServiceId)'               
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+  # Deploy DM Virtual Network
+  - stage: DeployDmVirtualNetwork
+    displayName: DeployDmVirtualNetwork
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployRTandNSG]
+    jobs:
+    - deployment: DeployDmVirtualNetwork
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone Virtual Network
+            - template: templates/deploy-VirtualNetwork.yml
+              parameters:
+                serviceId: '$(subscriptionServiceId)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+  # Deploy Sftp Virtual Network
+  - stage: DeploySftpVirtualNetwork
+    displayName: DeploySftpVirtualNetwork
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployRTandNSG]
+    jobs:
+    - deployment: DeploySftpVirtualNetwork
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone Virtual Network
+            - template: templates/deploy-VirtualNetworkSftp.yml
+              parameters:
+                serviceId: '$(subscriptionServiceId)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+  # Deploy UDR Rules
+  - stage: DeployUDRRules
+    displayName: DeployUDRRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [deployRTandNSG]
+    jobs:
+    - deployment: DeployUDRRules
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone UDR Rules
+            - template: templates/deploy-UDRRules.yml
+              parameters:
+                serviceId: '$(subscriptionServiceId)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'                 
+  
+  # Deploy Landing Zone Network Peering
+  - stage: DeployNetworkPeering
+    displayName: DeployNetworkPeering
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVirtualNetwork, DeploySftpVirtualNetwork]
+    jobs:
+    - deployment: DeployNetworkPeering
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone Network Peering
+            - template: templates/deploy-NetworkPeering.yml
+              parameters:                
+                subscriptionId: '$(subscriptionID)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(subscriptionServiceId)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                connectivitySubscServiceConnection: '$(connectivitySubscServiceConnection)'
+                connectivitySubscriptionId: '$(connectivitySubscriptionId)'
+
+            - task: PowerShell@2
+              name: WarningMessage
+              displayName: Display warning - UPDATE IP GROUPS
+              inputs:
+                targetType: inline
+                script: |
+                    'Update IP groups e.g. ig-np-edc, ig-np-sdc'
+
+  # # Deploy Resource Groups
+  # - stage: DeployResourceGroup
+  #   displayName: DeployResourceGroup
+
+  #   variables:
+  #   - group: var-azure-platform
+  #   - group: var-service-principle-secrets
+  #   - group: lz-var-service-principle-secrets
+
+  #   pool:
+  #     vmImage: windows-latest
+
+  #   dependsOn: []
+  #   jobs:
+  #   - deployment: DeployResourceGroup
+  #     workspace:
+  #       clean: all
+
+  #     environment: $(AzureDevOpsEnvironments)
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+
+  #           - checkout: self
+
+  #           - task: DownloadPackage@1
+  #             displayName: DownloadArtifacts
+  #             inputs:
+  #               packageType: 'nuget'
+  #               feed: '$(artifactFeed)'
+  #               definition: '$(artifactDefinition)'
+  #               version: '$(artifactVersion)'
+  #               extract: true
+  #               downloadPath: '$(System.ArtifactsDirectory)'            
+
+  #           - task: PowerShell@2
+  #             name: ListFilesInRepositoryDirectory
+  #             displayName: List Files in Repository Directory
+  #             inputs:
+  #               targetType: inline
+  #               script: |
+  #                   'Repository files in directory "$(Pipeline.Workspace)"'
+  #                   Get-ChildItem -Path $(Pipeline.Workspace) -Recurse -File
+
+  #           #Resource Group
+  #           - template: templates/virtual-environment/deploy-ResourceGroup.yml
+  #             parameters:
+  #               serviceId: ${{ parameters.landingZoneServiceId }}
+  #               deploymentType: '$(deploymentType)'
+  #               serviceConnection: '$(landingZoneServiceConnection)'

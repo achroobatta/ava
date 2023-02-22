@@ -1,0 +1,26 @@
+#Template Format
+#- name: stonpedcbkof001
+#  resource_group: rg-np-edc-bkof-stor-001
+
+# Australia East
+- name: stodevedcfwpfa001
+  resource_group: rg-dev-edc-fwp-fa-001
+
+- name: stogamedcfwpfa001
+  resource_group: rg-gam-edc-fwp-fa-001
+
+- name: sanpedcfwpreadfnztest
+  resource_group: rg-np-edc-fwp-sbx-002
+
+- name: zsuowhukk32kkazfunctions
+  resource_group: rg-np-edc-fwp-sbx-002
+
+- name: stonpedcfwp001
+  resource_group: rg-np-edc-fwp-stor-001
+
+- name: stotstedcfwpfa001
+  resource_group: rg-tst-edc-fwp-fa-001
+
+# Australia South East
+- name: stonpsdcfwp001
+  resource_group: rg-np-sdc-fwp-stor-001

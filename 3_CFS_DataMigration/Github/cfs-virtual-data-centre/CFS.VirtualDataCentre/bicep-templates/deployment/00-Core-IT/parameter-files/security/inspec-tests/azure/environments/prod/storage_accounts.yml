@@ -1,0 +1,23 @@
+#Template Format
+#- name: stonpedcbkof001
+#  resource_group: rg-np-edc-bkof-stor-001
+
+# Australia East
+- name: netskopesx63tlwtspuc2
+  resource_group: rg-prd-edc-sec-sec-001
+
+- name: qualysvmsx63tlwtspuc2
+  resource_group: rg-prd-edc-sec-sec-001
+
+- name: stoprdedcdiagnlogs001
+  resource_group: rg-prd-edc-sec-stor-001
+
+- name: stoprdedcsec001
+  resource_group: rg-prd-edc-sec-stor-001
+
+# Australia South East
+- name: stoprdsdcdiagnlogs001
+  resource_group: rg-prd-sdc-sec-stor-001
+
+- name: stoprdsdcsec001
+  resource_group: rg-prd-sdc-sec-stor-001

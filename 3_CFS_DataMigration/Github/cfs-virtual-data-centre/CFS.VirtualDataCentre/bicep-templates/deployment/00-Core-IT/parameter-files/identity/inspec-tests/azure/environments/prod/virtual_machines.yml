@@ -1,0 +1,226 @@
+# Australia East
+
+- name: VMPRDEDCAAD001
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDEDCDC001
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCDC002
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCEX001
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4s_v4
+  os: Windows
+
+- name: VMPRDEDCIQS001
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDEDCIQS002
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDEDCPKI001
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDEDCPKI002
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDEDCQM001
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4ds_v4
+  os: Windows
+
+- name: VMPRDEDCQM003
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D8s_v4
+  os: Windows
+
+- name: VMPRDEDCQM004
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D8s_v4
+  os: Windows
+
+- name: VMPRDEDCQM005
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D8s_v4
+  os: Windows
+
+- name: VMPRDEDCQM006
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D8s_v4
+  os: Windows
+
+- name: VMPRDEDCQM007
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D8s_v4
+  os: Windows
+
+- name: VMPRDEDCRT001
+  resource_group: rg-prd-edc-iden-pki-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+#- name: VMPRDEDCSS001
+#  resource_group: rg-prd-edc-iden-comp-001
+#  datadisk_count: 2
+#  location: australiaeast
+#  size: Standard_D16s_v3
+#  os: Windows
+
+- name: VMPRDEDCSS002
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS003
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS004
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS005
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS006
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS007
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS008
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDEDCSS009
+  resource_group: rg-prd-edc-iden-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+#- name: VMPRDEDCVA001
+#  resource_group: rg-prd-edc-iden-comp-001
+#  datadisk_count: 0
+#  location: australiaeast
+#  size: Standard_D4s_v3
+#  os: Linux
+
+# Australia East
+- name: VMPRDSDCAAD001
+  resource_group: rg-prd-sdc-iden-comp-001
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDSDCDC001
+  resource_group: rg-prd-sdc-iden-comp-001
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDSDCDC002
+  resource_group: rg-prd-sdc-iden-comp-001
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D8s_v3
+  os: Windows
+
+- name: VMPRDSDCEX001
+  resource_group: rg-prd-sdc-iden-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D4s_v4
+  os: Windows
+
+- name: VMPRDSDCIQS001
+  resource_group: rg-prd-sdc-iden-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D4s_v3
+  os: Windows
+
+- name: VMPRDSDCPKI001
+  resource_group: rg-prd-sdc-iden-comp-001
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D4s_v3
+  os: Windows
+
+#- name: VMPRDSDCVA001
+#  resource_group: rg-prd-sdc-iden-comp-001
+#  datadisk_count: 0
+#  location: australiasoutheast
+#  size: Standard_D4s_v3
+#  os: Linux

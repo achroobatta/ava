@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_rg_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "oper"
+        },
+        "kv_service": {
+            "value": "operations"
+        },
+        "vm":  {
+            "value": {
+				"vmRgServiceAbbrv": "oper",
+				"vmRgLocation": "australiaeast",
+				"adminUsername": "AdministratorCFS",
+				"imageReferencePublisher" :"microsoftwindowsdesktop",
+                "imageReferenceOffer": "windows-11",
+                "imageSKU": "win11-21h2-ent",
+                "imageReferenceVersion": "latest",
+				"osDiskType": "StandardSSD_LRS",
+				"osDiskSize": 128,
+				"vmSize": "Standard_D2s_v3",
+				"vnetInstance": "1",
+				"vnetRgComponent": "netw",
+				"vnetRgServiceAbbrv": "operations",
+				"snetInstance": "2",
+				"snetServiceAbbrv": "operations",
+				"storageAccInstance": "3",
+				"timeZone": "E. Australia Standard Time",
+				"availabilitySetName" : "",
+				"appName": "AgentRunner",
+				"privateIPAllocationMethod": "Dynamic",
+				"privateIPAddress": "",
+				"autoShutdownNotificationEmail": "tbc@ausupprod.onmicrosoft.com",
+				"domainName": "cfs.com.au",
+				"domainUserName": "ADM-AD-DOM-ADD@cfs.com.au",
+				"isEnableDomainJoin": true,
+				"OUPAth": "",
+				"autoShutdownTime": "2100",
+				"dataDiskResources": {
+					"value": []
+				}
+			}
+		}
+    }
+}

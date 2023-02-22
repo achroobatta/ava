@@ -1,0 +1,52 @@
+# Australia East
+- name: rg-prd-edc-oper-ado-001
+
+- name: rg-prd-edc-oper-comp-001
+
+- name: rg-prd-edc-oper-comp-002
+
+- name: rg-prd-edc-oper-comp-003
+
+- name: rg-prd-edc-oper-comp-004
+
+- name: rg-prd-edc-oper-comp-005
+
+- name: rg-prd-edc-oper-gh-001
+
+- name: rg-prd-edc-oper-kv-001
+
+- name: rg-prd-edc-oper-netw-001
+
+- name: rg-prd-edc-oper-rsv-001
+
+- name: rg-prd-edc-oper-sec-001
+
+- name: rg-prd-edc-oper-snow-001
+
+- name: rg-prd-edc-oper-stor-001
+
+- name: rg-prd-edc-oper-stor-002
+
+# Australia South East
+
+- name: rg-prd-sdc-oper-comp-001
+
+- name: rg-prd-sdc-oper-comp-002
+
+- name: rg-prd-sdc-oper-comp-003
+
+- name: rg-prd-sdc-oper-comp-004
+
+- name: rg-prd-sdc-oper-kv-001
+
+- name: rg-prd-sdc-oper-netw-001
+
+- name: rg-prd-sdc-oper-rsv-001
+
+- name: rg-prd-sdc-oper-sec-001
+
+- name: rg-prd-sdc-oper-snow-001
+
+- name: rg-prd-sdc-oper-stor-001
+  
+- name: rg-prd-sdc-oper-stor-002

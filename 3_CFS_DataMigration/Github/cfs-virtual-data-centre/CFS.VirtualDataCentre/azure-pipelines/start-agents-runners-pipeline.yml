@@ -1,0 +1,24 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+schedules:
+- cron: "30 21 * * Sun-Thu"
+  displayName: Mon-Fri 7:30AM AEST / Mon-Fri 8:30AM AEDT (Sun-Thu 21:30 UTC)
+  branches:
+    include:
+    - develop
+    #exclude:
+    #- feature/*
+  always: true #important to always run, even if no code changes were made on the develop branch since the last scheduled run.
+
+stages:
+- template: templates/start-agents-runners-template.yml
+  parameters:
+    deployEnvironment: 'Non-Production'
+    artifactVersion: 'latest'
+
+- template: templates/start-agents-runners-template.yml
+  parameters:
+    deployEnvironment: 'Production'
+    artifactVersion: 'latest'

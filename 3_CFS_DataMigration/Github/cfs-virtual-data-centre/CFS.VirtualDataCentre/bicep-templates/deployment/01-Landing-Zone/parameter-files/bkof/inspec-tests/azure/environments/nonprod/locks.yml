@@ -1,0 +1,23 @@
+# Australia East
+- name: rg-np-edc-bkof-comp-001
+
+- name: rg-np-edc-bkof-kv-001
+
+- name: rg-np-edc-bkof-netw-001
+
+- name: rg-np-edc-bkof-rsv-001
+
+- name: rg-np-edc-bkof-sec-001
+
+- name: rg-np-edc-bkof-stor-001
+
+# Australia South East
+- name: rg-np-sdc-bkof-comp-001
+
+- name: rg-np-sdc-bkof-kv-001
+
+- name: rg-np-sdc-bkof-netw-001
+
+- name: rg-np-sdc-bkof-rsv-001
+
+- name: rg-np-sdc-bkof-stor-001

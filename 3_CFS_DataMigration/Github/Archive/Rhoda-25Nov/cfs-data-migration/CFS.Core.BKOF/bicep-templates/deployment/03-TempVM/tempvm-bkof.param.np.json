@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "rgname": "rg-np-edc-bkof-dm-image-001",
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "dm",
+                        "vmRgServiceAbbrv": "bkof",
+                        "vmRgLocation": "australiaeast",
+                        "vmService": "BKOF",
+                        "vmInstancePrefix": "DM",
+                        "vmInstance": "1",
+                        "vmType": "TMP",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2022-datacenter-g2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_B2ms",
+                        "timeZone": "E. Australia Standard Time",
+                        "appName": "Infra",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "vnetResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName": "vnet-np-edc-bkof-dm-001",
+                        "subnetName": "sub-np-edc-bkof-dm-vmsub-003",
+                        "diagstorageName": "dstonpedcbkofdm003"
+                    }
+                ]
+            }
+        }
+    }
+}

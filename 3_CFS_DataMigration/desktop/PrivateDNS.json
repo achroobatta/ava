@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "2018-09-01",
+            "name": "privatelink.database.windows.net",
+            "location": "global",
+            "tags": {},
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "2018-09-01",
+            "name": "privatelink.database.windows.net/agyap5ticgfqu",
+            "location": "global",
+            "dependsOn": [
+                "privatelink.database.windows.net"
+            ],
+            "properties": {
+                "virtualNetwork": {
+                    "id": "/subscriptions/a5b0380d-1f49-475e-b6a1-788228c2970b/resourceGroups/demorg/providers/Microsoft.Network/virtualNetworks/demovnet"
+                },
+                "registrationEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "EndpointDnsRecords-86cea649-f28e-40e3-aced-c23757c5904a",
+            "dependsOn": [
+                "privatelink.database.windows.net"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templatelink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "https://sqlazureextension.hosting.portal.azure.net/sqlazureextension/Content/2.1.02084280/DeploymentTemplates/PrivateDnsForPrivateEndpoint.json"
+                },
+                "parameters": {
+                    "privateDnsName": {
+                        "value": "privatelink.database.windows.net"
+                    },
+                    "privateEndpointNicResourceId": {
+                        "value": "/subscriptions/a5b0380d-1f49-475e-b6a1-788228c2970b/resourceGroups/demorg/providers/Microsoft.Network/networkInterfaces/sqlpvtendpoint.nic.9173da94-a1c4-4960-8b42-8f28fbb08ab1"
+                    },
+                    "nicRecordsTemplateUri": {
+                        "value": "https://sqlazureextension.hosting.portal.azure.net/sqlazureextension/Content/2.1.02084280/DeploymentTemplates/PrivateDnsForPrivateEndpointNic.json"
+                    },
+                    "ipConfigRecordsTemplateUri": {
+                        "value": "https://sqlazureextension.hosting.portal.azure.net/sqlazureextension/Content/2.1.02084280/DeploymentTemplates/PrivateDnsForPrivateEndpointIpConfig.json"
+                    },
+                    "uniqueId": {
+                        "value": "86cea649-f28e-40e3-aced-c23757c5904a"
+                    },
+                    "existingRecords": {
+                        "value": {}
+                    }
+                }
+            }
+        }
+    ]
+}

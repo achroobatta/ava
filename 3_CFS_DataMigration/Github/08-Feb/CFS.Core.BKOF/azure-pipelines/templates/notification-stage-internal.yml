@@ -1,0 +1,51 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    variableGroup: ''
+    taskNumber: ''
+    workItemState: ''
+    workItemComment: ''
+    updateWorkItemDescription: ''
+    sendEmailDescription: ''
+    emailSubject: ''
+    emailBody: ''
+    environment: ''
+    receiverEmailAddress: ''
+
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  jobs:
+  - template: updateworkitem.yml
+    parameters:
+      name: update_workitem
+      displayName: ${{ parameters.updateWorkItemDescription}}
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/UpdateWorkItem.ps1'
+      dependsOn: ''
+      workItemComment: ${{ parameters.workItemComment}}
+      workItemId: ${{ parameters.taskNumber}}
+      workItemState: ${{ parameters.workItemState}}
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email
+      displayName: ${{ parameters.sendEmailDescription}}
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:  update_workitem
+      emailSubject: ${{ parameters.emailSubject}}
+      emailBody: ${{ parameters.emailBody}}
+      environment: ${{ parameters.environment}}
+      receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
+      condition: ''
+      variableGroup: var-password
+

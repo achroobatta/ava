@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nsgObject": {
+            "value": {
+                "nsgValues": [
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "fwd",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-prd-edc-fwd-001",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-edc-fwd-001",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-prd-edc-fwd-001",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.20.0.192/26",
+                                        "10.30.0.192/26"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "fwd",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-prd-sdc-fwd-001",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-sdc-fwd-001",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-prd-sdc-fwd-001",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.20.0.192/26",
+                                        "10.30.0.192/26"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

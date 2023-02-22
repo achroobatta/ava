@@ -1,0 +1,144 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "sec"
+        },
+        "kv_service": {
+            "value": "security"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "sec"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "sec",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "0",
+                        "vmInstance": "1",
+                        "vmService": "SYSLOG",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 64,
+                        "imageReferencePublisher" :"RedHat",
+                        "imageReferenceOffer": "RHEL",
+                        "imageSKU": "82gen2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "security",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "security",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "appName": "Sentinel",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Standard_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 500,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "sec",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "0",
+                        "vmInstance": "1",
+                        "vmService": "FALC",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 64,
+                        "imageReferencePublisher" :"RedHat",
+                        "imageReferenceOffer": "RHEL",
+                        "imageSKU": "82gen2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "security", 
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "security",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "appName": "Crowdstrike",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 500,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "cfstestwebapp"
+        },
+        "webAppDBObject": {
+            "value": { 
+                "webAppDBValues": [
+                    {
+                        "hostingPlanName": "ASP-rgnpedcbackcomp001-bbab",
+                        "databaseName": "testdb",
+                        "sku": "PremiumV2",
+                        "skuCode": "P1v2",
+                        "workerSize": "",
+                        "workerSizeId": "",
+                        "numberOfWorkers": "1",
+                        "linuxFxVersion": "DOTNETCORE|6.0",
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "sqlDbSkuName": "GP_S_Gen5_1",
+                        "sqlDbTierName": "GeneralPurpose",
+                        "serverName": "cfstestdbsrv1",
+                        "serverUsername": "testdbadmin",
+                        "serverPassword": "CFSP@ssw0rd1!",
+                        "storageAccountName": "stocfstestdb",
+                        "isVnetEnabled": true,
+                        "isPrivateEndpointForAppEnabled": false,
+                        "vnetAddress": "10.0.0.0/16",
+                        "subnetAddressForPrivateEndpoint": "10.0.0.0/24",
+                        "subnetAddressForApp": "10.0.2.0/24"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "rgname": {
+            "value": "rg-np-edc-bkof-dm-001"
+          },
+          "appName": {
+            "value": "Infra"
+          },
+          "location": {
+            "value": "australiaeast"
+          },
+          "serviceAbbrv": {
+            "value": "bkof"
+          },
+          "component": {
+            "value": "dm"
+          },
+          "instance": {
+            "value": "1"
+          },
+          "vnetname": {
+            "value": "vnet-np-edc-bkof-dm-001"
+          },
+          "bastionhostname": {
+            "value": "bas-np-edc-bkof-dm-001"
+          },
+          "bastionsubnetipprefix": {
+            "value": "10.53.3.0/26"
+          }
+      }
+  }

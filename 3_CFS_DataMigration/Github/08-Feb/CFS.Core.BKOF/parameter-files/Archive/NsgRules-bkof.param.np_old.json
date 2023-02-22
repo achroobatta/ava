@@ -1,0 +1,654 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters":  {
+      "nsgObject": {
+          "value": { 
+              "nsgValues": [
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "bkof",
+                    "component": "dm",
+                    "instance": 1,
+                    "nsgName": "nsg-np-edc-bkof-dm-sftp-001",
+                    "securityRules": [
+                      {
+                        "name": "DenyAllRules",
+                        "properties": {
+                          "description": "Deny All Rules",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-RDP",
+                        "properties": {
+                          "description": "Allow RDP",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4090,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5985",
+                        "properties": {
+                          "description": "Allow Port 5985",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4085,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5985"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5986",
+                        "properties": {
+                          "description": "Allow Port 5986",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4080,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5986"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-22",
+                        "properties": {
+                          "description": "Allow Port 22",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4075,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "bkof",
+                    "component": "dm",
+                    "instance": 1,
+                    "nsgName": "nsg-np-edc-bkof-dm-com-002",
+                    "securityRules": [
+                      {
+                        "name": "DenyAllRules",
+                        "properties": {
+                          "description": "Deny All Rules",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-RDP",
+                        "properties": {
+                          "description": "Allow RDP",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4090,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5985",
+                        "properties": {
+                          "description": "Allow Port 5985",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4085,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5985"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5986",
+                        "properties": {
+                          "description": "Allow Port 5986",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4080,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5986"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-22",
+                        "properties": {
+                          "description": "Allow Port 22",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4075,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "bkof",
+                    "component": "dm",
+                    "instance": 1,
+                    "nsgName": "nsg-np-edc-bkof-dm-vmsub-003",
+                    "securityRules": [
+                      {
+                        "name": "DenyAllRules",
+                        "properties": {
+                          "description": "Deny All Rules",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-RDP",
+                        "properties": {
+                          "description": "Allow RDP",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4090,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5985",
+                        "properties": {
+                          "description": "Allow Port 5985",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4085,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5985"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5986",
+                        "properties": {
+                          "description": "Allow Port 5986",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4080,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5986"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-22",
+                        "properties": {
+                          "description": "Allow Port 22",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4075,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "bkof",
+                    "component": "dm",
+                    "instance": 1,
+                    "nsgName": "nsg-np-sdc-bkof-dm-sftp-001",
+                    "securityRules": [
+                      {
+                        "name": "DenyAllRules",
+                        "properties": {
+                          "description": "Deny All Rules",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-RDP",
+                        "properties": {
+                          "description": "Allow RDP",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4090,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5985",
+                        "properties": {
+                          "description": "Allow Port 5985",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4085,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5985"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5986",
+                        "properties": {
+                          "description": "Allow Port 5986",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4080,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5986"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-22",
+                        "properties": {
+                          "description": "Allow Port 22",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4075,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "bkof",
+                    "component": "dm",
+                    "instance": 1,
+                    "nsgName": "nsg-np-sdc-bkof-dm-com-002",
+                    "securityRules": [
+                      {
+                        "name": "DenyAllRules",
+                        "properties": {
+                          "description": "Deny All Rules",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-RDP",
+                        "properties": {
+                          "description": "Allow RDP",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4090,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5985",
+                        "properties": {
+                          "description": "Allow Port 5985",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4085,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5985"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5986",
+                        "properties": {
+                          "description": "Allow Port 5986",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4080,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5986"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-22",
+                        "properties": {
+                          "description": "Allow Port 22",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4075,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "bkof",
+                    "component": "dm",
+                    "instance": 1,
+                    "nsgName": "nsg-np-sdc-bkof-dm-vmsub-003",
+                    "securityRules": [
+                      {
+                        "name": "DenyAllRules",
+                        "properties": {
+                          "description": "Deny All Rules",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-RDP",
+                        "properties": {
+                          "description": "Allow RDP",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4090,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5985",
+                        "properties": {
+                          "description": "Allow Port 5985",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4085,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5985"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-5986",
+                        "properties": {
+                          "description": "Allow Port 5986",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4080,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "5986"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Port-22",
+                        "properties": {
+                          "description": "Allow Port 22",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 4075,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  }
+              ]
+          }
+      }
+  }
+}

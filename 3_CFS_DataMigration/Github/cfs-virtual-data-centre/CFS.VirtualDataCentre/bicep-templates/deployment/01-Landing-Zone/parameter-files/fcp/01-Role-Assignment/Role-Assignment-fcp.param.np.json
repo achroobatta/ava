@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleAssignmentArray": {
+            "value": [
+                {
+                    "principalId":  "3981742e-b890-4e02-92f6-a15cce95d4c6",
+                    "DisplayName":  "SG-AA-OPS-fcp-owner"
+                },
+                {
+                    "principalId":  "44eb4015-dc65-4c07-b425-911d83c4c878",
+                    "DisplayName":  "SG-AA-OPS-fcp-reader"
+                },
+                {
+                    "principalId":  "cbda08d3-4eaf-45ae-8a01-e8946d1b97d3",
+                    "DisplayName":  "SG-AA-OPS-fcp-contributor"
+                }
+            ]
+        }
+    }
+}

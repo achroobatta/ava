@@ -1,0 +1,30 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Execute PowerShell in ${{ parameters.serviceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Triggering scripts"    
+                    $computervm = "VMnpedcdm6604"                
+                    $User = "achroo.batta@dev.cfs.com.au"
+                    $Password = ConvertTo-SecureString -String $(adminP) -AsPlainText -Force
+                    $Credential = [pscredential]::new($User,$Password)
+                    $ScriptBlock = {
+                         Start-Process -FilePath Powershell.exe -ArgumentList "echo hello > $env:HOMEDRIVE$env:HOMEPATH\abc.txt" -Wait -Verb RunAs -PassThru 2>&1
+                    }
+                    Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                    $j = Get-Job
+                    $j | Format-List -Property *
+                    $result = $j | Receive-Job

@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "connectivity",
+                        "serviceAbbrv": "hub",
+                        "appName": "connectivity",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 2,
+                        "vmBackup": [
+                            {
+                                "vmName": "PUB001"
+                            },
+                            {
+                                "vmName": "PUB002"
+                            },
+                            {
+                                "vmName": "PUBL001"
+                            },
+                            {
+                                "vmName": "PUBL002"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "connectivity",
+                        "serviceAbbrv": "hub",
+                        "appName": "connectivity",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 2,
+                        "vmBackup": [
+                            {
+                                "vmName": "PUB001"
+                            },
+                            {
+                                "vmName": "PUB002"
+                            },
+                            {
+                                "vmName": "PUBL001"
+                            },
+                            {
+                                "vmName": "PUBL002"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
+

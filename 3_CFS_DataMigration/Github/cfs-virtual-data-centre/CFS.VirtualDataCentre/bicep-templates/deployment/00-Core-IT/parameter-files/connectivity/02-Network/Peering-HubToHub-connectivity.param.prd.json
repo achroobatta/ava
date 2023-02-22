@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "vnetPeeringArray":  {
+            "value":  [
+                {
+                  "localVirtualNetworkName": "vnet-prd-edc-hub-001",
+                  "localVirtualNetworkResourceGroup": "rg-prd-edc-hub-netw-001",
+                  "remoteVirtualNetworkName": "vnet-prd-sdc-hub-001",
+                  "remoteVirtualNetworkResourceGroup": "rg-prd-sdc-hub-netw-001"
+                }
+            ]
+        }
+    }
+  }

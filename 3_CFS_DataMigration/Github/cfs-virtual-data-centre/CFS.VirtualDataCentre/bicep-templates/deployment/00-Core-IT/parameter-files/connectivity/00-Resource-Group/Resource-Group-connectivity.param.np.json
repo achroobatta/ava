@@ -1,0 +1,129 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "hub",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "2",
+                    "component": "comp",
+                    "serviceAbbrv": "hub",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "ddos",
+                    "serviceAbbrv": "hub",
+                    "appName": "DDOS"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "fn",
+                    "serviceAbbrv": "hub",
+                    "appName": "Fortinet"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "hub",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "hub",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "2",
+                    "component": "netw",
+                    "serviceAbbrv": "hub",
+                    "appName": "ExpressRoute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "hub",
+                    "appName": "Connectivity"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "hub",
+                    "appName": "Connectivity"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "hub",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "2",
+                    "component": "comp",
+                    "serviceAbbrv": "hub",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "ddos",
+                    "serviceAbbrv": "hub",
+                    "appName": "DDOS"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "fn",
+                    "serviceAbbrv": "hub",
+                    "appName": "Fortinet"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "hub",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "hub",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "2",
+                    "component": "netw",
+                    "serviceAbbrv": "hub",
+                    "appName": "ExpressRoute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "hub",
+                    "appName": "Connectivity"
+                }
+            ]
+        }
+    }
+}

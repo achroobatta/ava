@@ -1,0 +1,80 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyarray": {
+            "value": [
+                {
+                    "policyName": "Policy1",
+                    "location": "australiaeast",
+                    "displayName": "CIS Microsoft Azure Foundations Benchmark v1.3.0",
+                    "policyDescription": "This initiative includes policies that address a subset of CIS Microsoft Azure Foundations Benchmark recommendations. Additional policies will be added in upcoming releases. For more information, visit https://aka.ms/cisazure130-initiative.",
+                    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/612b5213-9160-4969-8578-1518bd2a000c",
+                    "parameters": {}
+                },
+                {
+                    "policyName": "Policy2",
+                    "location": "australiaeast",    
+                    "displayName": "PCI v3.2.1 2018",
+                    "policyDescription": "This initiative includes policies that address a subset of PCI v3.2.1:2018 controls. Additional policies will be added in upcoming releases. For more information, visit https://aka.ms/pciv321-init.",
+                    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/496eeda9-8f2f-4d5e-8dfd-204f0a92ed41",
+                    "parameters": {}
+                },
+                {
+                    "policyName": "Policy3",
+                    "location": "australiaeast",    
+                    "displayName": "ISO 27001 2013",
+                    "policyDescription": "This initiative includes audit and virtual machine extension deployment policies that address a subset of ISO 27001:2013 controls. Additional policies will be added in upcoming releases. For more information, visit https://aka.ms/iso27001-init.",
+                    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/89c6cddc-1c73-4ac1-b19c-54d1a15a42f2",
+                    "parameters": {}
+                },
+                {
+                    "policyName": "Policy5",
+                    "location": "australiaeast",    
+                    "displayName": "NIST SP 800-53 Rev. 5",
+                    "policyDescription": "This initiative includes policies that address a subset of NIST SP 800-53 Rev. 5 controls. Additional policies will be added in upcoming releases. For more information, visit https://aka.ms/nist800-53r5-initiative.",
+                    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/179d1daa-458f-4e47-8086-2a68d0d6c38f",
+                    "parameters": {}
+                },
+                {
+                    "policyName": "Policy6",
+                    "location": "australiaeast",    
+                    "displayName": "SWIFT CSP CSCF v2020",
+                    "policyDescription": "This initiative includes audit and virtual machine extension deployment policies that address a subset of SWIFT CSP-CSCF v2020 controls. Additional policies will be added in upcoming releases. For more information, visit https://aka.ms/swift2020-init.",
+                    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/3e0c67fc-8c7c-406c-89bd-6b6bdc986a22",
+                    "parameters": {
+                        "workspaceIDsLogAnalyticsAgentShouldConnectTo": { 
+                            "value": "04c667c5-2e00-48b2-9cc1-f4993d21ac21"
+                        },
+                        "domainNameFQDN": {
+                            "value": "dev.cfs.com.au"
+                        },
+                        "listOfMembersToIncludeInWindowsVMAdministratorsGroup": {
+                            "value": "Administrators;Domain Admins;"
+                        }
+                    }
+                },      
+                {
+                    "policyName": "Policy7",
+                    "location": "australiaeast",    
+                    "displayName": "Australian Government ISM PROTECTED",
+                    "policyDescription": "This initiative includes policies that address a subset of Australian Government Information Security Manual (ISM) controls. Additional policies will be added in upcoming releases. For more information, visit https://aka.ms/auism-initiative.",
+                    "policyDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/27272c0b-c225-4cc3-b8b0-f2534b093077",
+                    "parameters": {
+                        "logAnalyticsWorkspaceId": { 
+                            "value": "04c667c5-2e00-48b2-9cc1-f4993d21ac21"
+                        },
+                        "listOfResourceTypes": {
+                            "value": ["Microsoft.Network/azurefirewall","Microsoft.Network/firewallpolicies","Microsoft.Network/firewallpolicies/ruleCollectionGroups","Microsoft.Network/firewallpolicies/ruleGroups"] 
+                        },
+                        "membersToExclude": {
+                            "value": "null"
+                        }
+                    }
+                }
+                    
+            ]  
+        }
+    }
+}      
+    

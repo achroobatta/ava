@@ -1,0 +1,34 @@
+#deploy-AvailabilitySet.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+  
+- name: serviceId
+  type: string
+
+- name: landingZoneType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Availability Set in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-AvailabilitySet.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\08-Compute\AvailabilitySet-${{ parameters.serviceId }}.param.json `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)'

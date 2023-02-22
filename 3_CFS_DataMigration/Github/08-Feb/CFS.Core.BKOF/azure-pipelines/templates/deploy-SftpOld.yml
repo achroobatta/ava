@@ -1,0 +1,232 @@
+#deploy-storageAccount.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string    
+
+steps:
+  # - task: PowerShell@2
+  #   inputs:
+  #     targetType: 'inline' 
+  #     script: |          
+          
+  #         Install-Module -Name MSOnline -Force
+  #         Install-PackageProvider -Name NuGet -Force
+  #         # # Install-Module PowerShellGet -AllowClobber -Force
+  #         Set-PSRepository -Name PSGallery -InstallationPolicy Trusted           
+  #         Install-Module Az.Compute -Force 
+  #         Install-Module Az.KeyVault -AllowClobber -Force
+  #         # Install-Module Az.Storage -AllowClobber -Force 
+           
+  #         echo 'Hello' 
+  #         $rgName = '$(rgName)'
+  #         $sftpRg = '$(rgName)'
+  #         $sftpStorageAcctName = "depstonpedcbkofdm001"
+  #         $sftpContainerName = "sshkeycontainer"
+  #         $sshKeyName = '$(sshKeyName)'
+  #         $currentDirectory = "C:\Users\VssAdministrator\.ssh\"
+  #         $sshfilePath = "C:\Users\VssAdministrator\.ssh\*"
+  #         if (Test-Path -Path $sshfilePath){
+  #               Remove-Item $sshfilePath}
+
+  #         $outfile = "C:\Temp\SSH\$sshKeyName.pem"
+  #         $outFileFolder = 'C:\Temp\SSH'
+  #         $outFilePath = 'C:\Temp\SSH\*'
+  #         if (Test-Path -Path $outFileFolder){
+  #                Remove-Item $outFilePath}
+  #         else {
+  #             New-Item -ItemType Directory -Path $outFileFolder}
+
+  #         New-AzSshKey -ResourceGroupName $rgName -Name $sshKeyName
+  #         Write-Output 'Start'
+  #         Write-Output '***********************************************'
+  #         Get-ChildItem $currentDirectory
+  #         Remove-Item "$currentDirectory\*.pub"
+  #         Get-ChildItem $currentDirectory
+
+  #         Write-Output $rgName
+  #         Write-Output $sshKeyName
+
+  #         Copy-Item -Path $sshfilePath -Destination $outfile
+  #         $storageAccountkey = (Get-AzStorageAccountKey -ResourceGroupName $sftpRg -Name $sftpStorageAcctName | Where-Object {$_.KeyName -eq "key1"}).Value
+  #         $ctx = New-AzStorageContext -StorageAccountName $sftpStorageAcctName -StorageAccountKey $storageAccountkey
+  #         Set-AzStorageBlobContent -File $outfile -Container $sftpContainerName -Blob "$sshKeyName.pem" -Context $ctx -Force
+
+  #         $privateKey=Get-Content -Path "$currentDirectory\*" -Encoding "utf8"
+
+  #         $str = ""
+  #         for($i=0; $i -lt $privateKey.Count; $i++)
+  #          {
+  #               Write-Output $privateKey[$i]
+  #               $str = $str+$privateKey[$i]+"`n"
+  #               Write-Output '****'
+  #               Write-Output $str
+  #               Write-Output '$$$$$$$$$$'
+  #          }
+
+  #         #Write-Output $privateKeyEncoded >> $logFilePath
+  #          Write-Output $keyVaultName
+  #          Write-Output $sshKeyName
+            
+  #          echo "##vso[task.setvariable variable=My_Secret]$str" 
+
+  #          Write-Output "Writing to keyvault now"
+  #          $string = New-Object System.Net.NetworkCredential("",$str)
+  #          $secretvalue = $string.SecurePassword
+  #          Set-AzKeyVaultSecret -VaultName $keyVaultName -Name $sshKeyName -SecretValue $secretvalue
+
+  #          Remove-Item "$currentDirectory\*"
+  #          Remove-Item $outFilePath
+  #          Get-ChildItem $currentDirectory
+  #          Write-Output '***********************************************'
+  #          Write-Output 'End'   
+
+  - task: AzureCLI@2
+    displayName : Deploy SshKey in  Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}     
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript' 
+      inlineScript: | 
+          echo '*************************************************************************'          
+          echo 'sshKeyName: ' $(sshKeyName)
+          echo 'Sftp Storage Account: ' $(destStorageAccountName)
+          $sshKey = '$(sshKeyName)'          
+          echo '$(dmEnvironment)'
+          echo '*************************************************************************'          
+          if ('$(dmEnvironment)' -eq 'Non-Production') {
+             $depStorageAccount =  "depstonpedcbkofdm001"
+             $blob = "$(npblob)"
+          }
+          else {
+             $depStorageAccount = "depstoprdedcbkofdm001"
+             $blob = "$(prdblob)"
+          }
+          echo '**************************************************************************'
+          az --version
+          az sshkey create --name '$(sshKeyName)' --ssh-public-key-name '$(sshKeyName)' --resource-group '$(rgName)'
+          echo 'before'
+          echo '***************************************************************************'  
+          ls 'C:\Users\VssAdministrator\.ssh\'
+          rm 'C:\Users\VssAdministrator\.ssh\*.pub'
+          echo 'after'
+          echo '***************************************************************************'  
+          ls 'C:\Users\VssAdministrator\.ssh\' 
+          echo '***************************************************************'
+          $sshfilePath = "C:\Users\VssAdministrator\.ssh\*"  
+          $outfile = "C:\Users\VssAdministrator\$sshKey.pem"
+          Copy-Item -Path $sshfilePath -Destination $outfile  
+          az storage blob upload --account-name $depStorageAccount  --account-key $blob -c "sshkeycontainer" --file $outfile -n $outfile 
+          echo '***************************************************************'      
+          # $privateKey=Get-Content -Path "C:\Users\VssAdministrator\.ssh\*" -Encoding "utf8"        
+          # $str = ""
+          # for($i=0; $i -lt $privateKey.Count; $i++)
+          #  {               
+          #       $str = $str+$privateKey[$i]+"`n"                
+          #  }   
+          # Write-Output '******************************************************'
+          # Write-Output $str
+          # Write-Output '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'  
+          # # $string = New-Object System.Net.NetworkCredential("",$str)
+          # # $secretvalue = $string.SecurePassword  
+          # echo '******************************************************************'
+          # echo $string  
+          # echo '******************************************************************'
+          # echo '$(rgName)' 
+          # echo $privateKey.Count 
+          # echo '***************************************************************************' 
+          # echo $privateKey
+          # echo '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&'
+          # $privateKeyInBytes = [System.Text.Encoding]::UTF8.GetBytes($privateKey)
+          # $privateKeyEncoded = [System.Convert]::ToBase64String($privateKeyInBytes)
+          # echo $privateKeyEncoded
+          # echo '***************************************************************************'                     
+          # echo "##vso[task.setvariable variable=My_Secret]$privateKey"  
+          #  echo "##vso[task.setvariable variable=myVar;]foo" 
+          # echo '$MY_Secret'
+          # echo '****************************************************************************'      
+          # Write-Output $My_Secret   
+          # echo '***************************************************************************' 
+          # echo '$(keyVaultName)'
+          # echo '***************************************************************************' 
+          # echo '$(sshKeyName)'         
+          # echo '***************************************************************************' 
+          # echo 'Writing to keyvault now'  
+          # echo '***************************************************************************'   
+          # az keyvault secret set --name '$(sshKeyName)' --vault-name '$(keyVaultName)' --value $privateKeyEncoded          
+          # echo 'removing extra files'
+          # echo '***************************************************************************'  
+          rm 'C:\Users\VssAdministrator\.ssh\*'
+          ls 'C:\Users\VssAdministrator\.ssh\'
+
+  - task: AzureCLI@2
+    displayName : Deploy Sftp Storage Account in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-SFTP.bicep `                    
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters owner='$(owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters sshKeyName='$(sshKeyName)' `
+                    --parameters appName='$(appName)' `
+                    --parameters resourceLocation='$(resourceLocation)' `
+                    --parameters sftpstorageAccountName='$(destStorageAccountName)' `
+                    --parameters sftpRootContainerName='$(rootContainerName)' `
+                    --parameters warrantyPeriod='$(warrantyPeriod)' `
+                    --parameters ipTobeWhiteListed='$(ipTobeWhiteListed)' `
+                    --parameters sftpUserName='$(sftpUserName)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\04-SFTP\sftp-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json 
+
+#   - task: GraphEmail@0        
+#     displayName: 'Sending sFtp Username using Graph Api'
+#     inputs:
+#       To: '$(emailAddress)' # The Business User who will receive the email 
+#       From: '$(fromEmailAddress)'
+#       Subject: 'Username for sFTP' # Email Subject
+#       Body: "Username for sFtp is: $(sftpUserName). Ssh private key will be sent in seperate email." # Email Body
+#       BodyAsHtml: true  
+#       ShowClientSecret: false
+#       ClientID: $(ClientID) 
+#       ClientSecret: $(ClientSecret) 
+#       TenantDomain: $(TenantDomain) 
+# #
+#   - task: GraphEmail@0        
+#     displayName: 'Sending sFtp SshKey using Graph Api'
+#     inputs:
+#       To: '$(emailAddress)' # The Business User who will receive the email 
+#       From: '$(fromEmailAddress)'
+#       Subject: 'SSH Key for sFTP (should be saved)' # Email Subject
+#       Body: "Copy the below content in text file and save this file as .pem extension. Please Ensure Don't copy SPACES. \n\n $My_Secret" # Email Body
+#       BodyAsHtml: true 
+#       ShowClientSecret: false
+#       ClientID: $(ClientID) 
+#       ClientSecret: $(ClientSecret) 
+#       TenantDomain: $(TenantDomain) 
+
+  # - task: GraphEmail@0        
+  #   displayName: 'Sending sFtp Username using Graph Api'
+  #   inputs:
+  #     To: '$(emailAddress)' # The Business User who will receive the email 
+  #     From: '$(fromEmailAddress)'
+  #     Subject: 'Sftp Local Username for taskNumber $(dmTaskNumber). Please validate your access to dummyFile' # Email Subject
+  #     Body: "Username for sFTP is: $(destStorageAccountName).$(sftpUserName). Hostname is: $(destStorageAccountName).blob.core.windows.net. Dummy File Name: dummyCFS.txt is uploaded. Ssh private key and Ssh Password is aleady sent in seperate email. Please validate it and notify, if you can access dummy file using these credentials. On completion of Extraction process, actual filename will be shared. You will able to download actualfile using same credentials. Please save these for future." # Email Body
+  #     BodyAsHtml: true  
+  #     ShowClientSecret: false
+  #     ClientID: $(ClientID) 
+  #     ClientSecret: $(ClientSecret) 
+  #     TenantDomain: $(TenantDomain) 

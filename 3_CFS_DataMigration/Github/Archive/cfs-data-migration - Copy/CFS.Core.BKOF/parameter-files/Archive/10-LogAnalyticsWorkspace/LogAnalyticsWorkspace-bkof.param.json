@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups":[
+                    {
+                        "location": "australiaeast",
+                        "component": "sec",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Infra",
+                        "instance": 1
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "sec",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Infra",
+                        "instance": 2
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\bin\Debug\netcoreapp3.1\CFS.Core.BKOF.deps.json
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\bin\Debug\netcoreapp3.1\CFS.Core.BKOF.dll
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\bin\Debug\netcoreapp3.1\CFS.Core.BKOF.pdb
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.csproj.AssemblyReference.cache
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.GeneratedMSBuildEditorConfig.editorconfig
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.AssemblyInfoInputs.cache
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.AssemblyInfo.cs
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.csproj.CoreCompileInputs.cache
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.dll
+C:\0_PROJECTS\3_CFS_DataMigration\Github\cfs-data-migration\CFS.Core.BKOF\obj\Debug\netcoreapp3.1\CFS.Core.BKOF.pdb

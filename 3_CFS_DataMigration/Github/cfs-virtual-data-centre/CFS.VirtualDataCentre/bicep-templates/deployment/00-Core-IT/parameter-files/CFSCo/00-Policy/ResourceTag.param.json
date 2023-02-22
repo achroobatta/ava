@@ -1,0 +1,103 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "australiaeast"
+    },
+    "resouceTagsArray": {
+      "value": [
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require AppName Resource Tag in Resources",
+          "description": "Policy to Require AppName Resource Tag in Resources",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/871b6d14-10aa-478d-b590-94f262ecfa99",
+          "tagName": "appName",
+          "message": "AppName Resource Tag in Resources is required",
+          "enforcementMode": "DoNotEnforce"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require Environment Resource Tag in Resources",
+          "description": "Policy to Require Environment Resource Tag in Resources",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/871b6d14-10aa-478d-b590-94f262ecfa99",
+          "tagName": "environment",
+          "message": "Environment Resource Tag in Resources is required",
+          "enforcementMode": "DoNotEnforce"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require Owner Resource Tag in Resources",
+          "description": "Policy to Require Owner Resource Tag in Resources",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/871b6d14-10aa-478d-b590-94f262ecfa99",
+          "tagName": "owner",
+          "message": "Owner Resource Tag in Resources is required",
+          "enforcementMode": "DoNotEnforce"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require Cost Center Resource Tag in Resources",
+          "description": "Policy to Require Cost Center Resource Tag in Resources",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/871b6d14-10aa-478d-b590-94f262ecfa99",
+          "tagName": "costCenter",
+          "message": "Cost Center Resource Tag in Resources is required",
+          "enforcementMode": "DoNotEnforce"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require CreateOnDate Resource Tag in Resources",
+          "description": "Policy to Require CreateOnDate Resource Tag in Resources",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/871b6d14-10aa-478d-b590-94f262ecfa99",
+          "tagName": "createOnDate",
+          "message": "CreateOnDate Resource Tag in Resources is required",
+          "enforcementMode": "DoNotEnforce"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require AppName Resource Tag in Resource Groups",
+          "description": "Policy to Require AppName Resource Tag in Resource Groups",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+          "tagName": "appName",
+          "message": "AppName Resource Tag in Resource Groups is required",
+          "enforcementMode": "Default"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require Environment Resource Tag in Resource Groups",
+          "description": "Policy to Require Environment Resource Tag in Resource Groups",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+          "tagName": "environment",
+          "message": "Environment Resource Tag in Resource Groups is required",
+          "enforcementMode": "Default"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require Owner Resource Tag in Resource Groups",
+          "description": "Policy to Require Owner Resource Tag in Resource Groups",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+          "tagName": "owner",
+          "message": "Owner Resource Tag in Resource Groups is required",
+          "enforcementMode": "Default"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require Cost Center Resource Tag in Resource Groups",
+          "description": "Policy to Require Cost Center Resource Tag in Resource Groups",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+          "tagName": "costCenter",
+          "message": "Cost Center Resource Tag in Resource Groups is required",
+          "enforcementMode": "Default"
+        },
+        {
+          "name": "ResourceTagging",
+          "displayName": "Policy to Require CreateOnDate Resource Tag in Resource Groups",
+          "description": "Policy to Require CreateOnDate Resource Tag in Resource Groups",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025",
+          "tagName": "createOnDate",
+          "message": "CreateOnDate Resource Tag in Resource Groups is required",
+          "enforcementMode": "Default"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+parameters:
+- name: subscriptionServiceId
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: resourceGroup
+  type: string
+
+steps:
+  - task: AzureCLI@2
+                displayName : Deploy Single Database with Elastic Pool in ${{ parameters.subscriptionServiceId }} Subscription
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  scriptType: 'pscore'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                                "Starting az deployment"
+                                az deployment group $(deploymentType) --resource-group '${{ parameters.resourceGroup }}' `
+                                --name $(deploymentName) `
+                                --template-file $(templateDirectoryApplication)\$(application-deployment-templates)\singleDatabaseWithElasticPool.bicep `
+                                --parameters $(parameterDirectory)\06-PaasSQL\PaasSQL-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json `
+                                --parameters location='$(deploymentLocation_var)' `
+                                --parameters keyVaultResourceGroup='$(keyVaultResourceGroup)' `
+                                --parameters keyVaultName='$(keyVaultName)' `
+                                --parameters resourceGroupName='${{ parameters.resourceGroup }}' `
+                                --parameters storageAccountResourceGroup='$(storageAccountResourceGroup)' `
+                                --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                                --parameters storageAccountName='$(storageAccountName)' `
+                                --parameters workspaceResourceGroup='$(workspaceResourceGroup)' `
+                                --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                                --parameters workspaceName='$(workspaceName)' 

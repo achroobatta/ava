@@ -1,0 +1,38 @@
+# Template Format
+#- name: vmprodaedc01
+#  resource_group: rg-prod-ae-compute
+#  datadisk_count: 0
+#  location: australiaSouthEast
+#  size: Standard_B2ms
+#  os: Windows
+
+# Australia East
+- name: VMPRDEDCTCS001
+  resource_group: rg-prd-edc-sec-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_B2ms
+  os: Windows
+
+- name: VMPRDEDCWU001
+  resource_group: rg-prd-edc-sec-comp-002
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+# Australia South East
+
+- name: VMPRDSDCTCS001
+  resource_group: rg-prd-sdc-sec-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_B2ms
+  os: Windows
+
+- name: VMPRDSDCWU001
+  resource_group: rg-prd-sdc-sec-comp-002
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows

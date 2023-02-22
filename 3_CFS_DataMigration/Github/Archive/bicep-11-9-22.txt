@@ -1,0 +1,24 @@
+1 get-azaccount
+   2 get-azcontext
+   3 $serviceId
+   4 $serviceId = "bkof"
+   5 $deploymentType = "create"
+   6 $resourceLocation = "australiaeast"
+   7 $landingZoneType = "01-Landing-Zone"
+   8 $System.ArtifactsDirectory = "C:\CFS\cfs-data-migration"
+   9 $SystemArtifactsDirectory = "C:\CFS\cfs-data-migration"
+  10 $deployments = "deployments"
+  11 $parametersserviceId = $serviceId
+  12 $AzureEnvironmentPrefix = "np"
+  13 echo "$SystemArtifactsDirectory\$deployments\$landingZoneType\parameter-files\$parametersserviceId\00-Resource-Group\Resource-Group-$ parametersserviceId.param.$AzureEnvironmentPrefix.json"
+  14 echo $SystemArtifactsDirectory\$deployments\$landingZoneType\parameter-files\$parametersserviceId\00-Resource-Group\Resource-Group-$parametersserviceId.param.$AzureEnvironmentPrefix.json
+  15 $bicep-deployment-templates = "bicep-templates\deployment\deployment-templates"
+  16 $bicepdeploymenttemplates = "bicep-templates\deployment\deployment-templates"
+  17 echo $SystemArtifactsDirectory\$bicepdeploymenttemplates\deploy-ResourceGroup.bicep
+  18 $deploymentName
+  19 $deploymentName = "testdeployment"
+  20 $Owner = "rhoda"
+  21 $costCenterCode = "mycostcenter"
+  22 $AustraliaEastOffsetSymbol = "PT10H"
+  23 cls
+  24 az deployment sub $deploymentType --location $resourceLocation --name $deploymentName --template-file $SystemArtifactsDirectory\$bicep-deployment-templates\deploy-ResourceGroup.bicep --parameters e...

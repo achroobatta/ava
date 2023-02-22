@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "aseName": {
+              "value": "ase-np-edc-bkof-002"
+          },
+          "dedicatedHostCount": {
+            "value": 0
+          },
+          "zoneRedundant": {
+            "value": false
+          },
+          "virtualNetworkName": {
+            "value": "vnet-np-edc-bkof-001"
+          },
+          "virtualNetworkResourceGroup": {
+            "value": "rg-np-edc-bkof-netw-001"
+          },
+          "subnetName": {
+            "value": "sub-np-edc-ase-003"
+          },
+          "subnetAddress": {
+            "value": "10.43.6.0/24"
+          },
+          "ilbMode": {
+            "value": 3
+          }
+      }
+  }

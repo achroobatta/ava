@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters":  {
+      "udrObject": {
+          "value": { 
+              "routeValues": [
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-operations-001",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-operations-002",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-operations-001",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-operations-002",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68"
+                        }
+                      }
+                    ]
+                  }
+              ]
+          }
+      }
+  }
+}

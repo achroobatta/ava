@@ -1,0 +1,806 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters":  {
+      "nsgObject": {
+          "value": { 
+              "nsgValues": [
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                      "nsgName": "nsg-np-edc-operations-001",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-operations-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-operations-001",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.1.224/27",
+                              "10.60.1.224/27"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To WindowsServer",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "10.40.4.134",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 980,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "135",
+                              "139",
+                              "445",
+                              "5985",
+                              "5986",
+                              "49152-65535"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To LinuxServer",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "10.40.4.134",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 990,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-Inbound-WindowsUpdateDeliveryOptimization",
+                          "properties": {
+                            "description": "Allow Inbound Windows Update Delivery Optimization",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "7680",
+                            "sourceAddressPrefix": "10.40.4.0/25",
+                            "destinationAddressPrefix": "10.40.4.0/25",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        }
+                      ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-np-edc-operations-002",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-operations-002",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-operations-002",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.40.1.224/27",
+                            "10.60.1.224/27"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "10.40.4.134",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "10.40.4.134",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-HTTPS-From-Internet-To-sub-np-edc-operations-002",
+                        "properties": {
+                          "description": "Allow HTTPS From Internet To sub-np-edc-operations-002",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "443",
+                          "sourceAddressPrefix": "Internet",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 1000,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-np-sdc-operations-001",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-operations-001",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-operations-001",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.40.1.224/27",
+                            "10.60.1.224/27"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "10.40.4.134",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "10.40.4.134",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Inbound-WindowsUpdateDeliveryOptimization",
+                        "properties": {
+                          "description": "Allow Inbound Windows Update Delivery Optimization",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "7680",
+                          "sourceAddressPrefix": "10.60.4.0/25",
+                          "destinationAddressPrefix": "10.60.4.0/25",
+                          "access": "Allow",
+                          "priority": 1000,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "oper",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-np-sdc-operations-002",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-operations-002",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-operations-002",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.40.1.224/27",
+                            "10.60.1.224/27"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "10.40.4.134",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "10.40.4.134",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  }
+              ]
+          }
+      }
+  }
+}

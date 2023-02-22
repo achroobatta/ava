@@ -1,0 +1,128 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: subscriptionId
+    displayName: Subscription ID
+    type: string
+    default: ""
+    values:
+     - "tenant-root-group"
+     - "bkof"
+     - "fwp"
+     - "fcp"
+     - "connectivity"
+     - "identity"
+     - "operations"
+     - "security"
+
+  - name: deploymentType
+    displayName: Deployment Type
+    type: string
+    default: "create"
+    values:
+     - "create"
+     - "delete"
+     - "update"
+     - "show"
+
+variables:
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ - name: subscriptionServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.subscriptionId, 'tenant-root-group' ) }}:
+       value: "sc-np-${{ parameters.subscriptionId }}"
+     ${{ else }}:
+       value: "sc-subsc-np-${{ parameters.subscriptionId }}-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.subscriptionId, 'tenant-root-group' ) }}:
+       value: "sc-prd-${{ parameters.subscriptionId }}"
+     ${{ else }}:
+       value: "sc-subsc-prd-${{ parameters.subscriptionId }}-001"
+
+stages:
+
+  - stage: EnableManagementPartner
+    displayName: EnableManagementPartner
+
+    variables:
+    - group: var-management-partner
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: EnableManagementPartner
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+                 
+            - task: AzureCLI@2
+              displayName : Enable Management Partner
+              inputs:
+                azureSubscription: $(subscriptionServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                              az extension add --name managementpartner
+                              az managementpartner ${{ parameters.deploymentType }} --partner-id $(managementPartnerId)
+

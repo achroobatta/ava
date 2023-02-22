@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "oper"
+        },
+        "kv_service": {
+            "value": "oper"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "oper"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "oper",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix" : "00",
+                        "vmInstance": "1",
+                        "vmService": "DIG",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "StandardSSD_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2022-datacenter-g2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D2s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "operations",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "operations",
+                        "snetInstance": "2",
+                        "storageAccInstance": "3",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DIG",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "domainName":"cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@cfs.com.au",
+                        "isEnableDomainJoin": true,
+                        "OUPAth": "",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "StandardSSD_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

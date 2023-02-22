@@ -1,0 +1,51 @@
+#deploy-NetworkPeering-HubToSpoke.yml
+
+parameters:
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+  
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: landingZoneType
+  type: string
+
+- name: subscriptionId
+  type: string
+
+- name: connectivitySubscServiceConnection
+  type: string
+
+- name: connectivitySubscriptionId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Hub To ${{parameters.serviceName}} Spoke Virtual Network Peering
+    inputs:
+      azureSubscription: ${{ parameters.connectivitySubscServiceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --parameters remoteVirtualNetworkSubscriptionId=${{ parameters.subscriptionId }} `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-HubToSpokeVnetPeering.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\02-Network\Peering-HubtoSpoke-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json
+
+  - task: AzureCLI@2
+    displayName : ${{parameters.serviceName}} Spoke to Hub Virtual Network Peering
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --parameters remoteVirtualNetworkSubscriptionId=${{ parameters.connectivitySubscriptionId }} `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-SpokeToHubVnetPeering.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\02-Network\Peering-SpokeToHub-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json

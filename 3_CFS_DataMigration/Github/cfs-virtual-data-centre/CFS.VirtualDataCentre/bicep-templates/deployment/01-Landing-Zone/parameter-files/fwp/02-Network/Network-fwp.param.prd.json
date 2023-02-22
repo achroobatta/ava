@@ -1,0 +1,152 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fwp",
+                        "serviceAbbrv": "fwp",
+                        "appName": "CFS Wrap",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "addressSpaces": [ 
+                            "10.22.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.20.0.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-prd-edc-fwp-001",
+                              "location": "australiaeast",
+                              "service": "fwp",
+                              "instance" : "1",
+                              "addressPrefix": "10.22.0.0/24",
+                              "networkSecurityGroup": "nsg-prd-edc-fwp-001",
+                              "routeTable": "rt-prd-edc-fwp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-prd-edc-fwp-002",
+                              "location": "australiaeast",
+                              "service": "fwp",
+                              "instance" : "2",
+                              "addressPrefix": "10.22.1.0/24",
+                              "networkSecurityGroup": "nsg-prd-edc-fwp-002",
+                              "routeTable": "rt-prd-edc-fwp-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [
+                                  {
+                                      "name": "delegation",
+                                      "type": "Microsoft.Network/virtualNetworks/subnets/delegations",
+                                      "properties": {
+                                          "serviceName": "Microsoft.Web/serverfarms"
+                                      }
+                                  }
+                              ],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fwp",
+                        "serviceAbbrv": "fwp",
+                        "appName": "CFS Wrap",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "addressSpaces": [ 
+                            "10.32.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.30.0.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-prd-sdc-fwp-001",
+                              "location": "australiasoutheast",
+                              "service": "fwp",
+                              "instance" : "1",
+                              "addressPrefix": "10.32.0.0/24",
+                              "networkSecurityGroup": "nsg-prd-sdc-fwp-001",
+                              "routeTable": "rt-prd-sdc-fwp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-prd-sdc-fwp-002",
+                              "location": "australiasoutheast",
+                              "service": "fwp",
+                              "instance" : "2",
+                              "addressPrefix": "10.32.1.0/24",
+                              "networkSecurityGroup": "nsg-prd-sdc-fwp-002",
+                              "routeTable": "rt-prd-sdc-fwp-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

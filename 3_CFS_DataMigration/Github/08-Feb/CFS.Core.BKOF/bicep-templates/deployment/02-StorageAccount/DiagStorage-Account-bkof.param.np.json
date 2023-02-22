@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "location2": "australiasoutheast",
+                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-edc-bkof-dm-001",
+                        "subnetName":"sub-np-edc-bkof-dm-com-002",
+                        "virtualNetwork2ResourceGroup": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetwork2Name":"vnet-np-sdc-bkof-dm-001",
+                        "subnet2Name":"sub-np-sdc-bkof-dm-com-002",
+                        "rgname": "rg-np-edc-bkof-dm-vm-001",
+                        "rgname2": "rg-np-sdc-bkof-dm-vm-001",
+                        "containerPrefix": "",
+                        "privateDnsZoneName": "privatelink.blob.core.windows.net",
+                        "performance": "Standard_RAGRS",
+                        "kind": "StorageV2",
+                        "publicNetworkAccess": "Disabled",
+                        "defaultAction" : "Deny",
+                        "action" : "Allow",
+                        "allowBlobPublicAccess": false,
+                        "minimumTlsVersion": "TLS1_2"
+                    }
+                ]
+            }
+        }
+    }
+}

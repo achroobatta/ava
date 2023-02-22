@@ -1,0 +1,32 @@
+#deploy-UDRRules.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Delete UDR Rules in ${{ parameters.serviceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+         # az login 
+         $rg = $(kvRG)
+         $rtSftpName = "rt-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-sftp-001"
+         $rtComName = "rt-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-com-002"
+         $rtVmName = "rt-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-vmsub-003"
+         $udrName = "udr-VirtualNetwork"
+
+         az network route-table route delete -g $rg --route-table-name $rtSftpName -n $udrName
+         az network route-table route delete -g $rg --route-table-name $rtComName -n $udrName
+         az network route-table route delete -g $rg --route-table-name $rtVmName -n $udrName
+         # az logout

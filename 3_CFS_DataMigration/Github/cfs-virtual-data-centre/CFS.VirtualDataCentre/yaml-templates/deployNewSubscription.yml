@@ -1,0 +1,196 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+
+## If we want to read from trunk branch directly not using artifact version packages
+#resources:
+#  repositories:
+#  - repository: cfsnp
+#    type: github
+#    name: cfsnp/cfs-virtual-data-centre
+#    endpoint: cfsnp
+    
+parameters:
+  - name: deployEnvironments
+    displayName: Environment Pipelines
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: var-service-principle-secrets
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+   ${{ if eq(parameters.deployEnvironments, 'Non-Production') }}:
+     #artifact feed: https://dev.azure.com/ausup/core-it/cfs-infra-ci
+     #value: "0546de1d-9ad2-4d76-b1e5-9e85838ad59d/2f310d57-c4c8-497f-9e33-7738fc8da997"
+     value: "core-it/cfs-infra-ci"
+   ${{ if eq(parameters.deployEnvironments, 'Production') }}:
+     #artifact feed: https://dev.azure.com/ausup/core-it/cfs-infra-release
+     #value: "0546de1d-9ad2-4d76-b1e5-9e85838ad59d/0bad1200-8709-4b64-8c2e-6612a5170c0b"
+     value: "core-it/cfs-infra-release"
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   ${{ if eq(parameters.deployEnvironments, 'Non-Production') }}:
+     value: "Non-Production"
+   ${{ if eq(parameters.deployEnvironments, 'Production') }}:
+     value: "Production"
+
+ # Azure DevOps Service Connection Name
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironments, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironments, 'Production') }}:
+     value: "prd"
+
+ # Azure DevOps Tenant Root Group Service Connection Name
+ - name: tenantRootGroupSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironments, 'Non-Production') }}:
+     value: "sc-np-tenant-root-group"
+   ${{ if eq(parameters.deployEnvironments, 'Production') }}:
+     value: "sc-prd-tenant-root-group"
+
+ # Azure Main Management Group Name
+ - name: mainManagementGroupName
+   ${{ if eq(parameters.deployEnvironments, 'Non-Production') }}:
+     value: "CFSCoNonProd"
+   ${{ if eq(parameters.deployEnvironments, 'Production') }}:
+     value: "CFSCoProd"
+
+ # Azure Billing Scope
+ - name: billingScope
+   ${{ if eq(parameters.deployEnvironments, 'Non-Production') }}:
+     value: "/providers/Microsoft.Billing/billingAccounts/5513952/enrollmentAccounts/284580"
+   ${{ if eq(parameters.deployEnvironments, 'Production') }}:
+     value: "/providers/Microsoft.Billing/billingAccounts/5513952/enrollmentAccounts/304912"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+
+stages:
+
+  # Deploy Management Group and Subscription in Platform Core
+  - stage: DeployManagementGroupAndSubscriptionInPlatformCore
+    displayName: DeployManagementGroupAndSubscriptionInPlatformCore
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployManagementGroupAndSubscriptionInPlatformCore
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : DeployManagementGroupAndSubscriptionInLandingZone
+              inputs:
+                azureSubscription: $(tenantRootGroupSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment tenant create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NewSubscription\deploy-NewSubscription.bicep ^
+                              --parameters billingScope='$(billingScope)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters mainManagementGroupName='$(mainManagementGroupName)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NewSubscription\deployPlatformCoreSubscription.param.json
+
+  # Deploy Management Group and Subscription in Landing Zone
+  - stage: DeployManagementGroupAndSubscriptionInLandingZone
+    displayName: DeployManagementGroupAndSubscriptionInLandingZone
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployManagementGroupAndSubscriptionInLandingZone
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : DeployManagementGroupAndSubscriptionInLandingZone
+              inputs:
+                azureSubscription: $(tenantRootGroupSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment tenant create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NewSubscription\deploy-NewSubscription.bicep ^
+                              --parameters billingScope='$(billingScope)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters mainManagementGroupName='$(mainManagementGroupName)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NewSubscription\deployLandingZoneSubscription.param.json

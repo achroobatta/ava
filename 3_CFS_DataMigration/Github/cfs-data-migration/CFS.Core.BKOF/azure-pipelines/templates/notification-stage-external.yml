@@ -1,0 +1,92 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    variableGroup: ''
+    taskNumber: ''
+    workItemState: ''
+    workItemComment: ''
+    updateWorkItemDescription: ''
+    emailSubjectForPass: ''
+    emailSubjectForFile: ''
+    emailBodyForFile: ''
+    environment: ''
+    receiverEmailAddress: ''
+    clientEmailAddress: ''
+    adReceiverEmailAddress: ''
+    adSendEmailDescription: ''
+    adEmailSubject: ''
+    adEmailBody: ''
+    runType: ''
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  variables:
+    - name: keyVaultSecretValue
+      value: $[ stageDependencies.download_key_vault_secret.get_kvsecret.outputs['get_kv_secret_value.KvSecretValue'] ]
+    - name: emailBody
+      ${{ if eq(parameters.runType, 'Dryrun') }}:
+        value: '<p> Hi,</p> <p> Please save the following password. This is the password for the extracted dummy file. </p><p><b> Password: </b> $(keyVaultSecretValue) </p> <p>Please validate if you can access file using these credentials. </p>On completion of Extraction process, actual filename along with the same password will be shared to access the file. </p>'
+      ${{ if eq(parameters.runType, 'Production') }}:
+        value: '<p> Hi, </p> <p> Please save the password below. This is the password for the extracted file. The file information will be shared in a separate email. </p> <p> <b> Password: </b> $(keyVaultSecretValue) </p>'
+  jobs:
+  - template: updateworkitem.yml
+    parameters:
+      name: update_workitem
+      displayName: ${{ parameters.updateWorkItemDescription}}
+      pool:
+        vmImage: 'windows-latest'
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/UpdateWorkItem.ps1'
+      dependsOn: ''
+      workItemComment: ${{ parameters.workItemComment}}
+      workItemId: ${{ parameters.taskNumber}}
+      workItemState: ${{ parameters.workItemState}}
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_via_ps_pass
+      displayName: Send Email for Pass
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:  update_workitem
+      emailSubject: ${{ parameters.emailSubjectForPass}}
+      emailBody: $(emailBody)
+      environment: ${{ parameters.environment}}
+      receiverEmailAddress: ${{ parameters.clientEmailAddress}}
+      condition: ''
+      variableGroup: var-password
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_via_ps_file
+      displayName: Send Email for File
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:  update_workitem
+      emailSubject: ${{ parameters.emailSubjectForFile}}
+      emailBody: ${{ parameters.emailBodyForFile}}
+      environment: ${{ parameters.environment}}
+      receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
+      condition: ''
+      variableGroup: var-password
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_ad
+      displayName: ${{ parameters.adSendEmailDescription}}
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:  update_workitem
+      emailSubject: ${{ parameters.adEmailSubject}}
+      emailBody: ${{ parameters.adEmailBody}}
+      environment: ${{ parameters.environment}}
+      receiverEmailAddress: ${{ parameters.adReceiverEmailAddress}}
+      condition: ''
+      variableGroup: var-password

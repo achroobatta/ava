@@ -1,0 +1,12 @@
+GitHub login: https://github.com/enterprises/ausup/sso
+
+
+Core IT repo:
+
+https://github.com/CFSCo/cfs-virtual-data-centre
+
+
+
+Azure DevOps:
+
+Project: https://dev.azure.com/AUSUP/core-it/_build

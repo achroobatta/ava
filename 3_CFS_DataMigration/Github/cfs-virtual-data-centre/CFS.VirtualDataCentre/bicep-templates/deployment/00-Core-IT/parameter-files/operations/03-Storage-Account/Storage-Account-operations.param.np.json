@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "instance": 2,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stonpedcoper002",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "AVDFSLOGIX",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "vmnpedcfs001",
+                                "performance": "Premium_LRS",
+                                "kind": "FileStorage",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction": "Deny",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            },
+                            {
+                                "storageAccountName": "stonpedcoper001",
+                                "performance": "Standard_ZRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "stor",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "AVDFSLOGIX",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "vmnpsdcfs001",
+                                "performance": "Premium_LRS",
+                                "kind": "FileStorage",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction": "Deny",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

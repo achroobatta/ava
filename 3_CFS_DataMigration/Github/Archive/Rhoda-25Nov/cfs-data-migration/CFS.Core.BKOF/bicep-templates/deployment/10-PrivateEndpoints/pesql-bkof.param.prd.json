@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "appName": {
+            "value": "Infra"
+          },
+          "sqlServerName": {
+            "value": "sql-prd-edc-bkof-dm-001"
+          },
+          "location2": {
+            "value": "australiasoutheast"
+          },
+          "serviceAbbrv": {
+            "value": "bkof"
+          },
+          "instance": {
+            "value": "1"
+          },
+          "component": {
+            "value": "dm"
+          },
+          "rgname2": {
+            "value": "rg-prd-sdc-bkof-dm-001"
+          },
+          "virtualNetwork2ResourceGroup": {
+            "value": "rg-prd-sdc-bkof-dm-001"
+          },
+          "virtualNetwork2Name": {
+            "value": "vnet-prd-sdc-bkof-dm-001"
+          },
+          "subnet2Name": {
+            "value": "sub-prd-sdc-bkof-dm-com-002"
+          },
+          "privateDnsZoneName": {
+            "value": "privatelink.database.windows.net"
+          },
+          "sqlRG": {
+            "value": "rg-prd-edc-bkof-dm-001"
+          }
+      }
+  }

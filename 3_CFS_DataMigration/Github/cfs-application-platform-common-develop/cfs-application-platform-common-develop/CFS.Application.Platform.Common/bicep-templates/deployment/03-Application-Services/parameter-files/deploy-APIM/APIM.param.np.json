@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "apimName": {
+              "value": "apim-np-edc-bkof-poc-002"
+          },
+          "skuName": {
+            "value": "Premium"
+          },
+          "skuCapacity": {
+            "value": 1
+          },
+          "publisherEmail": {
+            "value": "Cfs-azure-nonprod-admin@ausupnonp.onmicrosoft.com"
+          },
+          "publisherName": {
+            "value": "CFS"
+          },
+          "notificationSenderEmail": {
+            "value": "Cfs-azure-nonprod-admin@ausupnonp.onmicrosoft.com"
+          },
+          "virtualnetworkResourceGroup": {
+            "value": "rg-np-edc-bkof-netw-001"
+          },
+          "virtualNetworkName": {
+            "value": "vnet-np-edc-bkof-001"
+          },
+          "subnetName": {
+              "value": "sub-np-edc-apim-001"
+          }
+      }
+  }

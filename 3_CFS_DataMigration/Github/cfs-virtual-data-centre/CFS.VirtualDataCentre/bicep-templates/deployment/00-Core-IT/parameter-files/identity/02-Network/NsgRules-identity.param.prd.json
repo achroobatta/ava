@@ -1,0 +1,2376 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters":  {
+      "nsgObject": {
+          "value": { 
+              "nsgValues": [
+                  {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-prd-edc-identity-001",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RemotePS-from-IQS-to-Exchange",
+                          "properties": {
+                            "description": "Allow-RemotePS-from-IQS-to-Exchange",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "10.20.2.10",
+                            "access": "Allow",
+                            "priority": 199,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.30.2.9",
+                              "10.20.2.12",
+                              "10.20.2.29"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-edc-identity-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-edc-identity-001",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.192/26",
+                              "10.30.0.192/26"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "PKI_HTTP",
+                          "properties": {
+                            "description": "PKI CDP AIA HTTP Access",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.8",
+                              "10.20.2.9"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Web_Enrolment",
+                          "properties": {
+                            "description": "PKI Web Enrollment",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 501,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.8",
+                              "10.20.2.9"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To WindowsServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 980,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "135",
+                              "139",
+                              "445",
+                              "5985",
+                              "5986",
+                              "49152-65535"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.130.8",
+                              "10.30.130.4"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To LinuxServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 990,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.130.8",
+                              "10.30.130.4"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "ICMP_From_CFS_Wrap",
+                          "properties": {
+                            "description": "Allow RDP From sub-prd-edc-mgmt-001 To sub-prd-edc-identity-001",
+                            "protocol": "ICMP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "192.168.1.0/24",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NTP-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NTP UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "123",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-RPC-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound RPC TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "135",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-RPC-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound RPC UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "135",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosName-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosName TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "137",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosName-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosName UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "137",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1600,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosDatagram-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosDatagram UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "138",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1700,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosSession-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosSession TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "139",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1800,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-SMB-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound SMB TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "445",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1900,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-SMB-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound SMB TCP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "445",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-Kerberos-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound Kerberos TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "464",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-Kerberos-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound Kerberos UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "464",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-LDAP-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound LDAP TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-LDAP-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound LDAP UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-LDAPSSL-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound LDAPSSL TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "636",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-GlobalCatalogue-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound GlobalCatalogue TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2600,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "3268",
+                              "3269"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-KerberosAuth-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound KerberosAuth TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "88",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2700,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-KerberosAuth-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound KerberosAuth UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "88",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2800,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DNS-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DNS TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "53",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2900,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DNS-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DNS UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "53",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DynamicPorts-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DynamicPorts UDP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "49152-65535",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-ADManagementGatewayService-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound ADManagementGatewayService TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "9389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DynamicPorts-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DynamicPorts UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-TCP-from-SailpointVA-to-IQS",
+                          "properties": {
+                            "description": "Allow TCP from SailpointVA to IQS",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 3400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "5050",
+                              "5051",
+                              "5052",
+                              "5053"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.2.13",
+                              "10.30.2.11"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.12",
+                              "10.20.2.29",
+                              "10.20.2.30"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Allow-AzureLoadBalancer-to-IQS",
+                          "properties": {
+                            "description": "Allow-AzureLoadBalancer-to-IQS",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "5052",
+                            "sourceAddressPrefix": "AzureLoadBalancer",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 3410,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.12",
+                              "10.20.2.29"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Allow-CFSWrap-VDC",
+                          "properties": {
+                            "description": "Allow DC dommunication from CFSWrap Domain to Azure VDC",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "192.168.0.0/16",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3450,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "123",
+                              "135",
+                              "137",
+                              "138",
+                              "139",
+                              "464",
+                              "389",
+                              "636",
+                              "53",
+                              "88",
+                              "445",
+                              "443",
+                              "1024-65535"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "SkySync-migration-servers-to-communicate-with-SQL-DB-Server",
+                          "properties": {
+                            "description": "SkySync migration servers to communicate with SQL DB Server",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "10.20.2.0/24",
+                            "destinationAddressPrefix": "10.20.2.0/24",
+                            "access": "allow",
+                            "priority": 400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "1433",
+                              "9090"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-ICMP-From-AVD-To-DomainController",
+                          "properties": {
+                            "description": "Allow-ICMP-From-AVD-To-DomainController",
+                            "protocol": "ICMP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 970,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.128.0/23",
+                              "10.30.128.0/23"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.4",
+                              "10.20.2.5"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Allow-RPC-QuestMigrationServers",
+                          "properties": {
+                            "description": "Allow full RPC Port Range for all Quest Migration Servers. Can be deleted once Migration has been completed",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                             "135",
+                             "389",
+                             "1024-65535"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.2.11",
+                              "10.20.2.14",
+                              "10.20.2.15",
+                              "10.20.2.16",
+                              "10.20.2.17",
+                              "10.20.2.18",
+                              "10.20.2.27",
+                              "10.20.2.4"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.11",
+                              "10.20.2.14",
+                              "10.20.2.15",
+                              "10.20.2.16",
+                              "10.20.2.17",
+                              "10.20.2.18",
+                              "10.20.2.27",
+                              "10.20.2.4"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "NTTSA Client Log and Data Interface",
+                          "properties": {
+                            "description": "NTTSA Client Log and Data Interface",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "10.20.2.196",
+                            "access": "Allow",
+                            "priority": 4091,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                               "514"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.5.4",
+                              "10.20.5.5", 
+                              "10.20.2.4", 
+                              "10.20.2.5"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Client Snare Agents",
+                          "properties": {
+                            "description": "Client Snare Agents",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "6161",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 4092,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "10.20.0.196", 
+                                "10.20.0.197", 
+                                "10.20.0.198", 
+                                "10.20.0.199", 
+                                "10.20.0.200", 
+                                "10.20.0.201", 
+                                "10.20.0.202", 
+                                "10.20.0.203", 
+                                "10.20.0.204", 
+                                "10.20.0.205", 
+                                "10.20.0.206"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.20.2.4", 
+                              "10.20.2.5"
+                            ]
+                          }
+                        }
+                      ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "iden",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-prd-edc-identity-002",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-edc-identity-002",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-edc-identity-002",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.0.192/26",
+                            "10.30.0.192/26"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "iden",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-prd-edc-identity-003",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-edc-identity-003",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-edc-identity-003",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.0.192/26",
+                            "10.30.0.192/26"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "NTTSA Client Log and Data Interface",
+                        "properties": {
+                          "description": "NTTSA Client Log and Data Interface",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "10.20.2.196",
+                          "access": "Allow",
+                          "priority": 4091,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                             "514"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.5.4",
+                            "10.20.5.5", 
+                            "10.20.2.4", 
+                            "10.20.2.5"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "iden",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-prd-sdc-identity-001",
+                    "securityRules": [
+                        {
+                          "name": "Allow-RemotePS-from-IQS-to-Exchange",
+                          "properties": {
+                            "description": "Allow-RemotePS-from-IQS-to-Exchange",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "10.30.2.8",
+                            "access": "Allow",
+                            "priority": 199,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                                "10.30.2.9",
+                                "10.20.2.12",
+                                "10.20.2.29"
+                              ],
+                            "destinationAddressPrefixes": []
+                           }
+                        },
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-sdc-identity-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-sdc-identity-001",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.192/26",
+                              "10.30.0.192/26"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Port_443",
+                          "properties": {
+                            "description": "PKI Cert Web enrollment",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 700,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Port_80",
+                          "properties": {
+                            "description": "PKI CDP/AIA website",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 800,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To WindowsServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 980,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "135",
+                              "139",
+                              "445",
+                              "5985",
+                              "5986",
+                              "49152-65535"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.130.8",
+                              "10.30.130.4"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To LinuxServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 990,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.130.8",
+                              "10.30.130.4"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "ICMP_From_CFS_Wrap",
+                          "properties": {
+                            "description": "Allow RDP From sub-prd-sdc-mgmt-001 To sub-prd-sdc-identity-001",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "192.168.1.0/24",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NTP-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NTP UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "123",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-RPC-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound RPC TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "135",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-RPC-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound RPC UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "135",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosName-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosName TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "137",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosName-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosName UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "137",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1600,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosDatagram-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosDatagram UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "138",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1700,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-NetBiosSession-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound NetBiosSession TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "139",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1800,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-SMB-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound SMB TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "445",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1900,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-SMB-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound SMB TCP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "445",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-Kerberos-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound Kerberos TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "464",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-Kerberos-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound Kerberos UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "464",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-LDAP-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound LDAP TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-LDAP-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound LDAP UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-LDAPSSL-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound LDAPSSL TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "636",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-GlobalCatalogue-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound GlobalCatalogue TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2600,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "3268",
+                              "3269"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-KerberosAuth-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound KerberosAuth TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "88",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2700,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-KerberosAuth-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound KerberosAuth UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "88",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2800,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DNS-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DNS TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "53",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2900,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DNS-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DNS UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "53",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DynamicPorts-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DynamicPorts UDP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "49152-65535",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3100,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-ADManagementGatewayService-TCP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound ADManagementGatewayService TCP From VDC To DomainController",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "9389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-DynamicPorts-UDP-From-VDC-To-DomainController",
+                          "properties": {
+                            "description": "Allow Inbound DynamicPorts UDP From VDC To DomainController",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8389",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 3300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.0.0/14",
+                              "10.25.0.0/16",
+                              "10.26.0.0/16",
+                              "10.27.0.0/16",
+                              "10.28.0.0/16",
+                              "10.30.0.0/15",
+                              "10.32.0.0/15"
+
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-TCP-from-SailpointVA-to-IQS",
+                          "properties": {
+                            "description": "Allow TCP from SailpointVA to IQS",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "10.30.2.9",
+                            "access": "Allow",
+                            "priority": 3400,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "5050",
+                              "5051",
+                              "5052",
+                              "5053"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.20.2.13",
+                              "10.30.2.11"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-ICMP-From-AVD-To-DomainController",
+                          "properties": {
+                            "description": "Allow-ICMP-From-AVD-To-DomainController",
+                            "protocol": "ICMP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 970,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.20.128.0/23",
+                              "10.30.128.0/23"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.30.2.4",
+                              "10.30.2.5"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "NTTSA Client Log and Data Interface",
+                          "properties": {
+                            "description": "NTTSA Client Log and Data Interface",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "10.30.2.196",
+                            "access": "Allow",
+                            "priority": 4091,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                               "514"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.30.5.4",
+                              "10.30.5.5", 
+                              "10.30.2.4", 
+                              "10.30.2.5"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Client Snare Agents",
+                          "properties": {
+                            "description": "Client Snare Agents",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "6161",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 4092,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.30.0.196", 
+                              "10.30.0.197", 
+                              "10.30.0.198", 
+                              "10.30.0.199"
+                            ],
+                            "destinationAddressPrefixes": [
+                              "10.30.2.4", 
+                              "10.30.2.5"
+                            ]
+                          }
+                        }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "iden",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-prd-sdc-identity-002",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-sdc-identity-002",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-sdc-identity-002",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.0.192/26",
+                            "10.30.0.192/26"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "iden",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-prd-sdc-identity-003",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-sdc-identity-003",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-sdc-identity-003",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.0.192/26",
+                            "10.30.0.192/26"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "NTTSA Client Log and Data Interface",
+                        "properties": {
+                          "description": "NTTSA Client Log and Data Interface",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "10.30.2.196",
+                          "access": "Allow",
+                          "priority": 4091,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                             "514"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.30.5.4",
+                            "10.30.5.5", 
+                            "10.30.2.4", 
+                            "10.30.2.5"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  }
+              ]
+          }
+      }
+  }
+}

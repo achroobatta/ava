@@ -1,0 +1,85 @@
+#deploy-storageAccount.yml
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy SshKey in  Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}     
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |  
+          az --version 
+          az sshkey create --name '$(dmSshKeyName)' --ssh-public-key-name '$(dmSshKeyName)' --resource-group '$(rgName)' 
+          echo 'before'
+          echo '***************************************************************************'  
+          ls 'C:\Users\VssAdministrator\.ssh\'
+          rm 'C:\Users\VssAdministrator\.ssh\*.pub'
+          echo 'after'
+          echo '***************************************************************************'  
+          ls 'C:\Users\VssAdministrator\.ssh\'
+          $privateKey=Get-Content -Path "C:\Users\VssAdministrator\.ssh\*"  
+          echo '$(rgName)' 
+          echo '***************************************************************************' 
+          echo $privateKey
+          echo '***************************************************************************' 
+          $privateKeyInBytes = [System.Text.Encoding]::UTF8.GetBytes($privateKey)
+          $privateKeyEncoded = [System.Convert]::ToBase64String($privateKeyInBytes)
+          echo $privateKeyEncoded
+          echo '***************************************************************************' 
+          echo '$(keyVaultName)'
+          echo '***************************************************************************' 
+          echo '$(dmSshKeyName)'         
+          echo '***************************************************************************' 
+          echo 'Writing to keyvault now'  
+          echo '***************************************************************************'   
+          az keyvault secret set --name '$(dmSshKeyName)' --value $privateKeyEncoded --vault-name '$(keyVaultName)'         
+          echo 'removing extra files'
+          echo '***************************************************************************'  
+          rm 'C:\Users\VssAdministrator\.ssh\*'
+          ls 'C:\Users\VssAdministrator\.ssh\'
+  # $privateKey = cat 'C:\Users\VssAdministrator\.ssh\*'
+
+  # - task: PowerShell@2
+  #   displayName : Deploy SshKey in  Subscription
+  #   inputs:
+  #     azureSubscription: ${{ parameters.serviceConnection }}     
+  #     scriptType: 'pscore'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: |  
+  #         az --version 
+  #         az sshkey create --name '$(keyName)' --ssh-public-key-name '$(keyName)' --resource-group '$(rgName)' 
+  #         echo 'before'
+  #         echo '***************************************************************************'  
+  #         ls 'C:\Users\VssAdministrator\.ssh\'
+  #         rm 'C:\Users\VssAdministrator\.ssh\*.pub'
+  #         echo 'after'
+  #         echo '***************************************************************************'  
+  #         ls 'C:\Users\VssAdministrator\.ssh\'          
+  #         $privateKey=Get-Content -Path "C:\Users\achroo.batta\.ssh\*"  
+  #         echo '$(rgName)' 
+  #         echo '***************************************************************************' 
+  #         echo $privateKey
+  #         echo '***************************************************************************' 
+  #         echo '$(keyVaultName)'
+  #         echo '***************************************************************************' 
+  #         echo '$(keyName)'         
+  #         echo '***************************************************************************' 
+  #         echo 'Writing to keyvault now'  
+  #         echo '***************************************************************************'   
+  #         az keyvault secret set --name '$(keyName)' --value $privateKey --vault-name '$(keyVaultName)'         
+  #         echo 'removing extra files'
+  #         echo '***************************************************************************'  
+  #         rm 'C:\Users\VssAdministrator\.ssh\*'
+  #         ls 'C:\Users\VssAdministrator\.ssh\'
+                    

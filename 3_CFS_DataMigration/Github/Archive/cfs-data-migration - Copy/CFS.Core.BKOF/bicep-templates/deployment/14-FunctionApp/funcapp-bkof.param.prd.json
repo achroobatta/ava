@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "location2": "australiasoutheast",
+                        "component": "dm",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Infra",
+                        "instance": 1,
+                        "rgname": "rg-prd-edc-bkof-dm-001",
+                        "virtualNetworkResourceGroup": "rg-prd-edc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-prd-edc-bkof-dm-001",
+                        "subnetName":"sub-prd-edc-bkof-dm-com-002",
+                        "rgname2": "rg-prd-sdc-bkof-dm-001",
+                        "virtualNetwork2ResourceGroup": "rg-prd-sdc-bkof-dm-001",
+                        "virtualNetwork2Name":"vnet-prd-sdc-bkof-dm-001",
+                        "subnet2Name":"sub-prd-sdc-bkof-dm-com-002",
+                        "storageprivateDnsZoneName":"privatelink.blob.core.windows.net",
+                        "funcappprivateDnsZoneName": "privatelink.azurewebsites.net",
+                        "funcappRG": "rg-prd-edc-bkof-dm-001",
+                        "stoprefix": "fsto",
+                        "storageRG":"rg-prd-edc-bkof-dm-001",
+                        "locationAbbrv":"edc"
+                    }
+                ]
+            }
+        }
+    }
+}

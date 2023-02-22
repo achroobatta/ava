@@ -1,0 +1,12 @@
+# Template Format
+#- name: kv-np-edc-bkof-001
+#  resource_group: rg-np-edc-bkof-kv-001
+
+# Australia East
+- name: kv-np-edc-oper-001
+  resource_group: rg-np-edc-oper-kv-001
+
+- name: kv-np-edc-oper-002
+  resource_group: rg-np-edc-oper-kv-001
+
+# Australia South East

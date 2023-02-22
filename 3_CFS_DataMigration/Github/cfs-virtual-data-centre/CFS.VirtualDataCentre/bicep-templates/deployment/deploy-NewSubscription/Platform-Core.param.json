@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subManagementGroupName": {
+            "value": "Platform-Core"
+        },
+        "subManagementGroupDisplayName": {
+            "value": "Platform Core"
+        },
+        "instance": {
+            "value": 1
+        },
+        "managementGroups": {
+            "value": [
+                {
+                    "name": "operations",
+                    "displayName": "Operations Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "operations",
+                            "workload": "Production"
+                        }
+                   ]
+                },
+                {
+                    "name": "identity",
+                    "displayName": "Identity Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "identity",
+                            "workload": "Production"
+                        }
+                   ]
+                },
+                {
+                    "name": "connectivity",
+                    "displayName": "Connectivity Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "connectivity",
+                            "workload": "Production"
+                        }
+                   ]
+                },
+                {
+                    "name": "security",
+                    "displayName": "Security Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "security",
+                            "workload": "Production"
+                        }
+                   ]
+                }
+            ]
+        }
+    }
+}

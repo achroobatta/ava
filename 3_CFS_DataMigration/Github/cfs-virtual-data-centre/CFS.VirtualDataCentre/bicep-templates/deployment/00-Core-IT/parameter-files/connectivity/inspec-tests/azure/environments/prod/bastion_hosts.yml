@@ -1,0 +1,8 @@
+# Australia East
+- name: bastion-prd-edc-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+# Australia South East
+- name: bastion-prd-sdc-001
+  resource_group: rg-prd-sdc-hub-netw-001
+

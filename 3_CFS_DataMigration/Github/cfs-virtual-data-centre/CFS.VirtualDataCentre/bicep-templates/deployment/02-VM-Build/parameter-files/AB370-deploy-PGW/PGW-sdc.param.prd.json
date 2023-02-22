@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiasoutheast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 2
+        },
+        "kv_serviceAbbrv": {
+            "value": "oper"
+        },
+        "kv_service": {
+            "value": "oper"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "oper"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "5",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "oper",
+                        "vmRgLocation": "australiasoutheast",
+                        "vmInstancePrefix" : "00",
+                        "vmInstance": "1",
+                        "vmService": "PGW",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"RedHat",
+                        "imageReferenceOffer": "RHEL",
+                        "imageSKU": "82gen2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D2s_v4",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "operations",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "operations",
+                        "snetInstance": "1",
+                        "storageAccInstance": "3",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "PGW",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "domainName":"cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@cfs.com.au",
+                        "isEnableDomainJoin": false,
+                        "OUPAth": "",
+                        "dataDiskResources": {
+                            "value": []
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,81 @@
+# Template Format
+#- name: rg-np-edc-bkof-comp-001
+#  location: australiaeast
+  
+# Australia East
+- name: AzureBackupRG_australiaeast_1
+  location: australiaeast
+
+- name: rg-np-edc-fcp-comp-001
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-001
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-0010
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-0011
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-0012
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-002
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-003
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-004
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-005
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-006
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-007
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-008
+  location: australiaeast
+
+- name: rg-np-edc-fcp-fndev0-009
+  location: australiaeast
+
+- name: rg-np-edc-fcp-kv-001
+  location: australiaeast
+
+- name: rg-np-edc-fcp-netw-001
+  location: australiaeast
+
+- name: rg-np-edc-fcp-rsv-001
+  location: australiaeast
+
+- name: rg-np-edc-fcp-sec-001
+  location: australiaeast
+
+- name: rg-np-edc-fcp-stor-001
+  location: australiaeast
+
+# Australia South East
+
+- name: AzureBackupRG_australiasoutheast_1
+  location: australiasoutheast
+
+- name: rg-np-sdc-fcp-comp-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-fcp-kv-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-fcp-netw-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-fcp-rsv-001
+  location: australiasoutheast
+
+- name: rg-np-sdc-fcp-stor-001
+  location: australiasoutheast

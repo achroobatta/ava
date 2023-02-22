@@ -1,0 +1,31 @@
+#deploy-ResourceGroup.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: Deploy ResourceGroup in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deployment-RoleAssignment.bicep `
+                    --parameters principalId='$(principalId)'  ` 
+                    --parameters vmName='$(vmName)'  `                     
+                    --parameters subscriptionId='$(bkofSubscriptionID)'  `
+                    --parameters vmRG='$(vmRG)'  `                      
+                    --parameters kvRG='$(kvRG)' 

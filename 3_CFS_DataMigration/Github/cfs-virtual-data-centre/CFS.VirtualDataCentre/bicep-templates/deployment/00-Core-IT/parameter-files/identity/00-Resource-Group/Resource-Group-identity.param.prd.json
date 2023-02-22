@@ -1,0 +1,94 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "iden",
+                    "appName": ""
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "iden",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "pki",
+                    "serviceAbbrv": "iden",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "iden",
+                    "appName": "Identity"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "iden",
+                    "appName": "Identity"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "iden",
+                    "appName": "Identity"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "iden",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "iden",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "iden",
+                    "appName": "Identity"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "iden",
+                    "appName": "Identity"
+                }
+            ]
+        }
+    }
+}

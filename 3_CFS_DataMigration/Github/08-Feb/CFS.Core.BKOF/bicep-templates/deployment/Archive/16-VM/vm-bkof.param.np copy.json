@@ -1,0 +1,170 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "bkof"
+        },
+        "kv_service": {
+            "value": "bkof"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "dm-vm",
+                    "serviceAbbrv": "bkof"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "rgname": "rg-np-edc-bkof-dm-vm-001",
+                        "vmResouceGroupLocation": "australiaeast",
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "dm-vm",
+                        "vmRgServiceAbbrv": "bkof",
+                        "vmRgLocation": "australiaeast",
+                        "vmService": "BKOF",
+                        "vmInstancePrefix": "DM",
+                        "vmInstance": "1",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2022-datacenter-g2",
+                        "imageReferenceVersion": "latest",
+                        "vmSmallSize": "Standard_E8-4s_v5",
+                        "vmLargeSize": "Standard_E16-8s_v5 ",
+                        "timeZone": "E. Australia Standard Time",
+                        "appName": "Infra",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "vnetResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName": "vnet-np-edc-bkof-dm-001",
+                        "subnetName": "sub-np-edc-bkof-dm-vmsub-003",
+                        "diagstorageName": "dstonpedcbkofdm003",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "availabilitySetName":"",
+                        "domainName":"dev.cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@dev.cfs.com.au",
+                        "isEnableDomainJoin": true,
+                        "OUPAth": "OU=Servers,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au", 
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                },
+                                {
+                                    "lun": 1,
+                                    "createOption": "attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                },
+                                {
+                                    "lun": 2,
+                                    "createOption": "attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                },
+                                {
+                                    "lun": 3,
+                                    "createOption": "attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                },
+                                {
+                                    "lun": 4,
+                                    "createOption": "attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

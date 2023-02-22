@@ -1,0 +1,33 @@
+#Template Format
+#- name: GatewaySubnet
+#  resource_group: rg-prod-ae-network
+#  vnet: vn-prod-ae-hub-01
+#  prefix: 10.10.0.0/26
+#  nsg: null
+
+# Australia East
+- name: sub-np-edc-security-001
+  resource_group: rg-np-edc-sec-netw-001
+  vnet: vnet-np-edc-sec-001
+  prefix: 10.40.3.0/25
+  nsg: nsg-np-edc-security-001
+
+- name: sub-np-edc-security-002
+  resource_group: rg-np-edc-sec-netw-001
+  vnet: vnet-np-edc-sec-001
+  prefix: 10.40.3.128/25
+  nsg: nsg-np-edc-security-002
+
+# Australia South East
+- name: sub-np-sdc-security-001
+  resource_group: rg-np-sdc-sec-netw-001
+  vnet: vnet-np-sdc-sec-001
+  prefix: 10.60.3.0/25
+  nsg: nsg-np-sdc-security-001
+
+- name: sub-np-sdc-security-002
+  resource_group: rg-np-sdc-sec-netw-001
+  vnet: vnet-np-sdc-sec-001
+  prefix: 10.60.3.128/25
+  nsg: nsg-np-sdc-security-002
+

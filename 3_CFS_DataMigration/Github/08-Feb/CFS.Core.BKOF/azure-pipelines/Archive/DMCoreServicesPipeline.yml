@@ -1,0 +1,764 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: landingZoneServiceId
+    displayName: Landing Zone Service Id - case sensitive when matching suffix of the Nuget Package Name (e.g. "FWD" or "fwp" or "fcp" or "bkof")
+    type: string
+    default: "BKOF"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: var-azure-tenant-id
+ - group: var-password
+ - group: lz-var-service-principle-secrets
+ - group: var-domain-join-password
+ - group: var-service-principle-secrets
+
+  # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ - name: azureTenantId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(np-azure-tenant-id)'
+   ${{ else }}:
+     value: '$(prd-azure-tenant-id)'
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: CFS.Core.${{ parameters.landingZoneServiceId }}
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+# Azure DevOps Environment Prefix
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: "not-valid"
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }} 
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+  # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ #  Landing Zone Subscription ID
+ - name: landingZoneSubscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.landingZoneServiceId, 'bkof' ) }}:
+       value: $(subsc-np-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-np-${{ parameters.landingZoneServiceId }}-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.landingZoneServiceId, 'bkof' ) }}:
+       value: $(subsc-prd-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-prd-${{ parameters.landingZoneServiceId }}-sid)
+
+ # Azure DevOps Landing Zone Service Connection Name
+ - name: landingZoneServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      ${{ if eq(parameters.deployEnvironment, 'BKOF')}}:
+        value: "sc-subsc-np-bkof-001"
+      ${{ else }}:
+        value: "sc-subsc-np-${{ parameters.landingZoneServiceId }}-001"      
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      ${{ if eq(parameters.deployEnvironment, 'BKOF')}}: 
+        value: "sc-subsc-prd-bkof-001"
+      ${{ else }}:
+        value: "sc-subsc-prd-${{ parameters.landingZoneServiceId }}-001"
+
+ # Subscription Service Name
+ - name: subscriptionServiceName
+   value: "CFSCO Management Group" 
+
+ # Azure Owner 
+ - name: owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+ 
+ - name: adminP
+   value: '$(adminPassword)'
+
+ # Diagnostic Settings Storage Resource Group
+ - name: storageAccountResourceGroup  
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-edc-sec-stor-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-edc-sec-stor-001"
+
+ # Diagnostic Settings Storage Account
+ - name: storageAccountName
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "stonpedcdiagnlogs003"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "stonpedcdiagnlogs001"
+
+# Workspace Resource Group
+ - name: workspaceResourceGroup
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-edc-sec-sec-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-edc-sec-sec-001"
+ 
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Workspace name
+ - name: workspaceName 
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "ws-np-edc-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "ws-prd-edc-001"
+
+stages:
+
+  # # Deploy Resource Groups
+  # - stage: deployResourceGroup
+  #   displayName: DeployResourceGroup  
+
+  #   pool:
+  #     vmImage: windows-latest
+
+  #   dependsOn: []
+  #   jobs:
+  #   - deployment: DeployResourceGroup
+  #     workspace:
+  #       clean: all
+
+  #     environment: $(AzureDevOpsEnvironments)
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+
+  #           - checkout: self
+
+  #           - task: DownloadPackage@1
+  #             displayName: DownloadArtifacts
+  #             inputs:
+  #               packageType: 'nuget'
+  #               feed: '$(artifactFeed)'
+  #               definition: '$(artifactDefinition)'
+  #               version: '$(artifactVersion)'
+  #               extract: true
+  #               downloadPath: '$(System.ArtifactsDirectory)'            
+
+  #           - task: PowerShell@2
+  #             name: ListFilesInRepositoryDirectory
+  #             displayName: List Files in Repository Directory
+  #             inputs:
+  #               targetType: inline
+  #               script: |
+  #                   'Repository files in directory "$(Pipeline.Workspace)"'
+  #                   Get-ChildItem -Path $(Pipeline.Workspace) -Recurse -File
+
+  #           #Resource Group
+  #           - template: templates/deploy-ResourceGroup.yml
+  #             parameters:
+  #               serviceId: ${{ parameters.landingZoneServiceId }}
+  #               deploymentType: '$(deploymentType)'
+  #               serviceConnection: '$(landingZoneServiceConnection)' 
+
+  # # Deploy Temp VM
+  # - stage: deployTempVM
+  #   displayName: DeployTempVM
+
+  #   # variables:   
+  #   # - group: var-azure-platform
+  #   # - group: var-service-principle-secrets
+  #   # - group: lz-var-service-principle-secrets
+
+  #   pool:
+  #     vmImage: windows-latest
+    
+  #   condition: succeeded()
+  #   dependsOn: [deployResourceGroup]
+
+  #   jobs:
+  #   - deployment: DeployTempVM
+  #     workspace:
+  #       clean: all
+
+  #     environment: $(AzureDevOpsEnvironments)
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+
+  #           - checkout: self
+
+  #           - task: DownloadPackage@1
+  #             displayName: DownloadArtifacts
+  #             inputs:
+  #               packageType: 'nuget'
+  #               feed: '$(artifactFeed)'
+  #               definition: '$(artifactDefinition)'
+  #               version: '$(artifactVersion)'
+  #               extract: true
+  #               downloadPath: '$(System.ArtifactsDirectory)'            
+
+  #           #TempVM
+  #           - template: templates/deploy-TempVM.yml
+  #             parameters:
+  #               serviceId: ${{ parameters.landingZoneServiceId }}
+  #               serviceConnection: '$(landingZoneServiceConnection)'                  
+  #               deploymentType: '$(deploymentType)'               
+                
+  # # Deploy Managed Identity
+  # - stage: deployManagedIdentity
+  #   displayName: DeployManagedIdentity
+
+  #   # variables:
+  #   # - group: var-password
+  #   # - group: var-service-principle-secrets
+  #   # - group: lz-var-service-principle-secrets
+
+  #   pool:
+  #     vmImage: windows-latest
+
+  #   dependsOn: []
+  #   jobs:
+  #   - deployment: DeployManagedIdentity
+  #     workspace:
+  #       clean: all
+
+  #     environment: $(AzureDevOpsEnvironments)
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+
+  #           - checkout: self
+
+  #           - task: DownloadPackage@1
+  #             displayName: DownloadArtifacts
+  #             inputs:
+  #               packageType: 'nuget'
+  #               feed: '$(artifactFeed)'
+  #               definition: '$(artifactDefinition)'
+  #               version: '$(artifactVersion)'
+  #               extract: true
+  #               downloadPath: '$(System.ArtifactsDirectory)'            
+
+  #           #Managed Identity
+  #           - template: templates/deploy-ManagedIdentity.yml
+  #             parameters:
+  #               serviceName: '$(subscriptionServiceName)'
+  #               serviceConnection: '$(landingZoneServiceConnection)'  
+  #               deploymentType: '$(deploymentType)'
+  #               serviceId: ${{ parameters.landingZoneServiceId }}
+                
+
+# Deploy PrivateDnsZone
+  - stage: deployPrivateDnsZone
+    displayName: DeployPrivateDnsZone
+
+    # variables:
+    # - group: var-password
+    # - group: var-service-principle-secrets
+    # - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployPrivateDnsZone
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'            
+
+            #PrivateDnsZone
+            - template: templates/deploy-PrivateDnsZoneAll.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'  
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.landingZoneServiceId }}
+
+# Deploy Source StorageAccount
+  - stage: deployStorageAccount
+    displayName: DeployStorageAccount
+
+    # variables:
+    # - group: var-password
+    # - group: var-service-principle-secrets
+    # - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: [deployPrivateDnsZone]
+    jobs:
+    - deployment: DeployStorageAccount
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'            
+
+            #StorageAccount
+            - template: templates/deploy-StorageAccount.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'  
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.landingZoneServiceId }}
+
+# Deploy Dependency StorageAccount
+  - stage: deployDepStorageAccount
+    displayName: DeployDepStorageAccount
+
+    # variables:
+    # - group: var-password
+    # - group: var-service-principle-secrets
+    # - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: [deployPrivateDnsZone]
+    jobs:
+    - deployment: DeployDepStorageAccount
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'            
+
+            #StorageAccount
+            - template: templates/deploy-DepStorageAccount.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'  
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.landingZoneServiceId }}
+
+# # Deploy Sftp
+#   - stage: deploySftp
+#     displayName: DeploySftp 
+
+#     # variables:
+#     # - group: var-password
+#     # - group: var-service-principle-secrets
+#     # - group: lz-var-service-principle-secrets
+
+#     pool:
+#       vmImage: windows-latest
+
+#     condition: succeeded()
+#     dependsOn: [deployPrivateDnsZone]
+#     jobs:
+#     - deployment: DeploySftp 
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'            
+
+#             #Sftp
+#             - template: templates/deploy-Sftp.yml
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'  
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: ${{ parameters.landingZoneServiceId }}
+
+# # Deploy DataLake
+#   - stage: deployDataLake
+#     displayName: DeployDataLake 
+
+#     # variables:
+#     # - group: var-password
+#     # - group: var-service-principle-secrets
+#     # - group: lz-var-service-principle-secrets
+
+#     pool:
+#       vmImage: windows-latest
+
+#     condition: succeeded()
+#     dependsOn: [deployPrivateDnsZone]
+#     jobs:
+#     - deployment: DeployDataLake
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'            
+
+#             #DataLake
+#             - template: templates/deploy-DataLake.yml
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'  
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: ${{ parameters.landingZoneServiceId }}
+
+# # Deploy ADF
+#   - stage: deployADF
+#     displayName: DeployADF  
+
+#     # variables:
+#     # - group: var-password
+#     # - group: var-service-principle-secrets
+#     # - group: lz-var-service-principle-secrets
+
+#     pool:
+#       vmImage: windows-latest
+
+#     condition: succeeded()
+#     dependsOn: [deployPrivateDnsZone]
+#     jobs:
+#     - deployment: DeployADF
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'            
+
+#             #ADF
+#             - template: templates/deploy-ADF.yml
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'  
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: ${{ parameters.landingZoneServiceId }}
+
+# # Deploy FunctionApp
+#   - stage: deployFunctionApp
+#     displayName: DeployFunctionApp  
+
+#     # variables:
+#     # - group: var-password
+#     # - group: var-service-principle-secrets
+#     # - group: lz-var-service-principle-secrets
+
+#     pool:
+#       vmImage: windows-latest
+
+#     condition: succeeded()
+#     dependsOn: [deployPrivateDnsZone]
+#     jobs:
+#     - deployment: DeployFunctionApp
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'            
+
+#             #FunctionApp
+#             - template: templates/deploy-FunctionApp.yml
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'  
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: ${{ parameters.landingZoneServiceId }}
+            
+#             #FunctionAppPS
+#             - template: templates/deploy-FunctionAppPS.yml
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'  
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: ${{ parameters.landingZoneServiceId }}
+
+# Deploy KeyVault
+  - stage: deployKeyVault
+    displayName: DeployKeyVault 
+
+    # variables:
+    # - group: var-password
+    # - group: var-service-principle-secrets
+    # - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: [deployPrivateDnsZone]
+    jobs:
+    - deployment: DeployKeyVault
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'            
+
+            #KeyVault
+            - template: templates/deploy-KeyVault.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'  
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.landingZoneServiceId }}
+
+# #Deploy PaasSQL
+#   - stage: deployPaasSQL
+#     displayName: DeployPaasSQL 
+
+#     variables:
+#     - group: var-password
+#     - group: var-service-principle-secrets
+#     - group: lz-var-service-principle-secrets
+
+#     pool:
+#       vmImage: windows-latest
+
+#     condition: succeeded()
+#     dependsOn: [deployPrivateDnsZone]
+#     jobs:
+#     - deployment: DeployPaasSQL
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'            
+
+#             #PaasSQL
+#             - template: templates/deploy-SQLPaaSwithElasticPool.yml
+#               parameters:                
+#                 serviceConnection: '$(landingZoneServiceConnection)'  
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: ${{ parameters.landingZoneServiceId }}

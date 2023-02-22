@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>CFS.Application.Platform.Common</AssemblyName>
+    <RootNamespace>CFS.Application.Platform.Common</RootNamespace>
+    <PackageId>CFS.Application.Platform.Common</PackageId>
+    <Authors></Authors>
+    <Company>CFS</Company>
+    <Product>CFS.Application.Platform.Common</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bicep-templates\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="scripts\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="yaml-templates\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="README.md" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+</Project>

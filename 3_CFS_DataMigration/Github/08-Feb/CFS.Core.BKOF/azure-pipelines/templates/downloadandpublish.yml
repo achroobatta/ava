@@ -1,0 +1,45 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+    artifactName: ''
+    workItemId: ''
+    condition: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+  condition: ${{ parameters.condition}}
+
+  steps:
+      - checkout: self
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Download Work Item Attachment'
+        name: Download_Work_Item_Attachment
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -WorkItemId ${{ parameters.workItemId}} -PAT $(PAT)
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+        env:
+          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact Input Parameter File"
+        inputs:
+          PathtoPublish: '$(Build.SourcesDirectory)\$(excelFileName)'
+          ArtifactName: ${{ parameters.artifactName}}
+

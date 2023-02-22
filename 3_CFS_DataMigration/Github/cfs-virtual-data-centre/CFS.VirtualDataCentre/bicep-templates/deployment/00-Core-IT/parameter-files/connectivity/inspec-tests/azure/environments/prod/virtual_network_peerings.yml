@@ -1,0 +1,59 @@
+# Australia East
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-sdc-hub-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-edc-identity-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-edc-operations-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-edc-security-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-edc-fwp-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-edc-bkof-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vnet-prd-edc-hub-001-to-vnet-prd-edc-fcp-001
+  vnet: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+# Australia South East
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-edc-hub-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-sdc-identity-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-sdc-operations-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-sdc-security-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-sdc-fcp-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-sdc-bkof-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: vnet-prd-sdc-hub-001-to-vnet-prd-sdc-fwp-001
+  vnet: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001

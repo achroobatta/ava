@@ -1,0 +1,130 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "iden"
+        },
+        "kv_service": {
+            "value": "identity"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden"
+                }
+            ]
+        },
+        "vmArray": {
+            "value": [
+                {
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vm_instance": "1",
+                    "vmService": "NTT",
+                    "osDiskType": "StandardSSD_LRS",
+                    "adminUsername": "AdministratorCFS",
+                    "OSDiskSize": 60,
+                    "vmSize": "Standard_D2s_v3",
+                    "vnet_instance": "1",
+                    "sub2_instance": "3",
+                    "vnet_component": "netw",
+                    "vnet_serviceAbbrv": "iden",
+                    "sn_serviceAbbrv": "identity",
+                    "stor_instance": "1",
+                    "appName": "NTT",
+                    "ImageName": "IMGNPEDCNTT",
+                    "osDiskBlobUri": "https://stonpedciden001.blob.core.windows.net/nttsa/NTTSA_OS.vhd",
+                    "osAccountType": "StandardSSD_LRS",
+                    "dataDiskResources": {
+                        "value": [
+                            {
+                                "lun": 0,
+                                "createOption": "Attach",
+                                "deleteOption": "Detach",
+                                "caching": "None",
+                                "writeAcceleratorEnabled": false,
+                                "id": null,
+                                "storageAccountType": null,
+                                "diskSizeGB": null,
+                                "diskEncryptionSet": null,
+                                "sku": "StandardSSD_LRS",
+                                "properties": {
+                                    "diskSizeGB": 100,
+                                    "creationData": {
+                                        "createOption": "Import",
+                                        "storageAccountId": "/subscriptions/fb2f0e33-580d-4cc8-ada3-9c1ec175ead1/resourceGroups/rg-np-edc-iden-stor-001/providers/Microsoft.Storage/storageAccounts/stonpedciden001",
+                                        "sourceUri": "https://stonpedciden001.blob.core.windows.net/nttsa/NTTSA_DATA.vhd"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vm_instance": "2",
+                    "vmService": "NTT",
+                    "osDiskType": "StandardSSD_LRS",
+                    "adminUsername": "AdministratorCFS",
+                    "OSDiskSize": 60,
+                    "vmSize": "Standard_D2s_v3",
+                    "vnet_instance": "1",
+                    "sub2_instance": "3",
+                    "vnet_component": "netw",
+                    "vnet_serviceAbbrv": "iden",
+                    "sn_serviceAbbrv": "identity",
+                    "stor_instance": "1",
+                    "appName": "NTT",
+                    "ImageName": "IMGNPEDCNTT",
+                    "osDiskBlobUri": "https://stonpedciden001.blob.core.windows.net/nttsa/NTTSA_OS.vhd",
+                    "osAccountType": "StandardSSD_LRS",
+                    "dataDiskResources": {
+                        "value": [
+                            {
+                                "lun": 0,
+                                "createOption": "Attach",
+                                "deleteOption": "Detach",
+                                "caching": "None",
+                                "writeAcceleratorEnabled": false,
+                                "id": null,
+                                "storageAccountType": null,
+                                "diskSizeGB": null,
+                                "diskEncryptionSet": null,
+                                "sku": "StandardSSD_LRS",
+                                "properties": {
+                                    "diskSizeGB": 100,
+                                    "creationData": {
+                                        "createOption": "Import",
+                                        "storageAccountId": "/subscriptions/fb2f0e33-580d-4cc8-ada3-9c1ec175ead1/resourceGroups/rg-np-edc-iden-stor-001/providers/Microsoft.Storage/storageAccounts/stonpedciden001",
+                                        "sourceUri": "https://stonpedciden001.blob.core.windows.net/nttsa/NTTSA_DATA.vhd"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

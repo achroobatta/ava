@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "vnetPeeringArray":  {
+            "value":  [
+                {
+                  "localVirtualNetworkName": "vnet-np-edc-hub-001",
+                  "localVirtualNetworkResourceGroup": "rg-np-edc-hub-netw-001",
+                  "remoteVirtualNetworkName": "vnet-np-edc-fcp-001",
+                  "remoteVirtualNetworkResourceGroup": "rg-np-edc-fcp-netw-001"
+                },
+                {
+                  "localVirtualNetworkName": "vnet-np-sdc-hub-001",
+                  "localVirtualNetworkResourceGroup": "rg-np-sdc-hub-netw-001",
+                  "remoteVirtualNetworkName": "vnet-np-sdc-fcp-001",
+                  "remoteVirtualNetworkResourceGroup": "rg-np-sdc-fcp-netw-001"
+                }
+            ]
+        }
+    }
+  }

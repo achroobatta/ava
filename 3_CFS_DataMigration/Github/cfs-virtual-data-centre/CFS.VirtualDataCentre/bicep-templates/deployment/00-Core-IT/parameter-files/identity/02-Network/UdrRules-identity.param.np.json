@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "udrObject": {
+            "value": { 
+                "routeValues": [
+                    {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-np-edc-identity-001",
+                      "routeRules": [
+                        {
+                          "name": "udr-DefaultRouteToFirewall",
+                          "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.40.1.68"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-np-edc-identity-002",
+                      "routeRules": [
+                        {
+                          "name": "udr-DefaultRouteToFirewall",
+                          "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.40.1.68"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-np-edc-identity-003",
+                      "routeRules": [
+                        {
+                          "name": "udr-DefaultRouteToFirewall",
+                          "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.40.1.68"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-np-sdc-identity-001",
+                      "routeRules": [
+                        {
+                          "name": "udr-DefaultRouteToFirewall",
+                          "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.60.1.68"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-np-sdc-identity-002",
+                      "routeRules": [
+                        {
+                          "name": "udr-DefaultRouteToFirewall",
+                          "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.60.1.68"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "iden",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-np-sdc-identity-003",
+                      "routeRules": [
+                        {
+                          "name": "udr-DefaultRouteToFirewall",
+                          "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.60.1.68"
+                          }
+                        }
+                      ]
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "$schema":  "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion":  "1.0.0.0",
+    "parameters":  {
+        "adminPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/fb2f0e33-580d-4cc8-ada3-9c1ec175ead1/resourceGroups/rg-np-edc-iden-kv-001/providers/Microsoft.KeyVault/vaults/kv-np-edc-identity-001"
+                },
+                "secretName": "cfsadmin"
+            }
+        },
+        "resourceTags": {
+            "value": {
+                "appName": "TBD",
+                "environment": "TBD",
+                "owner": "TBD",
+                "costCentre": "TBD",
+                "createOnDate": "TBD"
+            }
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResourceGroupName": "rg-np-edc-back-comp-001",
+                    "vmResouceGroupLocation": "australiaeast"
+                }
+            ]
+        },
+        "vmArray":  {
+            "value":  [
+                {
+                    "vmResourceGroupName": "rg-np-edc-back-comp-001",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vmName": "testsql02",
+                    "adminUsername": "AdministratorCFS",
+                    "osDiskType": "StandardSSD_LRS",
+                    "OSDiskSize": 128,
+                    "vmSize": "Standard_D2s_v3",
+                    "imageReferencePublisher" :"MicrosoftSQLServer",
+                    "imageReferenceOffer": "sql2019-ws2022",
+                    "imageSKU": "enterprise-gen2",
+                    "imageReferenceVersion": "latest",
+                    "vnetResourceGroup": "rg-np-edc-bkof-netw-001",
+                    "virtualNetworkName": "vnet-np-edc-bkof-001",
+                    "subnetName": "sub-np-edc-bkof-001",
+                    "timeZone": "E. Australia Standard Time",
+                    "diagstorageName": "stonpedcbkof001",
+                    "dataPath": "F:\\SQLData",
+                    "logPath": "G:\\SQLLog",
+                    "tempDbPath": "D:\\SQLTemp",
+                    "sqlVirtualMachineName": "testsql02",
+                    "sqlDataDisksCount": 1,
+                    "sqlLogDisksCount": 1,
+                    "workspaceId": "04c667c5-2e00-48b2-9cc1-f4993d21ac21",
+                    "workspaceKey": "Ux9jtCynpiWhOOutRQRMzLii6F/EtyO0HJmS2HBZnr2G5/j3fVAhk6qy4R0bxFSSUTeFwq1vfzvhqn6s4bnjyg==",
+                    "keyVaultURL": "https://kv-np-edc-bkof-001.vault.azure.net/",
+                    "keyVaultName_resourceId": "/subscriptions/0caf2912-0197-4ea5-968d-f517c90d5930/resourceGroups/rg-np-edc-bkof-kv-001/providers/Microsoft.KeyVault/vaults/kv-np-edc-bkof-001",
+                    "KeyEncryptionKeyURL": "https://kv-np-edc-bkof-001.vault.azure.net/keys/keyEncrypt/bdba7d7a80ac45a8b063268a4e7f568c",
+                    "KekVaultResourceId": "/subscriptions/0caf2912-0197-4ea5-968d-f517c90d5930/resourceGroups/rg-np-edc-bkof-kv-001/providers/Microsoft.KeyVault/vaults/kv-np-edc-bkof-001"
+                }
+            ]
+        }
+    }
+}

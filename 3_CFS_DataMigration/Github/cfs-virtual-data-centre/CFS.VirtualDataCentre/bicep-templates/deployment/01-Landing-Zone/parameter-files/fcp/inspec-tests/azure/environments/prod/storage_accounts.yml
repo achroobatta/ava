@@ -1,0 +1,11 @@
+#Template Format
+#- name: stonpedcfcp001
+#  resource_group: rg-np-edc-fcp-stor-001
+
+# Australia East
+- name: stoprdedcfcp001
+  resource_group: rg-prd-edc-fcp-stor-001
+
+# Australia South East
+- name: stoprdsdcfcp001
+  resource_group: rg-prd-sdc-fcp-stor-001

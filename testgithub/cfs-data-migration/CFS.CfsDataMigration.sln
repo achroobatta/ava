@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFS.CfsDataMigration", "CFS.CfsDataMigration\CFS.CfsDataMigration.csproj", "{E088E914-4640-4EE5-9F5D-5EEC30E737DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E088E914-4640-4EE5-9F5D-5EEC30E737DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E088E914-4640-4EE5-9F5D-5EEC30E737DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E088E914-4640-4EE5-9F5D-5EEC30E737DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E088E914-4640-4EE5-9F5D-5EEC30E737DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40161958-97F4-4699-AF81-ED6558446A89}
+	EndGlobalSection
+EndGlobal

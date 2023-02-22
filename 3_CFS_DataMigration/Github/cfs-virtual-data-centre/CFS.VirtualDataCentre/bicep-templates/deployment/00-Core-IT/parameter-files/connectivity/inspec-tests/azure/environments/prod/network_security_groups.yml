@@ -1,0 +1,96 @@
+# Australiaeast
+
+- name: FortiManager-NSG
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-AzureBastionSubnet
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-002
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-003
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-004
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-005
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-006
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-007
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-008
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-fn-009
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-mgmt-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: nsg-prd-edc-mgmt-002
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: VMPRDEDCFAZ001-NSG
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: VMPRDEDCFG001-m7i3i4ylgdabu-NSG
+  resource_group: rg-prd-edc-hub-netw-001
+
+# Australia South East
+
+- name: FortiAnalyzer-NSG
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-AzureBastionSubnet
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-002
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-003
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-004
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-005
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-006
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-007
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-008
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-fn-009
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-mgmt-001
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: nsg-prd-sdc-mgmt-002
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: VMPRDSDCFAZ001-NSG
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: VMPRDSDCFG001-4gwnpqcb6lyak-NSG
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: VMPRDSDCFM001-NSG
+  resource_group: rg-prd-sdc-hub-netw-001

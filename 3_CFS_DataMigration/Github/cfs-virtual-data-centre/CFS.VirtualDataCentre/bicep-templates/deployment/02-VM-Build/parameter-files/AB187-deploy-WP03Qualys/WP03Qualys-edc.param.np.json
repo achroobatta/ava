@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "sec"
+        },
+        "kv_service": {
+            "value": "security"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "sec"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": { 
+                "vmValues": [
+                    {
+                        "rgInstanceNumber" : "1",
+                        "component": "comp",
+                        "serviceAbbrv": "sec",
+                        "vmResouceGroupLocation": "australiaeast",
+                        "vmInstanceNumber": "1",
+                        "vmService": "QUALYS",
+                        "vmSize": "Standard_D4s_v3",
+                        "publisher": "qualysguard",
+                        "offer": "qualys-virtual-scanner",
+                        "sku": "qvsa",
+                        "version": "latest",
+                        "osDiskType": "Standard_LRS",
+                        "osDiskSize": 128,
+                        "dataDiskType":"Standard_LRS",
+                        "dataDiskSize": 200,
+                        "adminUsername": "AdministratorCFS",
+                        "perscode": 21635050712806,
+                        "vnet_instance": "1",
+                        "vnet_component": "netw",
+                        "vnet_serviceAbbrv": "sec",
+                        "snet_instance": "1",
+                        "sn_serviceAbbrv": "security",
+                        "stor_instance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "appName": "Qualys",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isPublicIp": false,
+                        "isPublicIpNew" : false
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,460 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+"parameters":  {
+    "nsgObject": {
+        "value": { 
+            "nsgValues": [
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-edc-bkof-dm-sftp-001",
+                  "securityRules": [
+                    {
+                      "name": "AllowVmSubnet",
+                      "properties": {
+                        "description": "Allow Vm Subnet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.2.0/24",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowTagCustom22Inbound",
+                      "properties": {
+                        "description": "Allow SSH From Vnet",
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "22",
+                        "sourceAddressPrefix": "VirtualNetwork",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-edc-bkof-dm-com-002",
+                  "securityRules": [
+                    {
+                      "name": "AllowVmSubnet",
+                      "properties": {
+                        "description": "Allow Vm Subnet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.2.0/24",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-edc-bkof-dm-vmsub-003",
+                  "securityRules": [
+                    {
+                      "name": "AllowPort59855986FromVirtualNetwork",
+                      "properties": {
+                        "description": "Allow Port 5985 and 5986 From VirtualNetwork",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "VirtualNetwork",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "5985",
+                          "5986"
+                        ],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowRDPFromVnet",
+                      "properties": {
+                        "description": "Allow RDP From Vnet",
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "3389",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [
+                          "10.20.0.192/26",
+                          "10.30.0.192/26",
+                          "10.20.0.128/26",
+                          "10.30.0.128/26"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-edc-bkof-dm-blob-001",
+                  "securityRules": [
+                    {
+                      "name": "AllowVmSubnet",
+                      "properties": {
+                        "description": "Allow Vm Subnet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.2.0/24",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-sdc-bkof-dm-sftp-001",
+                  "securityRules": [
+                    {
+                      "name": "AllowVmSubnet",
+                      "properties": {
+                        "description": "Allow Vm Subnet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.33.2.0/24",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowTagCustom22Inbound",
+                      "properties": {
+                        "description": "Allow SSH From Vnet",
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "22",
+                        "sourceAddressPrefix": "VirtualNetwork",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-sdc-bkof-dm-com-002",
+                  "securityRules": [
+                    {
+                      "name": "AllowVmSubnet",
+                      "properties": {
+                        "description": "Allow Vm Subnet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.33.2.0/24",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-sdc-bkof-dm-vmsub-003",
+                  "securityRules": [
+                    {
+                      "name": "AllowPort59855986FromVirtualNetwork",
+                      "properties": {
+                        "description": "Allow Port 5985 and 5986 From VirtualNetwork",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "VirtualNetwork",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "5985",
+                          "5986"
+                        ],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowRDPFromVnet",
+                      "properties": {
+                        "description": "Allow RDP From Vnet",
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "3389",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [
+                          "10.20.0.192/26",
+                          "10.30.0.192/26",
+                          "10.20.0.128/26",
+                          "10.30.0.128/26"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "bkof",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-sdc-bkof-dm-blob-001",
+                  "securityRules": [
+                    {
+                      "name": "AllowVmSubnet",
+                      "properties": {
+                        "description": "Allow Vm Subnet",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.33.2.0/24",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                }
+            ]
+        }
+    }
+}
+}

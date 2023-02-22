@@ -1,0 +1,45 @@
+<param>
+    <!--globaly used and stripe param-->
+    <akv>psteamkv001</akv>
+    <rgname>demorgpsteam</rgname>
+    <filesize>10</filesize>
+    <Party>False</Party>
+    <sourceCount>1</sourceCount>
+
+    <!--Copy from Storage to Disk-->
+    <storageaccount>psstoteam01</storageaccount>
+    <stgencryptedFileName>ninembtest.7z</stgencryptedFileName>
+    <localTargetDirectory>S:\FromStorageAccount</localTargetDirectory>
+    <sourceContainerName>sourcezip</sourceContainerName>
+
+    <!--Unzip using KeyVault Secret-->
+    <akvsecretzip>ninepassword</akvsecretzip>
+    <localzippath>S:\FromStorageAccount</localzippath>
+    <TargetunzipPath>T:\UnzipFile</TargetunzipPath>
+
+    <!--Copy File from Local to Storage-->
+    <deststorageacctname>psteamdlgen2</deststorageacctname>
+    <ContainerName>destinationlgen2</ContainerName>
+    <sourceunzippath>T:\UnzipFile</sourceunzippath>
+
+    <!--Copy File from Disk to SFTP-->
+    <sftpstoracctname>psteamsftp01</sftpstoracctname>
+    <sftpcontainerName>sftpdestination</sftpcontainerName>
+    <sourcezippath>T:\EncryptedZipFile</sourcezippath> <!--Dont know what to put since all the files in T:\ are unzip-->
+
+    <!--Zip File Using 7z-->
+    <akvencrypt>testpassword1</akvencrypt>
+    <TargetunzipPath>T:\UnzipFile</TargetunzipPath> 
+    <newsourcezippath>T:\EncryptedZipFile</newsourcezippath> <!--Dont know what to put since all the files in T:\ are unzip-->
+
+    <!--SQL Server param-->
+    <servername>psteamsqlser01</servername>
+    <database>psteamdb01</database>
+    <keyvaultscript>readkeyvaultpass.ps1</keyvaultscript>
+    <sqltablename>Identification</sqltablename>
+    <akvsecretsql>sqlpass</akvsecretsql>
+    <sqlusername>sqladmin</sqlusername>
+    <sqldata1>demotest1</sqldata1>
+    <sqldata2>demotest2</sqldata2>
+    <sqldata3>2001-09-09</sqldata3>
+</param>

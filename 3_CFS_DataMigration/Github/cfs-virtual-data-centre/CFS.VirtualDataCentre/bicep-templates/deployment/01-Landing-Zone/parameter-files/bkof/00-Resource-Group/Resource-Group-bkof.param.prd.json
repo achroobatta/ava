@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "bkof",
+                    "appName": "backoffice"
+                }
+            ]
+        }
+    }
+}

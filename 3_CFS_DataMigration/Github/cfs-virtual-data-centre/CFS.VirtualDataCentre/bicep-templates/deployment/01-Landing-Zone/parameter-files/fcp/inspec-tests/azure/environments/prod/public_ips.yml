@@ -1,0 +1,9 @@
+# Template Format
+#- name: pip-prod-ae-vgw-01
+#  resource_group: rg-prod-ae-network
+#  address: 20.211.106.245
+
+
+# Australia East
+
+# Australia South East

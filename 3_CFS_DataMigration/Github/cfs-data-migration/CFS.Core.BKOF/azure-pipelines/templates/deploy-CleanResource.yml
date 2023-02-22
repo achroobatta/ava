@@ -1,0 +1,36 @@
+#deploy-CleanResource.yml
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: delResourceName
+  type: string
+
+- name: delResourceLocation
+  type: string
+
+- name: delImpactedResource
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Clean Resource
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $delResourceName = "${{ parameters.delResourceName }}"
+        $delResourceLocation = "${{ parameters.delResourceLocation }}"
+        $delImpactedResource = "${{ parameters.delImpactedResource }}"
+      
+        Write-Output '***************************************************************************'
+        Write-Output 'ResourceName:' $delResourceName
+        Write-Output 'ResourceLocation:' $delResourceLocation
+        Write-Output 'ImpactedResource:' $delImpactedResource
+        Write-Output '***************************************************************************'
+        
+        az resource delete -g $delResourceLocation -n $delResourceName
+        

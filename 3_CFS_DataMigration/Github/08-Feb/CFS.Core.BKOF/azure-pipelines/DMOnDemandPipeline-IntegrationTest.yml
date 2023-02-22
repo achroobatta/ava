@@ -1,0 +1,987 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: appName
+    displayName: appName (Tags - e.g. infra/onyx)
+    type: string
+    default: "infra"
+  
+  - name: owner
+    displayName: owner (Tags - e.g. "Robert Reakes")
+    type: string
+    default: "Robert Reakes"
+
+  - name: costCenterCode
+    displayName: costCenterCode (Tags - e.g. 4010)
+    type: string
+    default: "4010"
+
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+  
+  - name: fileSize
+    displayName: size of File to be migrated (e.g. 25 KB, 300 MB, 50 GB or 100 TB, value and type should be seperated by one space only)
+    type: string
+    default: "7 KB"
+
+  - name: sourceDataType
+    displayName: From where input file is coming (e.g. sftp or databox)
+    type: string
+    default: "sftp"
+  
+  - name: sourceLocation
+    displayName: Location of Source file (e.g. uri of sFtp container, only applicable if sourceDataType is sFtp)
+    type: string
+    default: " "
+  
+  - name: targetDataType 
+    displayName: Target Deployment Environment
+    type: string 
+    default: "internal" 
+    values:
+     - "internal"
+     - "external" 
+  
+  - name: ipTobeWhiteListed
+    displayName: IP to be whitelisted for external users should be comma seperated for multiple (e.g. 1.157.208.55,20.28.179.29)
+    type: string
+    default: "1.157.208.55" 
+
+  - name: vendorName
+    displayName: Name of third party sFtp Vendor 
+    type: string
+    default: " "     
+  
+  - name: emailAddress
+    displayName: CFS App Contact Email Address 
+    type: string
+    default: "achroo.batta@dev.cfs.com.au"
+  
+  - name: secretName
+    displayName: Name of the secret which contains password for encrypted source file 
+    type: string
+    default: " "
+
+  - name: keyVaultNameforSecret
+    displayName: Name of the keyVault where secret is stored
+    type: string
+    default: "kv-np-edc-bkof-dm-0028"
+    values:
+     - "kv-np-edc-bkof-dm-0028"
+     - "kv-prd-edc-bkof-dm-0025" 
+  
+  - name: warrantyPeriod
+    displayName: Date by which Data needs to be deleted  (in months, 1 to 6)
+    type: string
+    default: "1"
+
+  - name: taskNumber
+    displayName: Task Number 
+    type: string   
+    default: "1234"
+
+  - name: resourceLocation
+    displayName: Location of the resources (australiaeast or australiasoutheast)
+    type: string
+    default: "australiaeast"
+ 
+  - name: ultraSSDEnabled
+    displayName: Value for ultraSSDEnabled
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: srcSftpCtn
+    displayName: Source Sftp Connection 
+    type: string
+    default: "australiaeast"
+  
+  - name: srcSftpAcctNm
+    displayName: Source Sftp Account Name 
+    type: string
+    default: " "
+  
+  - name: srcSftpPass
+    displayName: Source Sftp Password 
+    type: string
+    default: " "
+
+  - name: srcSftpKey
+    displayName: Source Sftp Key 
+    type: string
+    default: " "
+
+variables:
+
+ - group: var-azure-tenant-id
+   
+ - name: subTenantId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(np-azure-tenant-id)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: '$(prd-azure-tenant-id)' 
+
+ - group: var-password
+ - group: lz-var-service-principle-secrets
+ - group: var-domain-join-password
+ - group: var-service-principle-secrets 
+
+ - name: resourceLocation
+   value: ${{ parameters.resourceLocation }} 
+
+ - name: dmTaskNumber
+   value: ${{ parameters.taskNumber }}
+
+ - name: dmTargetDataType
+   value: ${{ parameters.targetDataType }}
+
+ #workspaces are in edc only
+ - name: workspaceLocationPrefix
+   ${{ if eq(parameters.resourceLocation, 'australiaeast') }}:
+    value: "edc"
+   ${{ else }}:
+    value: "sdc"
+
+#Fetch variables from Variable Group
+ - name: appName 
+   value: ${{ parameters.appName }}
+
+ - name: owner 
+   value: ${{ parameters.owner }}
+
+ - name: costCenterCode
+   value: ${{ parameters.costCenterCode }} 
+
+ - name: fileSize
+   value: ${{ parameters.fileSize }}
+ 
+ - name: dmEnvironment
+   value: ${{ parameters.deployEnvironment }}
+ 
+ - name: sourceDataType
+   value: ${{ parameters.sourceDataType }}
+ 
+ - name: sourceLocation
+   value:  ${{ parameters.sourceLocation }}
+
+ - name: ipTobeWhiteListed
+   ${{ if eq(parameters.targetDataType, 'external') }}:
+    value: ${{ parameters.ipTobeWhiteListed }} 
+
+ - name: rootContainerName
+   ${{ if eq(parameters.targetDataType, 'external') }}:
+    value: '${{ parameters.vendorName }}container-b$(Build.BuildId)'
+   ${{ else }}: 
+    value: 'container-b$(Build.BuildId)' 
+
+ - name: sshKeyName 
+   ${{ if eq(parameters.targetDataType, 'external') }}:
+    value: '${{ parameters.vendorName }}sshKeyb$(Build.BuildId)'
+
+ - name: landingZoneServiceId
+   value: 'BKOF'
+
+ - name: AzureEnvironmentPrefix  
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "np" 
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "prd"
+
+ - name: destStorageAccountName 
+   ${{ if eq(parameters.targetDataType, 'external') }}: 
+    value: 'dsftp$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkofb$(Build.BuildId)'
+   ${{ else }}: 
+    value: 'dlgen2$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkofb$(Build.BuildId)'
+ 
+ - name: sftpUserName
+   ${{ if eq(parameters.targetDataType, 'external') }}:
+    value: '${{ parameters.vendorName }}vendorb$(Build.BuildId)'
+   ${{ if eq(parameters.targetDataType, 'internal') }}:
+    value: ''
+
+ - name: diagStorageAcctName   
+   value: 'dsto$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkofb$(Build.BuildId)'
+
+ - name: privateEndpointNameForStorage
+   value: 'pve-$(resourceLocation)-$(diagStorageAcctName)'  
+
+ - name: emailAddress
+   value: ${{ parameters.emailAddress }}
+ 
+ - name: secretName
+   value: ${{ parameters.secretName }}
+
+ - name: keyVaultNameforSecret
+   value: ${{ parameters.keyVaultNameforSecret }}
+
+ - name: warrantyPeriod
+   value: ${{ parameters.warrantyPeriod }}
+
+#Ultra SSD only Enabled when region is australiaeast
+ - name: ultraSSDEnabled
+   value: ${{ parameters.ultraSSDEnabled }}
+
+ - name: srcSftpCtn
+   value: ${{ parameters.srcSftpCtn }}
+
+ - name: srcSftpAcctNm
+   value: ${{ parameters.srcSftpAcctNm }}
+ 
+ - name: srcSftpPass
+   value: ${{ parameters.srcSftpPass }}
+
+ - name: srcSftpKey
+   value: ${{ parameters.srcSftpKey }}
+
+ - name: isDayLightSavings
+   value: false 
+
+ - name: useWhatIfDeploymentType
+   value: false
+
+ - name: artifactVersion
+   value: "latest"
+
+ - name: azureTenantId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '$(np-azure-tenant-id)'
+   ${{ else }}:
+    value: '$(prd-azure-tenant-id)'
+
+ - name: agentPool
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    # value: 'VMNPEDCADOW001'
+    value: 'Windows-NP'
+   ${{ else }}:
+    # value: 'VMPRDEDCADOW001' 
+    value: 'Windows-PRD'
+
+ # Artifact Package Feed Value
+ - name: artifactFeed  
+   ${{ if and(eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:  
+    value: "core-it/cfs-infra-release"   
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact). 
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition  
+   value: CFS.Core.$(landingZoneServiceId)
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}      
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol 
+   ${{ if eq(variables.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+  # Deployment Type
+ - name: deploymentType  
+   ${{ if eq(variables.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ #  Landing Zone Subscription ID
+ - name: landingZoneSubscriptionID 
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if eq(variables.landingZoneServiceId, 'BKOF') }}:
+       value: $(subsc-np-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-np-$(landingZoneServiceId)-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if eq(variables.landingZoneServiceId, 'BKOF') }}: 
+       value: $(subsc-prd-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-prd-$(landingZoneServiceId)-sid)
+
+ # Azure DevOps Landing Zone Service Connection Name
+ - name: landingZoneServiceConnection 
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:   
+      value: "sc-subsc-prd-bkof-001"        
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:   
+      value: "sc-subsc-np-bkof-001"      
+
+ # Subscription Service Name
+ - name: subscriptionServiceName
+   value: "CFSCO Management Group" 
+
+ - name: depContainerName
+   value: 'sshkeycontainer'
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+ 
+ - name: adminP
+   value: '$(adminPassword)'
+
+ - name: serviceAccountP 
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '$(serviceAccountNPPassword)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: '$(serviceAccountPRDPassword)'
+
+ - name: serviceAccountU  
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '$(serviceAccountNPUser)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: '$(serviceAccountPRDUser)'
+
+ - name: mountPwd 
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: $(npMountPwd)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: $(prdMountPwd)
+
+ - name: serviceAccountUE
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '$(serviceAccountNPUserEmail)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: '$(serviceAccountPRDUserEmail)'
+
+ - name: domainPassword
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '$(np-domain-join-password)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: '$(prd-domain-join-password)'
+
+ # Diagnostic Settings Storage Resource Group
+ - name: storageAccountResourceGroup  
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-edc-sec-stor-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-edc-sec-stor-001"
+
+ # Diagnostic Settings Storage Account
+ - name: storageAccountName
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "stonpedcdiagnlogs003"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "stonpedcdiagnlogs001"
+
+# Workspace Resource Group
+ - name: workspaceResourceGroup
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-edc-sec-sec-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-edc-sec-sec-001"
+ 
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Workspace name
+ - name: workspaceName 
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "ws-np-edc-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "ws-prd-edc-001"
+ 
+# keyVaultName
+ - name: keyVaultName
+   ${{ if and(eq(variables.landingZoneServiceId, 'BKOF'), eq(parameters.deployEnvironment, 'Non-Production')) }}:      
+      value: 'kv-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-bkof-dm-0028'
+   ${{ if and(eq(variables.landingZoneServiceId, 'BKOF'), eq(parameters.deployEnvironment, 'Production')) }}:
+      value: 'kv-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-bkof-dm-001' 
+   ${{ if ne(variables.landingZoneServiceId, 'BKOF')}}:
+      value: 'kv-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-$(landingZoneServiceId)-001'
+ 
+ - name: rgName 
+   ${{ if eq(variables.landingZoneServiceId, 'BKOF') }}:
+      value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-bkof-dm-001'
+   ${{ else }}:
+      value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-$(landingZoneServiceId)-dm-001'
+
+ - name: commRG
+   ${{ if eq(variables.landingZoneServiceId, 'BKOF') }}:
+      value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-bkof-dm-001' 
+ 
+ - name: vmRG
+   ${{ if eq(variables.landingZoneServiceId, 'BKOF') }}:
+      value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-bkof-dm-vm-001'
+  
+ - name: dmVMName
+   value: 'VM$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)dm$(Build.BuildId)'
+
+ - name: subId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(subsc-np-backoffice-sid)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: '$(subsc-prd-backoffice-sid)'
+
+ - name: connSubId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(subsc-np-connectivity-sid)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: '$(subsc-prd-connectivity-sid)'
+
+ - name: vendor 
+   value: ${{ parameters.vendorName }}
+
+ - name: fromEmailAddress
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: $(npFromEmail)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: $(prdFromEmail)
+
+ - name: ClientID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: $(npClientId)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: $(prdClientId)
+
+ - name: ClientSecret
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: $(npClientSecret)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: $(prdClientSecret)
+ 
+ - name: TenantDomain
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: $(npTenantDomain)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: $(prdTenantDomain)
+
+ - name: depStorageAccount
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: 'depstonpedcbkofdm001'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: 'depstoprdedcbkofdm001'
+
+stages:                    
+#   # Deploy VM
+#   - stage: deployVM
+#     displayName: DeployVM
+
+#     pool:
+#       vmImage: windows-latest
+    
+#     dependsOn: []
+
+#     jobs:
+#     - deployment: DeployVM
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'            
+
+#             #VM
+#             - template: templates/deploy-VM.yml              
+#               parameters:
+#                 serviceId: '$(landingZoneServiceId)' 
+#                 serviceConnection: '$(landingZoneServiceConnection)'                  
+#                 deploymentType: '$(deploymentType)'
+#                 keyVaultName: '$(keyVaultName)'        
+  
+#   # Copy Script Files to Target VM
+#   - stage: copyScriptandSoftwareFilesOnVM
+#     displayName: CopyScriptandSoftwareFilesOnVM
+
+#     pool: 
+#       name: $(agentPool)
+       
+    
+#     dependsOn: [deployVM]
+
+#     jobs:
+#     - deployment: CopyScriptandSoftwareFilesOnVM
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'   
+            
+#             - task: PowerShell@2
+#               inputs:
+#                 targetType: 'inline' 
+#                 script: |              
+#                    # for original below line should be uncommented and testing line should be commented 
+#                    $computervm = '$(dmVMName)'
+#                    # $computervm = 'VMnpedcdm8199'
+#                    echo '******************************************************************'
+#                    echo 'Copy Script Folders to Target VM'
+#                    echo '******************************************************************'
+#                    echo 'Computer Name: ' $computervm                   
+#                    ls $(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\*
+#                    $User = '$(serviceAccountUE)'                         
+#                    $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+#                    $Credential = [pscredential]::new($User,$Password)
+#                    $Session = New-PSSession -ComputerName "$computervm" -Credential $Credential
+#                    Copy-Item "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\" -Destination "C:\Users\$(serviceAccountU)\" -ToSession $Session -Recurse -Force                  
+            
+#             - task: PowerShell@2
+#               inputs:
+#                 targetType: 'inline' 
+#                 script: |              
+#                    # for original below line should be uncommented  
+#                    $computervm = '$(dmVMName)'
+#                    # $computervm = 'VMnpedcdm8199'    
+#                    echo '******************************************************************'
+#                    echo 'Copy Software Files to local path on Target VM'
+#                    echo '******************************************************************'
+#                    echo 'Computer Name: ' $computervm                   
+#                    ls $(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\*
+#                    echo '******************************************************************'
+#                    echo 'pwd: ' $(mountPwd)
+#                    $pwd = ConvertTo-SecureString -String $(mountPwd) -AsPlainText -Force
+#                    echo '******************************************************************'
+#                    echo 'serviceAccountUser: ' $(serviceAccountU)
+#                    echo 'depStorageAccount: ' $(depStorageAccount)
+#                    $User = '$(serviceAccountUE)'                         
+#                    $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+#                    $Credential = [pscredential]::new($User,$Password)
+#                    $ToSession = New-PSSession -ComputerName "$computervm" -Credential $Credential
+#                    Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\FileMount.ps1" -ArgumentList "$(mountPwd)","$(depStorageAccount)"
+
+#   # Stripe VM Disks                 
+#   - stage: stripeVMDisk
+#     displayName: StripeVMDisk
+
+#     pool: 
+#       name: $(agentPool)       
+    
+#     dependsOn: [CopyScriptandSoftwareFilesOnVM]
+
+#     jobs:
+#     - deployment: StripeVMDisk
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self                   
+           
+#             - task: PowerShell@2
+#               inputs:
+#                 targetType: 'inline' 
+#                 script: |              
+#                    $computervm = '$(dmVMName)' 
+#                    echo '******************************************************************'
+#                    echo 'Striping Source and Destination Disks to Target VM'
+#                    echo '******************************************************************'                 
+#                    $User = '$(serviceAccountUE)'                         
+#                    $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+#                    $Credential = [pscredential]::new($User,$Password)
+#                    echo 'Computer Name: ' $computervm 
+#                    echo 'Size of File: ' $(fileSize)
+#                    $ScriptBlock = {
+#                         Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Stripe.ps1","-fileSize","$(fileSize)" -Wait -Verb RunAs -PassThru 2>&1
+#                    }
+#                    Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+#                    $j = Get-Job
+#                    $j | Format-List -Property *
+#                    $result = $j | Receive-Job
+
+#   # Install Dependency Modules                 
+#   - stage: installModules
+#     displayName: InstallModules
+
+#     pool: 
+#       name: $(agentPool)       
+    
+#     dependsOn: [StripeVMDisk]
+
+#     jobs:
+#     - deployment: InstallModules
+#       workspace:
+#         clean: all
+
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self                   
+           
+#             - task: PowerShell@2
+#               inputs:
+#                 targetType: 'inline' 
+#                 script: |              
+#                    $computervm = '$(dmVMName)' 
+#                    echo '******************************************************************'
+#                    echo 'Install Dependency Modules on VM'
+#                    echo '******************************************************************'                 
+#                    $User = '$(serviceAccountUE)'                         
+#                    $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+#                    $Credential = [pscredential]::new($User,$Password)
+#                    echo 'Computer Name: ' $computervm 
+#                    echo 'Service Account Username: ' $(serviceAccountU)
+#                    $ScriptBlock = {
+#                       # this line needs to be updated with correct scriptname and parameters 
+#                       Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\offlineModuleMod.ps1" -Wait -Verb RunAs -PassThru 2>&1
+#                    }
+#                    Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+#                    $j = Get-Job
+#                    $j | Format-List -Property *
+#                    $result = $j | Receive-Job
+
+# # Deploy Destination Storage Account
+#   - stage: deployDestinationStorageAccount
+#     displayName: DeployDestinationStorageAccount   
+        
+#     # pool:
+#     #   vmImage: windows-latest
+
+#     pool: 
+#       name: $(agentPool)
+
+#     condition: succeeded()
+   
+#     dependsOn: [InstallModules]
+#     jobs:
+#     - deployment: CreateUploadSSHKey
+#       workspace:
+#         clean: all
+#       condition: eq('${{parameters.targetDataType }}', 'external')
+#       pool:
+#         name: $(agentPool)
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+#             #Create and Upload Ssh Key
+#             - template: templates/deploy-SftpSshKey.yml
+
+#     - deployment: DeployDestinationStorageAccountInternal
+#       condition: eq('${{parameters.targetDataType }}', 'internal')
+#       workspace:
+#         clean: all
+#       pool:
+#         vmImage: 'windows-latest'
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'
+
+#             #DataLake
+#             - template: 'templates/deploy-DataLake.yml'
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: '$(landingZoneServiceId)'
+
+#     - deployment: DeployDestinationStorageAccountExternal
+#       workspace:
+#         clean: all
+#       dependsOn: [CreateUploadSSHKey]
+#       condition: and(succeeded(), eq('${{parameters.targetDataType }}', 'external'))
+#       pool:
+#         vmImage: 'windows-latest'
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'
+
+#             #Sftp
+#             - template: 'templates/deploy-Sftp.yml'
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(landingZoneServiceConnection)'
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: '$(landingZoneServiceId)'
+                
+#     - deployment: UploadDummyFile
+#       workspace:
+#         clean: all
+#       condition: and(succeeded(), eq('${{parameters.targetDataType }}', 'external'))
+#       dependsOn: [DeployDestinationStorageAccountExternal]
+#       pool:
+#         name: $(agentPool)
+#       environment: $(AzureDevOpsEnvironments)
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+
+#             - checkout: self
+#             #Upload Dummy File
+#             - template: templates/deploy-SftpDummy.yml
+  # Trigger Original Master Scripts                
+  - stage: triggerMasterScenario1
+    displayName: TriggerMasterScenario1
+    variables:
+     - name: destStorage
+       value: 'dlgen2npedcbkof7922'
+     
+     - name: destContainer
+       value: 'container7922'
+
+    pool: 
+      name: $(agentPool)      
+    
+    dependsOn: []
+
+    jobs:
+    - deployment: TriggerMaster
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self                   
+           
+            - task: PowerShell@2
+              inputs:
+                targetType: 'inline' 
+                script: |              
+                   # $computervm = '$(dmVMName)'  ## original script 
+                   $computervm = 'VMnpedcdm8422'                   
+                   echo '******************************************************************'
+                   echo 'Trigger Master Script'
+                   echo '******************************************************************'                 
+                   $User = '$(serviceAccountUE)'                         
+                   $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+                   $Credential = [pscredential]::new($User,$Password)
+                   echo 'Computer Name: ' $computervm                    
+                   $ScriptBlock = {                          
+                        # original script, both below lines should be uncommented (test line above should be commented)
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                   }                   
+                   Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                   $j = Get-Job
+                   $j | Format-List -Property *
+                   $result = $j | Receive-Job
+
+  - stage: triggerMasterScenario2
+    displayName: TriggerMasterScenario2
+    variables:
+     - name: destStorage
+       value: 'dlgen2npedcbkof7922'
+     
+     - name: destContainer
+       value: 'container7922'
+
+    pool: 
+      name: $(agentPool)      
+    
+    dependsOn: []
+
+    jobs:
+    - deployment: TriggerMaster
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self                   
+           
+            - task: PowerShell@2
+              inputs:
+                targetType: 'inline' 
+                script: |              
+                   # $computervm = '$(dmVMName)'  ## original script 
+                   $computervm = 'VMnpedcdm8427'                                       
+                   echo '******************************************************************'
+                   echo 'Trigger Master Script'
+                   echo '******************************************************************'                 
+                   $User = '$(serviceAccountUE)'                         
+                   $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+                   $Credential = [pscredential]::new($User,$Password)
+                   echo 'Computer Name: ' $computervm                    
+                   $ScriptBlock = {                          
+                        # original script, both below lines should be uncommented (test line above should be commented)
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                   }                   
+                   Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                   $j = Get-Job
+                   $j | Format-List -Property *
+                   $result = $j | Receive-Job
+
+  - stage: triggerMasterScenario3
+    displayName: TriggerMasterScenario3
+    variables:
+    - name: destStorage
+      value: 'dsftpnpedcbkof7567'
+     
+    - name: destContainer
+      value: 'tcscontainer7567'
+ 
+    pool: 
+      name: $(agentPool)      
+    
+    dependsOn: []
+
+    jobs:
+    - deployment: TriggerMaster
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self                   
+           
+            - task: PowerShell@2
+              inputs:
+                targetType: 'inline' 
+                script: |              
+                   # $computervm = '$(dmVMName)'  ## original script 
+                   $computervm = 'VMnpedcdm8422'                                       
+                   echo '******************************************************************'
+                   echo 'Trigger Master Script'
+                   echo '******************************************************************'                 
+                   $User = '$(serviceAccountUE)'                         
+                   $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+                   $Credential = [pscredential]::new($User,$Password)
+                   echo 'Computer Name: ' $computervm                    
+                   $ScriptBlock = {                          
+                        # original script, both below lines should be uncommented (test line above should be commented)
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                   }                   
+                   Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                   $j = Get-Job
+                   $j | Format-List -Property *
+                   $result = $j | Receive-Job
+
+  - stage: triggerMasterScenario4
+    displayName: TriggerMasterScenario4
+    variables:
+    - name: destStorage
+      value: 'dsftpnpedcbkof7567'
+     
+    - name: destContainer
+      value: 'tcscontainer7567'
+
+    pool: 
+      name: $(agentPool)      
+    
+    dependsOn: []
+
+    jobs:
+    - deployment: TriggerMaster
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self                   
+           
+            - task: PowerShell@2
+              inputs:
+                targetType: 'inline' 
+                script: |              
+                   # $computervm = '$(dmVMName)'  ## original script 
+                   $computervm = 'VMnpedcdm8427'                   
+                   echo '******************************************************************'
+                   echo 'Trigger Master Script'
+                   echo '******************************************************************'                 
+                   $User = '$(serviceAccountUE)'                         
+                   $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force             
+                   $Credential = [pscredential]::new($User,$Password)
+                   echo 'Computer Name: ' $computervm                    
+                   $ScriptBlock = {                          
+                        # original script, both below lines should be uncommented (test line above should be commented)
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(emailAddress)","-destStorageAccount","$(destStorage)","-destContainerName","$(destContainer)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-sftpLocalUser","$(destStorageAccountName).$(sftpUserName)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","-$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)" -Wait -Verb RunAs -PassThru 2>&1
+                   }                   
+                   Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                   $j = Get-Job
+                   $j | Format-List -Property *
+                   $result = $j | Receive-Job

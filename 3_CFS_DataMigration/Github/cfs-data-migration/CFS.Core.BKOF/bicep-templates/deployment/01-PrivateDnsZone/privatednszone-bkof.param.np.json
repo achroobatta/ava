@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups1": [
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 1,
+                        "appName": "Infra",
+                        "rgname": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-edc-bkof-dm-001",
+                        "privateDnsZoneName":"privatelink.blob.core.windows.net"
+                    },
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 2,
+                        "appName": "Infra",
+                        "rgname": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-edc-bkof-dm-001",
+                        "privateDnsZoneName":"privatelink.vaultcore.azure.net"
+                    }
+                ],
+                "resourceGroups2": [
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 1,
+                        "appName": "Infra",
+                        "rgname": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-sdc-bkof-dm-001",
+                        "privateDnsZoneName":"privatelink.blob.core.windows.net"
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 2,
+                        "appName": "Infra",
+                        "rgname": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-sdc-bkof-dm-001",
+                        "privateDnsZoneName":"privatelink.vaultcore.azure.net"
+                    }
+                ]
+            }
+        }
+    }
+}

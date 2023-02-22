@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "fcp",
+                    "appName": "First Choice"
+                }
+            ]
+        }
+    }
+}

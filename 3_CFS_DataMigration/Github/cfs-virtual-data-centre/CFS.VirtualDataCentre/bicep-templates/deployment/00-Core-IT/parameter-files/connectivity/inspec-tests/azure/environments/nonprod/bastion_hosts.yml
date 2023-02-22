@@ -1,0 +1,8 @@
+# Australia East
+- name: bastion-np-edc-001
+  resource_group: rg-np-edc-hub-netw-001
+
+# Australia South East
+- name: bastion-np-sdc-001
+  resource_group: rg-np-sdc-hub-netw-001
+

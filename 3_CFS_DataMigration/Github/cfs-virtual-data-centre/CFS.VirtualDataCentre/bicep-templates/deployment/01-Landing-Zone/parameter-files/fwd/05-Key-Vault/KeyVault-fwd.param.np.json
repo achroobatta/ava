@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "keyVaultObject": {
+            "value": { 
+                "keyVault":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "kv",
+                        "service": "fwd",
+                        "serviceAbbrv": "fwd",
+                        "appName": "CFS Wrap Data",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "localAdminPasswordSecretName": "cfsadmin",
+                        "vaultkeyEncryptName": "keyEncrypt",
+                        "keyVault": [
+                            {
+                                "instance": 1
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "kv",
+                        "service": "fwd",
+                        "serviceAbbrv": "fwd",
+                        "appName": "CFS Wrap Data",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "localAdminPasswordSecretName": "cfsadmin",
+                        "vaultkeyEncryptName": "keyEncrypt",
+                        "keyVault": [
+                            {
+                                "instance": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,13 @@
+# Australia East
+- name: vnet-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+  address_space: ["10.20.0.0/23", "10.20.5.0/24", "10.20.6.0/24", "10.20.7.0/24"]
+  location: australiaeast
+  dns_servers: ["10.20.0.68"]
+
+# Australia South East
+- name: vnet-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+  address_space: ["10.30.0.0/23", "10.30.5.0/24", "10.30.6.0/24", "10.30.7.0/24"]
+  location: australiasoutheast
+  dns_servers: ["10.30.0.68"]

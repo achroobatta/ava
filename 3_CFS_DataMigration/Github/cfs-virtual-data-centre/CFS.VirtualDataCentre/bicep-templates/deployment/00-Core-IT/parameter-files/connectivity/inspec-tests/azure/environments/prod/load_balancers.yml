@@ -1,0 +1,19 @@
+- name: VMPRDEDCFG001-ExternalLoadBalancer
+  resource_group: rg-prd-edc-hub-netw-001
+  sku_name: Standard
+  location: australiaeast
+
+- name: VMPRDEDCFG001-InternalLoadBalancer
+  resource_group: rg-prd-edc-hub-netw-001
+  sku_name: Standard
+  location: australiaeast
+
+- name: VMPRDSDCFG001-ExternalLoadBalancer
+  resource_group: rg-prd-sdc-hub-netw-001
+  sku_name: Standard
+  location: australiasoutheast
+
+- name: VMPRDSDCFG001-InternalLoadBalancer
+  resource_group: rg-prd-sdc-hub-netw-001
+  sku_name: Standard
+  location: australiasoutheast

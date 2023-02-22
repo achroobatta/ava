@@ -1,0 +1,294 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+
+resources:
+  repositories:
+  # for cfs-firewall-rules-config : main branch
+  - repository: CFSCo_cfs-firewall-rules-config_main
+    type: github
+    name: CFSCo/cfs-firewall-rules-config
+    endpoint: CFSCo
+    ref: main
+    
+  # for cfs-firewall-rules-config : develop branch
+  - repository: CFSCo_cfs-firewall-rules-config_develop
+    type: github
+    name: CFSCo/cfs-firewall-rules-config
+    endpoint: CFSCo
+    ref: develop
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: deploymentCommand
+    displayName: Deployment Command
+    type: string
+    default: "what-if"
+    values:
+     - "what-if"
+     - "create"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: locationPrefixes
+    type: object
+    default:
+     - edc
+     - sdc
+
+variables:
+
+ - group: var-service-principle-secrets
+ - group: var-azure-tenant-id
+
+ #workspaces are in edc only
+ - name: workspaceLocationPrefix
+   value: "edc"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Azure DevOps Service Connection Name
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: connectivitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-connectivity-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-connectivity-001"
+
+ # Azure DevOps Back Office Service Connection Name
+ - name: backOfficeSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-backoffice-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-backoffice-001"    
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: managementSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-mg-cfsco-nprd"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-mg-cfsco-prd"
+
+ # Azure DevOps Group Management Id
+ - name: managementGroupId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "CFSCoNonProd"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "CFSCoProd"
+
+ # Azure DevOps Identity Service Connection Name
+ - name: identitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-identity-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-identity-001"
+
+ # Azure DevOps Operations Service Connection Name
+ - name: operationsSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-operations-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-operations-001"
+
+ # Azure DevOps Security Service Connection Name
+ - name: securitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-security-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-security-001"
+
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Connectivity Subscription ID
+ - name: connectivitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-connectivity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-connectivity-sid)
+
+ # Operations Subscription ID
+ - name: operationsSubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-operations-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-operations-sid)
+
+ # Identity Subscription ID
+ - name: identitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-identity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-identity-sid)
+
+ # Azure Tenant ID
+ - name: azureTenantIdvar
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(np-azure-tenant-id)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(prd-azure-tenant-id)
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ # Azure Owner
+ - name: Owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+
+ - name: deploymentCommand
+   value: ${{ parameters.deploymentCommand }}
+
+stages:
+
+  # Deploy IP Groups
+  - stage: DeployIPGroups
+    displayName: DeployIPGroups
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    #dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployIPGroups
+      timeoutInMinutes: 240
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+              - checkout: CFSCo_cfs-firewall-rules-config_main
+                name: CheckoutRepoForConfig
+                displayName: Checkout repo for Config
+                clean: true
+                fetchDepth: 1
+                path: s\cfs-firewall-rules-config
+            # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+            - ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), or( eq(variables['Build.SourceBranch'], 'refs/heads/develop'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) ) }}:
+              - checkout: CFSCo_cfs-firewall-rules-config_develop
+                name: CheckoutRepoForConfig
+                displayName: Checkout repo for Config
+                clean: true
+                fetchDepth: 1
+                path: s\cfs-firewall-rules-config
+            - ${{ else }}:
+              - task: PowerShell@2
+                name: ShowErrorForInvalidBranch
+                displayName: Show Error For Invalid Branch
+                inputs:
+                  targetType: inline
+                  script: |
+                      "Invalid branch $(Build.SourceBranch)"
+                      Exit 1
+
+            - task: PowerShell@2
+              name: ListFilesInRepositoryDirectory
+              displayName: List Files in Repository Directory
+              inputs:
+                targetType: inline
+                script: |
+                    'Repository files in directory "$(Pipeline.Workspace)\s\cfs-firewall-rules-config"'
+                    Get-ChildItem -Path $(Pipeline.Workspace)\s\cfs-firewall-rules-config -Recurse -File
+
+            - ${{ each locationPrefix in parameters.locationPrefixes }}:
+              - task: AzureCLI@2
+                timeoutInMinutes: 120
+                displayName : Deploy IP Groups ${{ locationPrefix }}
+                inputs:
+                  azureSubscription: $(connectivitySubscServiceConnection)
+                  scriptType: 'pscore'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                    $locationPrefix='${{ locationPrefix }}'
+                    $buildNumber='$(Build.BuildNumber)'
+                    az deployment sub $(deploymentCommand) --location '$(resourceLocation)' `
+                    --name "DeployIPGroups_$($locationPrefix)_$($buildNumber)" `
+                    --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-IpGroups\deployIpGroups.bicep `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters $(Pipeline.Workspace)\s\cfs-firewall-rules-config\deploy-IpGroups\$($locationPrefix)-IpGroups.param.$(AzureEnvironmentPrefix).json

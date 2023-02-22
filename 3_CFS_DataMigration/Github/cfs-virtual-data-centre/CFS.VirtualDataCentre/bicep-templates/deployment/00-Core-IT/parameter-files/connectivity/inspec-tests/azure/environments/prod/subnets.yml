@@ -1,0 +1,176 @@
+# Australia East
+- name: GatewaySubnet
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.0.0/26
+  nsg: null
+
+- name: AzureFirewallSubnet
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.0.64/26
+  nsg: null
+
+- name: AzureBastionSubnet
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.0.128/26
+  nsg: nsg-AzureBastionSubnet
+
+- name: sub-prd-edc-mgmt-001
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.1.0/24
+  nsg: nsg-prd-edc-mgmt-001
+
+- name: sub-prd-edc-mgmt-002
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.0.192/26
+  nsg: nsg-prd-edc-mgmt-002
+
+- name: sub-prd-edc-fn-001
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.5.0/26
+  nsg: null
+
+- name: sub-prd-edc-fn-002
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.5.64/26
+  nsg: null
+
+- name: sub-prd-edc-fn-003
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.5.128/26
+  nsg: null
+
+- name: sub-prd-edc-fn-004
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.5.192/26
+  nsg: null
+
+- name: sub-prd-edc-fn-005
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.6.0/26
+  nsg: nsg-prd-edc-fn-005
+
+- name: sub-prd-edc-fn-006
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.6.64/26
+  nsg: nsg-prd-edc-fn-006
+
+- name: sub-prd-edc-fn-007
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.6.128/28
+  nsg: null
+
+- name: sub-prd-edc-fn-008
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.6.144/28
+  nsg: nsg-prd-edc-fn-008
+
+- name: sub-prd-edc-fn-009
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.7.64/28
+  nsg: nsg-prd-edc-fn-009
+
+- name: AzureFirewallManagementSubnet
+  resource_group: rg-prd-edc-hub-netw-001
+  vnet: vnet-prd-edc-hub-001
+  prefix: 10.20.7.0/26
+  nsg: null
+
+# Australia South East
+
+- name: GatewaySubnet
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.0.0/26
+  nsg: null
+
+- name: AzureFirewallSubnet
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.0.64/26
+  nsg: null
+
+- name: AzureBastionSubnet
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.0.128/26
+  nsg: nsg-AzureBastionSubnet
+
+- name: sub-prd-sdc-mgmt-001
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.1.0/24
+  nsg: nsg-prd-sdc-mgmt-001
+
+- name: sub-prd-sdc-fn-001
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.5.0/26
+  nsg: null
+
+- name: sub-prd-sdc-fn-002
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.5.64/26
+  nsg: null
+
+- name: sub-prd-sdc-fn-003
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.5.128/26
+  nsg: null
+
+- name: sub-prd-sdc-fn-004
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.5.192/26
+  nsg: null
+
+- name: sub-prd-sdc-fn-005
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.6.0/26
+  nsg: nsg-prd-sdc-fn-005
+
+- name: sub-prd-sdc-fn-006
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.6.64/26
+  nsg: nsg-prd-sdc-fn-006
+
+- name: sub-prd-sdc-fn-007
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.6.128/28
+  nsg: null
+
+- name: sub-prd-sdc-fn-008
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.6.144/28
+  nsg: nsg-prd-sdc-fn-008
+
+- name: sub-prd-sdc-fn-009
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.7.64/28
+  nsg: nsg-prd-sdc-fn-009
+
+- name: AzureFirewallManagementSubnet
+  resource_group: rg-prd-sdc-hub-netw-001
+  vnet: vnet-prd-sdc-hub-001
+  prefix: 10.30.7.0/26
+  nsg: null

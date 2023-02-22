@@ -1,0 +1,5 @@
+- name: ws-np-edc-001
+  resource_group: rg-np-edc-sec-sec-001
+  location: australiaeast
+  sku: PerGB2018
+  retention_in_days: 365

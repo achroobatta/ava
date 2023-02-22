@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "location2": "australiasoutheast",
+                        "component": "dm",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Infra",                        
+                        "locationAbbrv": "edc",
+                        "instance": 1,                        
+                        "rgname": "rg-np-edc-bkof-dm-001",
+                        "rgname2": "rg-np-sdc-bkof-dm-001"                                           
+                    }
+                ]
+            }
+        }
+    }
+}

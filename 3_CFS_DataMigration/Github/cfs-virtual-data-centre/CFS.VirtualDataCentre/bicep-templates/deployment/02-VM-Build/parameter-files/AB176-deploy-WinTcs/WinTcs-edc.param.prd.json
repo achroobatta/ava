@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "sec"
+        },
+        "kv_service": {
+            "value": "security"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "sec"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "sec",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmInstance": "1",
+                        "vmService": "TCS",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Standard_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2022-datacenter-g2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_B2ms",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "security",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "security",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "TCS",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "domainName":"cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@cfs.com.au",
+                        "isEnableDomainJoin": false,
+                        "OUPAth": "",
+                        "dataDiskResources": {
+                            "value": []
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

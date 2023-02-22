@@ -1,0 +1,17 @@
+# Template Format
+#- name: vmprodaedc01
+#  resource_group: rg-prod-ae-compute
+#  datadisk_count: 0
+#  location: australiaSouthEast
+#  size: Standard_B2ms
+#  os: Windows
+
+# Australia East
+- name: VMPRDEDCDMW001
+  resource_group: RG-PRD-EDC-BKOF-COMP-001
+  datadisk_count: 4
+  location: australiaeast
+  size: Standard_D8s_v3
+  os: Windows
+
+# Australia South East

@@ -1,0 +1,242 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+    
+parameters:
+
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  # delete respective resource group from Azure CLI
+  - name: deleteResourceGroupForSelfHosted
+    displayName: Delete Resource Group For Self-Hosted Agents/Runners
+    type: boolean
+    default: False
+    values:
+     - False
+     - True
+
+  ## vmNames - array of VMs to deregister (and delete if "Delete Resource Group For Self-Hosted Agents/Runners" selected)
+  - name: vmNames
+    displayName: VM Names (Must be a Valid YMAL list). Default values are examples only. 
+    type: object
+    default:
+    - VMNPEDCADO009
+    - VMNPEDCADO9TST
+    - VMNPEDCGH009
+    - VMNPEDCGH9TST
+
+variables:
+  - group: var-service-principle-secrets
+  - group: var-azure-platform
+  - group: var-workspace
+  - group: var-selfhosted-agents-runners
+
+ # Artifact Package Feed Value
+  - name: artifactFeed
+
+    # deregistering/deleting any tenant's agents/runners can be from the main branch for the pipeline yaml
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+     value: "core-it/cfs-infra-release"
+    # deregistering/deleting any tenant's agents/runners can be from the develop branch for the pipeline yaml
+    ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+     value: "core-it/cfs-infra-ci"
+    # deregistering/deleting any tenant's agents/runners can be from a feature branch for the pipeline yaml
+    # allow from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+    ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
+     value: "core-it/cfs-infra-pr-develop"
+    #branch and/or Test Pool/Runner Group are not valid -> do not pull any artifact, just let the pipeline error out
+    ${{ else }}:
+     value: ""
+
+ # Artifact Package Definition Value
+  - name: artifactDefinition
+    value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+  - name: artifactVersion
+    value: ${{ parameters.artifactVersion }}
+
+  # Azure DevOps Environments
+  - name: AzureDevOpsEnvironments
+    value: ${{ parameters.deployEnvironment }}
+
+  # Azure DevOps Service Connection Name
+  - name: AzureEnvironmentPrefix
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "np"
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "prd"
+
+  # Azure DevOps Operations Service Connection Name
+  - name: operationsSubscServiceConnection
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "sc-subsc-np-operations-001"
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "sc-subsc-prd-operations-001"
+
+  # gitHubOrgRunnerRegistrationPAT - always the prd value from the libary
+  - name: gitHubOrgRunnerRegistrationPAT
+    value: $(GITHUB-ORG-RUNNER-REGISTRATION-PAT)
+
+  # githubOrgUri - always the prd value from the libary
+  - name: githubOrgUri
+    value: $(GITHUB-ORG-URL)
+
+  # adoOrgAgentRegistrationPAT - always the prd value from the libary
+  - name: adoOrgAgentRegistrationPAT
+    value: $(ADO-ORG-AGENT-REGISTRATION-PAT)
+
+  ## adoOrgUri - always the prd value from the libary
+  #- name: adoOrgUri
+  #  value: $(ADO-ORG-URL)
+
+stages:                         
+
+- ${{ each vmName in parameters.vmNames }}:
+  - stage: unregister_and_delete_resource_group_${{ vmName }}
+    ${{ if eq(parameters.deleteResourceGroupForSelfHosted, 'true') }}:
+      displayName: '${{ vmName }} - unregister and delete resource group'
+    ${{ else }}:
+      displayName: '${{ vmName }} - unregister'
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployUnregisterAndDeleteResourceGroup
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : '${{ vmName }} - Check Vm'
+              name : CheckVmTask
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                # Setting the variable : eg: echo "##vso[task.setvariable variable=<var_name>;isoutput=true]somevalue"
+                inlineScript: |
+                              "Setting input Variables"
+                              $locationPrefix='edc'
+                              
+                              $VmName='${{ vmName }}'
+                              "`$VmName='$VmName'"
+                              $VmDetails=(az resource list --query "[? ends_with(id ,'/providers/Microsoft.Compute/virtualMachines/$($VmName)')].{rgName:resourceGroup,vmName:name}")| ConvertFrom-Json
+                              "`$VmDetails.Count='$($VmDetails.Count)'"
+                              
+                              $VmResults=@()
+                              
+                              foreach ($vm in $VmDetails)
+                              {
+                                $vm|select *
+                                if (($vm -ne $null) -And ($vm.vmName -ne $null) -And ($vm.vmName.ToLower().StartsWith("vm$(AzureEnvironmentPrefix)$($locationPrefix)ado")))
+                                {
+                                  $VmResults += @{ agentType='ado'; vmName=$vm.vmName; rgName=$vm.rgName; }
+                                }
+                                elseif (($vm -ne $null) -And ($vm.vmName -ne $null) -And ($vm.vmName.ToLower().StartsWith("vm$(AzureEnvironmentPrefix)$($locationPrefix)gh")))
+                                {
+                                  $VmResults += @{ agentType='gh'; vmName=$vm.vmName; rgName=$vm.rgName; }
+                                }
+                              }
+                              echo "##vso[task.setvariable variable=VmResultsJson;isoutput=true]$($VmResults|ConvertTo-Json -Compress)"
+
+            - task: AzureCLI@2
+              displayName : '${{ vmName }} - Start Vm'
+              name : StartVmTask
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                # using variable set from the 'CheckVmTask' task in the same job
+                # variable use syntax: $(<TaskName>.<variableName>)
+                inlineScript: |
+                              'CheckVmTask.VmResultsJson output'
+                              '$(CheckVmTask.VmResultsJson)'
+                              $vms='$(CheckVmTask.VmResultsJson)' | ConvertFrom-Json
+                              foreach ($vm in $vms) {
+                                $(System.ArtifactsDirectory)\$(scripts)\start-vm-if-stopped.ps1 -rgName "$($vm.rgName)" -vmName "$($vm.vmName)"
+                              }
+                              "sleep to allow time for agent/runner to start"
+                              Start-Sleep -Seconds 60
+
+            - task: AzureCLI@2
+              displayName : '${{ vmName }} - Unregister Vm'
+              name : UnregisterVmTask
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+                # using variable set from the 'CheckVmTask' task in the same job
+                # variable use syntax: $(<TaskName>.<variableName>)
+                inlineScript: |
+                              'CheckVmTask.VmResultsJson output'
+                              '$(CheckVmTask.VmResultsJson)'
+                              $vms='$(CheckVmTask.VmResultsJson)' | ConvertFrom-Json
+                              foreach ($vm in $vms) {
+                                if ($vm.agentType -eq 'ado')
+                                {
+                                  "Unregistering ADO agent - '$($vm.vmName)'"
+                                  az vm run-command invoke --command-id RunPowerShellScript `
+                                  --name "$($vm.vmName)" `
+                                  -g "$($vm.rgName)" `
+                                  --scripts @Remove-ADO-SelfHost.ps1 `
+                                  --parameters "AdoOrgAgentRegistrationPAT=$(adoOrgAgentRegistrationPAT)"
+                                }
+                                elseif ($vm.agentType -eq 'gh')
+                                {
+                                  "Unregistering GithHub runner - '$($vm.vmName)'"
+                                  az vm run-command invoke --command-id RunPowerShellScript `
+                                  --name "$($vm.vmName)" `
+                                  -g "$($vm.rgName)" `
+                                  --scripts @Remove-Github-SelfHost.ps1 `
+                                  --parameters "GitHubOrgRunnerRegistrationPAT=$(gitHubOrgRunnerRegistrationPAT)" `
+                                               "OrgURL=$(githubOrgUri)"
+                                }
+                              }
+            
+            - ${{ if eq(parameters.deleteResourceGroupForSelfHosted, 'true') }}:
+              - task: AzureCLI@2
+                displayName : '${{ vmName }} - Delete resource group'
+                name : DeleteRGTask
+                inputs:
+                  azureSubscription: $(operationsSubscServiceConnection)
+                  scriptType: 'pscore'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                                'CheckVmTask.VmResultsJson output'
+                                '$(CheckVmTask.VmResultsJson)'
+                                $vms='$(CheckVmTask.VmResultsJson)' | ConvertFrom-Json
+                                foreach ($vm in $vms) {
+                                  "##Destroying Resource Group '$($vm.rgName)' for VM '$($vm.vmName)'"
+                                  az group delete --name $($vm.rgName) -y
+                                }

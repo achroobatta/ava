@@ -1,0 +1,38 @@
+# Australia East
+- name: rg-dev-edc-fwp-fa-001
+
+- name: rg-gam-edc-fwp-fa-001
+
+- name: rg-np-edc-fwp-comp-001
+
+- name: rg-np-edc-fwp-kv-001
+
+- name: rg-np-edc-fwp-netw-001
+
+- name: rg-np-edc-fwp-rsv-001
+
+- name: rg-np-edc-fwp-sbx-001
+
+- name: rg-np-edc-fwp-sbx-002
+
+- name: rg-np-edc-fwp-sbx-003
+
+- name: rg-np-edc-fwp-sec-001
+
+- name: rg-np-edc-fwp-stor-001
+
+- name: rg-np-edc-fwp-testcrm-001
+
+- name: rg-tst-edc-fwp-fa-001
+
+# Australia South East
+
+- name: rg-np-sdc-fwp-comp-001
+
+- name: rg-np-sdc-fwp-kv-001
+
+- name: rg-np-sdc-fwp-netw-001
+
+- name: rg-np-sdc-fwp-rsv-001
+
+- name: rg-np-sdc-fwp-stor-001

@@ -1,0 +1,40 @@
+# Australia East
+- name: rg-prd-edc-conn-stor-001
+
+- name: rg-prd-edc-hub-comp-001
+
+- name: rg-prd-edc-hub-comp-002
+
+- name: rg-prd-edc-hub-ddos-001
+
+- name: rg-prd-edc-hub-fn-001
+
+- name: rg-prd-edc-hub-kv-001
+
+- name: rg-prd-edc-hub-netw-001
+
+- name: rg-prd-edc-hub-netw-002
+
+- name: rg-prd-edc-hub-sec-001
+
+- name: rg-prd-edc-hub-stor-001
+
+# Australia South East
+
+- name: rg-prd-sdc-conn-stor-001
+
+- name: rg-prd-sdc-hub-comp-001
+
+- name: rg-prd-sdc-hub-comp-002
+
+- name: rg-prd-sdc-hub-ddos-001
+
+- name: rg-prd-sdc-hub-fn-001
+
+- name: rg-prd-sdc-hub-kv-001
+
+- name: rg-prd-sdc-hub-netw-001
+
+- name: rg-prd-sdc-hub-netw-002
+
+- name: rg-prd-sdc-hub-stor-001

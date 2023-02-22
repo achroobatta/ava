@@ -1,0 +1,17 @@
+# Template Format
+#- name: nsg-np-edc-bkof-001
+#  resource_group: rg-np-edc-bkof-netw-001
+
+# Australia East
+- name: nsg-prd-edc-identity-001
+  resource_group: rg-prd-edc-iden-netw-001
+
+- name: nsg-prd-edc-identity-002
+  resource_group: rg-prd-edc-iden-netw-001
+
+# Australia South East
+- name: nsg-prd-sdc-identity-001
+  resource_group: rg-prd-sdc-iden-netw-001
+
+- name: nsg-prd-sdc-identity-002
+  resource_group: rg-prd-sdc-iden-netw-001

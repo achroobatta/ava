@@ -1,0 +1,336 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nsgObject": {
+            "value": {
+                "nsgValues": [
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "fwp",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-np-edc-fwp-001",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fwp-001",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fwp-001",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.40.1.224/27",
+                                        "10.60.1.224/27"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "Allow-HTTPS-From-sub-np-edc-operations-002-To-sub-np-edc-fwp-001",
+                                "properties": {
+                                    "description": "Allow HTTPS (from Azure Devops Agents) From EDC operations-002 subnet To sub-np-edc-fwp-001",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "443",
+                                    "sourceAddressPrefix": "10.40.4.128/25",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 300,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "fwp",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-np-edc-fwp-002",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fwp-002",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fwp-002",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.40.1.224/27",
+                                        "10.60.1.224/27"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "fwp",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-np-edc-fwp-003",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fwp-003",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fwp-003",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.40.1.224/27",
+                                        "10.60.1.224/27"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "fwp",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-np-edc-fwp-004",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fwp-004",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fwp-004",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.40.1.224/27",
+                                        "10.60.1.224/27"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "fwp",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-np-sdc-fwp-001",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fwp-001",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fwp-001",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.40.1.224/27",
+                                        "10.60.1.224/27"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "fwp",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-np-sdc-fwp-002",
+                        "securityRules": [
+                            {
+                                "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fwp-002",
+                                "properties": {
+                                    "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fwp-002",
+                                    "protocol": "Tcp",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "",
+                                    "sourceAddressPrefix": "",
+                                    "destinationAddressPrefix": "VirtualNetwork",
+                                    "access": "Allow",
+                                    "priority": 200,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [
+                                        "22",
+                                        "3389"
+                                    ],
+                                    "sourceAddressPrefixes": [
+                                        "10.40.1.224/27",
+                                        "10.60.1.224/27"
+                                    ],
+                                    "destinationAddressPrefixes": []
+                                }
+                            },
+                            {
+                                "name": "DenyAllInboundCommunication",
+                                "properties": {
+                                    "description": "Deny All Inbound Communication",
+                                    "protocol": "*",
+                                    "sourcePortRange": "*",
+                                    "destinationPortRange": "*",
+                                    "sourceAddressPrefix": "*",
+                                    "destinationAddressPrefix": "*",
+                                    "access": "Deny",
+                                    "priority": 4096,
+                                    "direction": "Inbound",
+                                    "sourcePortRanges": [],
+                                    "destinationPortRanges": [],
+                                    "sourceAddressPrefixes": [],
+                                    "destinationAddressPrefixes": []
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

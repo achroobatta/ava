@@ -1,0 +1,20 @@
+# Template Format
+#- name: nsg-np-edc-bkof-001
+#  resource_group: rg-np-edc-bkof-netw-001
+
+# Australia East
+- name: basicNsgsamplenic
+  resource_group: rg-np-edc-oper-netw-001
+
+- name: nsg-np-edc-operations-001
+  resource_group: rg-np-edc-oper-netw-001
+
+- name: nsg-np-edc-operations-002
+  resource_group: rg-np-edc-oper-netw-001
+  
+# Australia South East
+- name: nsg-np-sdc-operations-001
+  resource_group: rg-np-sdc-oper-netw-001
+
+- name: nsg-np-sdc-operations-002
+  resource_group: rg-np-sdc-oper-netw-001

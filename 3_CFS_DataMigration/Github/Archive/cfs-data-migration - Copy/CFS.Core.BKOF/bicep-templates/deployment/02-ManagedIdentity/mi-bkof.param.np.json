@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "appName": {
+            "value": "Infra"
+          },
+          "location": {
+            "value": "australiaeast"
+          },
+          "location2": {
+            "value": "australiasoutheast"
+          },
+          "serviceAbbrv": {
+            "value": "bkof"
+          },
+          "component": {
+            "value": "dm"
+          },
+          "instance": {
+            "value": "1"
+          },
+          "rgname": {
+            "value": "rg-np-edc-bkof-dm-001"
+          },
+          "rgname2": {
+            "value": "rg-np-sdc-bkof-dm-001"
+          }
+      }
+    }

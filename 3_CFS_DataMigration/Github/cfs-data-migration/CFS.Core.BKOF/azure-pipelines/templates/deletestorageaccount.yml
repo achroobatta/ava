@@ -1,0 +1,28 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    dependsOn: ''
+    landingZoneServiceConnection: ''
+    strAccName: ''
+    vmRgName: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  dependsOn: ${{ parameters.dependsOn}}
+
+  steps:
+  - task: AzureCLI@2
+    displayName: Delete Azure Storage Account
+    inputs:
+      azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az storage account show -g ${{ parameters.vmRgName}} -n ${{ parameters.strAccName }}
+        az storage account delete -n ${{ parameters.strAccName }} -g ${{ parameters.vmRgName}} --yes
+      failOnStandardError: true

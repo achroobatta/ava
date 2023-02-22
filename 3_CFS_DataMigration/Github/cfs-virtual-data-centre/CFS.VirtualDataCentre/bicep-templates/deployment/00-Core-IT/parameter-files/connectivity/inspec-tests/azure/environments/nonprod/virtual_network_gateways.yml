@@ -1,0 +1,5 @@
+# Australia East
+- name: vgw-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+# Australia South East

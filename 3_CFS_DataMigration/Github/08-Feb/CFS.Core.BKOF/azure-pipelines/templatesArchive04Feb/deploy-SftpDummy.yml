@@ -1,0 +1,52 @@
+steps:
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+                   # for original below line should be uncommented
+                   # $computervm = '$(dmVMName)'
+                   $computervm = 'VMnpedcdm8663'
+                   echo '******************************************************************'
+                   echo 'Upload Dummy File to Sftp StorageAccount'
+                   echo '******************************************************************'
+                   ls $(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\*
+                   echo '******************************************************************'
+                   $User = '$(serviceAccountUE)'
+                   $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force
+                   $Credential = [pscredential]::new($User,$Password)
+                   $ToSession = New-PSSession -ComputerName "$computervm" -Credential $Credential
+                   echo '***************************************************************************'
+                   echo 'serviceAccountUserName: ' $(serviceAccountU)
+                   echo 'serviceAccountUserEmail: ' $(serviceAccountUE)
+                   echo 'ServiceAccountPassword: ' $(serviceAccountP)
+                   echo 'User: ' $User
+                   echo 'Password: ' $Password
+                   echo 'Computervm: ' $computervm
+                   echo 'Credential: ' $Credential
+                   echo 'Session: ' $ToSession
+                   echo 'commRG: $(commRG)'
+                   echo 'Destination Storage Account: $(destStorageAccountName)'
+                   echo 'Root Container name: $(rootContainerName)'
+                   echo 'sftpUserName: $(sftpUserName)'
+                   echo 'keyVaultNameforSecret: ' $(keyVaultNameforSecret)'
+                   echo 'ClientID: ' $(ClientID)'
+                   echo 'ClientSecret: $(ClientSecret)'
+                   echo 'TenantDomain: $(TenantDomain)'
+                   echo 'FromEmailAddress: $(fromEmailAddress)'
+                   echo 'EmailAddress: $(emailAddress)'
+                   echo 'TaskNumber: $(dmTaskNumber)'
+                   echo '***************************************************************************'
+                   Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\UploadDummytoSftp.ps1" -ArgumentList  "$(commRG)","$(destStorageAccountName)","$(rootContainerName)","$(sftpUserName)","$(keyVaultNameforSecret)","$(destSftpSshKeySecret)","$(ClientID)","$(ClientSecret)","$(TenantDomain)","$(fromEmailAddress)","$(emailAddress)","$(dmTaskNumber)"
+
+  - task: GraphEmail@0
+    displayName: 'Sending sFtp Username using Graph Api'
+    inputs:
+      To: '$(emailAddress)' # The Business User who will receive the email
+      From: '$(fromEmailAddress)'
+      Subject: 'Sftp Local Username for taskNumber $(dmTaskNumber). Please validate your access to dummyFile.' # Email Subject
+      Body: "Username for sFTP is: $(destStorageAccountName).$(sftpUserName). Hostname is: $(ipTobeWhiteListed). Dummy File Name: dummyCFS.txt is uploaded. Ssh Password is aleady sent in seperate email. Please validate it and notify, if you can access dummy file using these credentials. On completion of Extraction process, actual filename will be shared, using same credentials, you will able to download actualfile. Please save these credentials for future." # Email Body
+      BodyAsHtml: true
+      ShowClientSecret: false
+      ClientID: $(ClientID)
+      ClientSecret: $(ClientSecret)
+      TenantDomain: $(TenantDomain)

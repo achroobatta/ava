@@ -1,0 +1,36 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+
+  steps:
+      - checkout: self
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Get Work Item Details'
+        name: get_work_item
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -NonProdSubIdCreation $(nonProdSubIdCreation) -NonProdSubIdUpdate $(nonProdSubIdUpdate) -prodSubIdCreation $(prodSubIdCreation) -ProdSubIdUpdate $(prodSubIdUpdate) -PAT $(PAT)
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+        env:
+          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+
+

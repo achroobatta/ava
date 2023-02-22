@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "rgname": {
+            "value": "rg-np-edc-bkof-dm-001"
+          },
+          "location": {
+            "value": "australiaeast"
+          },
+          "virtualNetworkName": {
+            "value": "vnet-np-edc-bkof-dm-001"
+          },
+          "virtualNetworkResourceGroup": {
+            "value": "rg-np-edc-bkof-dm-001"
+          },
+          "subnetName": {
+            "value": "sub-np-edc-bkof-dm-com-002"
+          },
+          "rgname2": {
+            "value": "rg-np-sdc-bkof-dm-001"
+          },
+          "location2": {
+            "value": "australiasoutheast"
+          },
+          "virtualNetwork2Name": {
+            "value": "vnet-np-sdc-bkof-dm-001"
+          },
+          "virtualNetwork2ResourceGroup": {
+            "value": "rg-np-sdc-bkof-dm-001"
+          },
+          "subnet2Name": {
+            "value": "sub-np-sdc-bkof-dm-com-002"
+          },
+          "appName": {
+            "value": "Infra"
+          },
+          "serviceAbbrv": {
+            "value": "bkof"
+          },
+          "component": {
+            "value": "dm"
+          },
+          "instance": {
+            "value": "1"
+          },
+          "sqlRG": {
+            "value": "rg-np-edc-bkof-dm-001"
+          },
+          "administratorLogin": {
+            "value": "sqladmin"
+          },
+          "sqlServerName": {
+            "value": "sql-np-edc-bkof-dm-001"
+          },
+          "elasticPoolName": {
+            "value": "ep-np-edc-bkof-dm-001"
+          },
+          "skuName": {
+            "value": "GP_Gen5"
+          },
+          "tier": {
+            "value": "GeneralPurpose"
+          },
+          "poolLimit": {
+            "value": 2
+          },
+          "minCapacity": {
+            "value": 0
+          },
+          "maxCapacity": {
+            "value": 2
+          },
+          "poolSize": {
+            "value": 34359738368
+          },
+          "zoneRedundant": {
+            "value": false
+          },
+          "licenseType": {
+            "value": "LicenseIncluded"
+          },
+          "databaseName": {
+            "value": "db-np-edc-bkof-dm-001"
+          },
+          "sqlDbTierName": {
+            "value": "GeneralPurpose"
+          },
+          "privateDnsZoneName": {
+            "value": "privatelink.database.windows.net"
+          }
+      }
+  }

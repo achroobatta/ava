@@ -1,0 +1,144 @@
+# Template Format
+#- name: vmprodaedc01
+#  resource_group: rg-prod-ae-compute
+#  datadisk_count: 0
+#  location: australiaSouthEast
+#  size: Standard_B2ms
+#  os: Windows
+
+# Australia East
+
+- name: VMNPEDCAAD001
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMNPEDCDC001
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+- name: VMNPEDCDC002
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+- name: VMNPEDCEX001
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D4s_v4
+  os:	Windows
+
+- name: VMNPEDCIQS001
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMNPEDCIQS002
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMNPEDCIQS003
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMNPEDCPKI001
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+- name: VMNPEDCPKI002
+  resource_group:	rg-np-edc-iden-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+- name: VMNPEDCRT001
+  resource_group:	rg-np-edc-iden-pki-001
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+#- name: VMNPEDCVA001
+#  resource_group:	rg-np-edc-iden-comp-001
+#  datadisk_count:	0
+#  location:	australiaeast
+#  size:	Standard_D4s_v3
+#  os:	Linux
+
+#- name: VMNPEDCVA002
+#  resource_group:	rg-np-edc-iden-comp-001
+#  datadisk_count:	0
+#  location:	australiaeast
+#  size:	Standard_D4s_v3
+#  os:	Linux
+
+# Australia South East
+
+- name: VMNPSDCAAD001
+  resource_group:	rg-np-sdc-iden-comp-001
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMNPSDCDC001
+  resource_group:	rg-np-sdc-iden-comp-001
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+- name: VMNPSDCDC002
+  resource_group:	rg-np-sdc-iden-comp-001
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D4s_v3
+  os:	Windows
+
+- name: VMNPSDCEX001
+  resource_group:	rg-np-sdc-iden-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_D4s_v4
+  os:	Windows
+
+- name: VMNPSDCIQS001
+  resource_group:	rg-np-sdc-iden-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+#- name: VMNPSDCVA001
+#  resource_group:	rg-np-sdc-iden-comp-001
+#  datadisk_count:	0
+#  location:	australiasoutheast
+#  size:	Standard_D4s_v3
+#  os:	Linux
+
+#- name: VMNPSDCVA002
+#  resource_group:	rg-np-sdc-iden-comp-001
+#  datadisk_count:	0
+#  location:	australiasoutheast
+#  size:	Standard_D4s_v3
+#  os:	Linux

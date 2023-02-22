@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "hub"
+        },
+        "kv_service": {
+            "value": "connectivity"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "hub"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "hub",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "FWT",
+                        "vmInstance": "0",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "StandardSSD_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"microsoftwindowsdesktop",
+                        "imageReferenceOffer": "windows-11",
+                        "imageSKU": "win11-21h2-ent",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D2s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "hub",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "fn",
+                        "snetInstance": "9",
+                        "storageAccInstance": "4",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "FWT",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"Premium_LRS",
+                        "dataDiskResources": {
+                            "value": []
+                        }
+                    }                   
+                ]
+            }
+        }
+    }
+}

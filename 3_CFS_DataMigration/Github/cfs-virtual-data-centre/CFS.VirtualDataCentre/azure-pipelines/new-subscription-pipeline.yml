@@ -1,0 +1,42 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: subManagementGroupType
+    displayName: Target Sub Management Group Type
+    type: string
+    default: "Landing-Zone"
+    values:
+     - "Platform-Core"
+     - "Landing-Zone"
+  
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+stages:
+
+- template: templates/new-subscription-template.yml
+  parameters:
+    deployEnvironment: ${{ parameters.deployEnvironment }}
+    subManagementGroupType: ${{ parameters.subManagementGroupType }}
+    artifactVersion: ${{ parameters.artifactVersion }}
+    useWhatIfDeploymentType: ${{ parameters.useWhatIfDeploymentType }}

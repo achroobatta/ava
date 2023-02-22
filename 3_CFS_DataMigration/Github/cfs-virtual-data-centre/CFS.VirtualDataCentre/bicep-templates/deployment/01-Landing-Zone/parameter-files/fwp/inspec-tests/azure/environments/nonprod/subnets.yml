@@ -1,0 +1,56 @@
+#Template Format
+#- name: GatewaySubnet
+#  resource_group: rg-prod-ae-network
+#  vnet: vn-prod-ae-hub-01
+#  prefix: 10.10.0.0/26
+#  nsg: null
+
+# Australia East
+- name: sub-np-edc-fwp-001
+  resource_group: rg-np-edc-fwp-netw-001
+  vnet: vnet-np-edc-fwp-001
+  prefix: 10.42.0.0/24
+  nsg: nsg-np-edc-fwp-001
+
+- name: sub-np-edc-fwp-002
+  resource_group: rg-np-edc-fwp-netw-001
+  vnet: vnet-np-edc-fwp-001
+  prefix: 10.42.1.0/24
+  nsg: nsg-np-edc-fwp-002
+
+- name: sub-np-edc-fwp-003
+  resource_group: rg-np-edc-fwp-netw-001
+  vnet: vnet-np-edc-fwp-001
+  prefix: 10.42.2.0/24
+  nsg: nsg-np-edc-fwp-003
+
+- name: sub-np-edc-fwp-004
+  resource_group: rg-np-edc-fwp-netw-001
+  vnet: vnet-np-edc-fwp-001
+  prefix: 10.42.3.0/24
+  nsg: nsg-np-edc-fwp-004
+
+- name: cfstestwebappSubnet
+  resource_group: rg-np-edc-fwp-sbx-001
+  vnet: cfstestwebappVnet
+  prefix: 10.0.0.0/24
+  nsg: null
+
+- name: cfstestwebappSubnet
+  resource_group: rg-np-edc-fwp-sbx-002
+  vnet: cfstestwebappVnet
+  prefix: 10.0.0.0/24
+  nsg: null
+
+# Australia South East
+- name: sub-np-sdc-fwp-001
+  resource_group: rg-np-sdc-fwp-netw-001
+  vnet: vnet-np-sdc-fwp-001
+  prefix: 10.62.0.0/24
+  nsg: nsg-np-sdc-fwp-001
+
+- name: sub-np-sdc-fwp-002
+  resource_group: rg-np-sdc-fwp-netw-001
+  vnet: vnet-np-sdc-fwp-001
+  prefix: 10.62.1.0/24
+  nsg: nsg-np-sdc-fwp-002

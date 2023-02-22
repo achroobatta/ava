@@ -1,0 +1,47 @@
+## Format
+name: $(Date:yyyyMMdd)$(Rev:.rr)
+
+# Stage Trigger
+trigger: none
+
+pr: none
+
+stages:
+
+#Download and Publish Stage
+- template: templates/pre-stage.yml
+  parameters:
+    stage: 'pre_stage'
+    displayName: 'Pre Stage'
+    dependsOn: ''
+    condition: eq(variables['Build.Reason'], 'Manual')
+    pool:
+      vmImage: 'windows-latest'
+    variableGroup: var-parameter-dm-grp
+
+#Download and Publish Stage
+- template: templates/downloadandpublish-stage.yml
+  parameters:
+    stage: 'download_and_publish_stage'
+    displayName: 'Download and Publish Stage'
+    dependsOn: 'pre_stage'
+    condition: ''
+    pool:
+      vmImage: 'windows-latest'
+    artifactName: excel
+    variableGroup: var-parameter-dm-grp
+
+
+#Trigger Stage
+- template: templates/trigger-stage.yml
+  parameters:
+    stage: 'trigger_stage'
+    displayName: 'Trigger Stage'
+    dependsOn: 
+    - download_and_publish_stage
+    - pre_stage
+    condition: ''
+    pool:
+      vmImage: 'windows-latest'
+    artifactName: excel
+    variableGroup: var-parameter-dm-grp

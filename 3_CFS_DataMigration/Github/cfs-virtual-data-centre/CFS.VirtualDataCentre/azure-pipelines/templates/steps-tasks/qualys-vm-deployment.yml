@@ -1,0 +1,43 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: vmServiceName
+  type: string
+
+- name: subscriptionServiceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: taskNumber
+  type: string
+
+- name: vmOSType
+  type: string
+
+- name: vmLocation
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy ${{ parameters.vmServiceName }} Virtual Machine in ${{ parameters.subscriptionServiceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(vm-deployment-templates)\deploy-${{ parameters.vmOSType }}-VM.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(vm-parameter-files)\${{ parameters.taskNumber }}-deploy-${{ parameters.vmServiceName }}\${{ parameters.vmServiceName }}-${{ parameters.vmLocation }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+
+   

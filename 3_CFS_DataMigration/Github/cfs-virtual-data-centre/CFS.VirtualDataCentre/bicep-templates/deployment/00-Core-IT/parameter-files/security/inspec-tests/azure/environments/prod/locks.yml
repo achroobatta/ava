@@ -1,0 +1,30 @@
+# Australia East
+- name: rg-prd-edc-sec-comp-001
+
+- name: rg-prd-edc-sec-comp-002
+
+- name: rg-prd-edc-sec-kv-001
+
+- name: rg-prd-edc-sec-netw-001
+
+- name: rg-prd-edc-sec-rsv-001
+
+- name: rg-prd-edc-sec-sec-001
+  
+- name: rg-prd-edc-sec-stor-001
+
+# Australia South East
+
+- name: rg-prd-sdc-sec-comp-001
+
+- name: rg-prd-sdc-sec-comp-002
+
+- name: rg-prd-sdc-sec-kv-001
+
+- name: rg-prd-sdc-sec-netw-001
+
+- name: rg-prd-sdc-sec-rsv-001
+
+- name: rg-prd-sdc-sec-sec-001
+
+- name: rg-prd-sdc-sec-stor-001

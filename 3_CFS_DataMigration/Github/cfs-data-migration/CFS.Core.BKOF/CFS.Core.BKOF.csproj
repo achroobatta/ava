@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>CFS.Core.BKOF</AssemblyName>
+    <RootNamespace>CFS.Core.BKOF</RootNamespace>
+    <PackageId>CFS.Core.BKOF</PackageId>
+    <Authors></Authors>
+    <Company>CFS</Company>
+    <Product>CFS.Core.BKOF</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bicep-templates\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="parameter-files\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="scripts\**\*" CopyToPublishDirectory="Always" />    
+    <Content Include="README.md" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+</Project>

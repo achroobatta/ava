@@ -1,0 +1,556 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+"parameters":  {
+    "nsgObject": {
+        "value": { 
+            "nsgValues": [
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "oper",
+                  "component": "netw",
+                  "instance": 1,
+                    "nsgName": "nsg-prd-edc-operations-001",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-edc-operations-001",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-edc-operations-001",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.0.192/26",
+                            "10.30.0.192/26"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To WindowsServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 980,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "135",
+                            "139",
+                            "445",
+                            "5985",
+                            "5986",
+                            "49152-65535"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                        "properties": {
+                          "description": "Allow WMI from MIDServer To LinuxServer",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 990,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [
+                            "10.20.130.8",
+                            "10.30.130.4"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "Allow-Inbound-WindowsUpdateDeliveryOptimization",
+                        "properties": {
+                          "description": "Allow Inbound Windows Update Delivery Optimization",
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "7680",
+                          "sourceAddressPrefix": "10.20.128.0/23",
+                          "destinationAddressPrefix": "10.230.128.0/23",
+                          "access": "Allow",
+                          "priority": 1000,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "RicohPrinting",
+                        "properties": {
+                          "description": "",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 201,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "2560",
+                            "7300",
+                            "9100",
+                            "631",
+                            "443",
+                            "7303",
+                            "7400",
+                            "8700"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "RicohPrintingOutbound",
+                        "properties": {
+                          "description": "",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 100,
+                          "direction": "Outbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "2560",
+                            "7300",
+                            "9100",
+                            "631",
+                            "443",
+                            "7303",
+                            "7400",
+                            "8700"
+                          ],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "oper",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-edc-operations-002",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-edc-operations-002",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-edc-operations-002",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.20.0.192/26",
+                          "10.30.0.192/26"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                      "properties": {
+                        "description": "Allow WMI from MIDServer To WindowsServer",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 980,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "135",
+                          "139",
+                          "445",
+                          "5985",
+                          "5986",
+                          "49152-65535"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.20.130.8",
+                          "10.30.130.4"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                      "properties": {
+                        "description": "Allow WMI from MIDServer To LinuxServer",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "22",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 990,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [
+                          "10.20.130.8",
+                          "10.30.130.4"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "oper",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-sdc-operations-001",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-sdc-operations-001",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-sdc-operations-001",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.20.0.192/26",
+                          "10.30.0.192/26"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                      "properties": {
+                        "description": "Allow WMI from MIDServer To WindowsServer",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 980,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "135",
+                          "139",
+                          "445",
+                          "5985",
+                          "5986",
+                          "49152-65535"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.20.130.8",
+                          "10.30.130.4"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                      "properties": {
+                        "description": "Allow WMI from MIDServer To LinuxServer",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "22",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 990,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [
+                          "10.20.130.8",
+                          "10.30.130.4"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-Inbound-WindowsUpdateDeliveryOptimization",
+                      "properties": {
+                        "description": "Allow Inbound Windows Update Delivery Optimization",
+                        "protocol": "TCP",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "7680",
+                        "sourceAddressPrefix": "10.30.128.0/23",
+                        "destinationAddressPrefix": "10.30.128.0/23",
+                        "access": "Allow",
+                        "priority": 1000,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "RicohPrinting",
+                      "properties": {
+                        "description": "",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 201,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "2560",
+                          "7300",
+                          "9100",
+                          "631",
+                          "443",
+                          "7303",
+                          "7400",
+                          "8700"
+                        ],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "RicohPrintingOutbound",
+                      "properties": {
+                        "description": "",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 100,
+                        "direction": "Outbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "2560",
+                          "7300",
+                          "9100",
+                          "631",
+                          "443",
+                          "7303",
+                          "7400",
+                          "8700"
+                        ],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "oper",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-prd-sdc-operations-002",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-prd-mgmt-002-To-sub-prd-sdc-operations-002",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 To sub-prd-sdc-operations-002",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.20.0.192/26",
+                          "10.30.0.192/26"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                      "properties": {
+                        "description": "Allow WMI from MIDServer To WindowsServer",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 980,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "135",
+                          "139",
+                          "445",
+                          "5985",
+                          "5986",
+                          "49152-65535"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.20.130.8",
+                          "10.30.130.4"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                      "properties": {
+                        "description": "Allow WMI from MIDServer To LinuxServer",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "22",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 990,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [
+                          "10.20.130.8",
+                          "10.30.130.4"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                }
+            ]
+        }
+    }
+}
+}

@@ -1,0 +1,37 @@
+#deploy-PolicyExemption.yml
+
+parameters:
+- name: service #e.g. '?'
+  type: string
+
+- name: landingZoneType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: deploymentType
+  type: string
+
+steps:
+- task: DownloadPackage@1
+  displayName: DownloadArtifacts
+  inputs:
+    packageType: 'nuget'
+    feed: '$(artifactFeed)'
+    definition: '$(artifactDefinition)'
+    version: '$(artifactVersion)'
+    extract: true
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+- task: AzureCLI@2
+  displayName : Deploy Policy Exemption
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment mg $(deploymentType) --management-group-id $(subscriptionID) `
+                  --location '$(resourceLocation)' `
+                  --name $(deploymentName) `
+                  --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-PolicyExemption.bicep `
+                  --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\00-Policy\PolicyExemption-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json

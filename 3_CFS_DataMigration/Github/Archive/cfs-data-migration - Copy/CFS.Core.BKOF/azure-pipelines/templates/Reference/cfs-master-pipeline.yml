@@ -1,0 +1,1247 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+
+## If we want to read from trunk branch directly not using artifact version packages
+#resources:
+#  repositories:
+#  - repository: cfsnp
+#    type: github
+#    name: cfsnp/cfs-virtual-data-centre
+#    endpoint: cfsnp
+
+parameters:
+
+  # Deployment Environment
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  # Artifact Version
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  # Subscription Service ID
+  - name: subscriptionServiceId
+    displayName: Subscription Service Id
+    type: string
+    default: ""
+    values:
+     - "connectivity"
+     - "identity"
+     - "operations"
+     - "security"
+     - "CFSCo"
+
+  # Set to True to enable daylight saving time
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  # Set to True to use what-if deployment
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: var-service-principle-secrets
+ - group: var-azure-tenant-id
+
+ # Workspaces are in EDC (Australiaeast) only
+ - name: workspaceLocationPrefix
+   value: "edc"
+
+ # Landing Zone Type
+ - name: landingZoneType
+   value: "00-Core-IT"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: "not-valid"
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Azure DevOps Service Connection Name
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+ # Subscription Service Name
+ - name: subscriptionServiceName
+   ${{ if eq(parameters.subscriptionServiceId, 'connectivity') }}:
+     value: "Connectivity"
+   ${{ if eq(parameters.subscriptionServiceId, 'identity') }}:
+     value: "Identity"
+   ${{ if eq(parameters.subscriptionServiceId, 'operations') }}:
+     value: "Operations"
+   ${{ if eq(parameters.subscriptionServiceId, 'security') }}:
+     value: "Security"
+   ${{ if eq(parameters.subscriptionServiceId, 'CFSCo') }}:
+     value: "CFSCO Management Group"     
+
+ # Subscription ID
+ - name: subscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'CFSCo')}} :
+       value: 'CFSCoNonProd'
+     ${{ else }}:
+       value: $(sc-subsc-np-${{ parameters.subscriptionServiceId }}-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'CFSCo')}} :
+       value: 'CFSCoProd'
+     ${{ else }}:
+       value: $(sc-subsc-prd-${{ parameters.subscriptionServiceId }}-sid)
+
+ # Management Group ID
+ - name: managementGroupId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'CFSCo')}} :
+       value: 'CFSCoNonProd'
+     ${{ else }}:
+       value: 'mg-$(AzureEnvironmentPrefix)-${{ parameters.subscriptionServiceId }}-001'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'CFSCo')}} :
+       value: 'CFSCoProd'
+     ${{ else }}:
+       value: 'mg-$(AzureEnvironmentPrefix)-${{ parameters.subscriptionServiceId }}-001'
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: managementSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-mg-cfsco-nprd"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-mg-cfsco-prd"
+
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Identity Subscription ID
+ - name: identitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-identity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-identity-sid)
+
+ # Connectivity Subscription ID
+ - name: connectivitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-connectivity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-connectivity-sid)
+
+ # Azure DevOps Landing Zone Service Connection Name
+ - name: serviceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'CFSCo')}} :
+       value: 'sc-mg-cfsco-nprd'
+     ${{ else }}:
+       value: "sc-subsc-np-${{ parameters.subscriptionServiceId }}-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'CFSCo')}} :
+       value: 'sc-mg-cfsco-prd'
+     ${{ else }}:
+       value: "sc-subsc-prd-${{ parameters.subscriptionServiceId }}-001"
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: connectivitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-connectivity-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-connectivity-001"
+
+ # Azure Tenant ID
+ - name: azureTenantIdvar
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(np-azure-tenant-id)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(prd-azure-tenant-id)
+
+ # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ # Azure Owner 
+ - name: Owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+
+stages:
+
+  # Automate Manual Configurations and Resource Providers
+  - stage: EnableRequiredResourceProviders
+    displayName: EnableResourceProviders
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: []
+    jobs:
+    - deployment: EnableResourceProviders
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+          
+            - template: templates/steps-tasks/deploy-EnableResourceProvides.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+
+  # Deploy Log Analytics Workspace first to build and deploy
+  - stage: DeployLogAnalyticsWorkspace
+    displayName: DeployLogAnalyticsWorkspace
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'security'))
+    dependsOn: [EnableRequiredResourceProviders]
+      
+    jobs:
+    - deployment: DeployLogAnalyticsWorkspace
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-LogAnalyticsWorkspace.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                landingZoneType: '$(landingZoneType)'
+
+  # Enable Microsoft Defender for Cloud and Automate the Process
+  - stage: EnableMicrosoftDefenderForCloud
+    displayName: EnableMicrosoftDefenderForCloud
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    
+    ${{ if eq(parameters.subscriptionServiceId, 'security') }} :
+      dependsOn: 
+        - DeployLogAnalyticsWorkspace
+    ${{ if ne(parameters.subscriptionServiceId, 'security') }} :
+      dependsOn:
+        - EnableRequiredResourceProviders
+
+    jobs:
+    - deployment: EnableMicrosoftDefenderForCloud
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-AzureSecurityCentre.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+
+  # Deploy Storage Accounts
+  - stage: DeployStorageAccounts
+    displayName: DeployStorageAccounts
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    
+    ${{ if eq(parameters.subscriptionServiceId, 'security') }} :
+      dependsOn: 
+        - DeployLogAnalyticsWorkspace
+    ${{ if ne(parameters.subscriptionServiceId, 'security') }} :
+      dependsOn:
+        - EnableRequiredResourceProviders
+        
+    jobs:
+    - deployment: DeployStorageAccounts
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+        
+            - template: templates/steps-tasks/deploy-StorageAccount.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy RT and NSG
+  - stage: DeployRTandNSG
+    displayName: DeployRTandNSG
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployStorageAccounts]
+
+    jobs:
+    - deployment: DeployRTandNSG
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-RTandNSG.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                landingZoneType: '$(landingZoneType)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+  # Deploy VDC Virtual Network Bundle
+  - stage: DeployVirtualNetwork
+    displayName: DeployVirtualNetwork
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployRTandNSG]
+
+    jobs:
+    - deployment: DeployVirtualNetwork
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-VDCVirtualNetwork.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                landingZoneType: '$(landingZoneType)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+  # Deploy VDC Virtual Network Peerings
+  - stage: DeployVirtualNetworkPeerings
+    displayName: DeployVirtualNetworkPeerings
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployVirtualNetwork]
+
+    jobs:
+    - deployment: DeployVirtualNetworkPeerings
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - ${{ if eq(parameters.subscriptionServiceId, 'connectivity') }}:
+              - template: templates/steps-tasks/deploy-NetworkPeering-Global.yml
+                parameters:
+                  serviceName: '$(subscriptionServiceName)'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  serviceId: ${{ parameters.subscriptionServiceId }}
+                  landingZoneType: '$(landingZoneType)'
+                  subscriptionId: '$(subscriptionID)'
+                  
+            - ${{ if ne(parameters.subscriptionServiceId, 'connectivity') }}:
+              - template: templates/steps-tasks/deploy-NetworkPeering-HubToSpoke.yml
+                parameters:
+                  serviceName: '$(subscriptionServiceName)'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  serviceId: ${{ parameters.subscriptionServiceId }}
+                  landingZoneType: '$(landingZoneType)'
+                  subscriptionId: '$(subscriptionID)'
+                  connectivitySubscServiceConnection: '$(connectivitySubscServiceConnection)'
+                  connectivitySubscriptionId: '$(connectivitySubscriptionId)'
+
+  # Deploy Network UDR Rules
+  - stage: DeployNetworkUDRRules
+    displayName: DeployNetworkUDRRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployVirtualNetwork]
+
+    jobs:
+    - deployment: DeployNetworkUDRRules
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-UDRRules.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                deploymentType: '$(deploymentType)'
+                landingZoneType: '$(landingZoneType)'
+
+
+  # Deploy Virtual Network Security Groups Rules
+  - stage: DeployNetworkNSGRules
+    displayName: DeployNetworkNSGRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployVirtualNetwork]
+
+    jobs:
+    - deployment: DeployNetworkNSGRules
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-NSGRules.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                deploymentType: '$(deploymentType)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Recovery Service Vault
+  - stage: DeployRSV
+    displayName: DeployRSV
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployStorageAccounts]
+
+    jobs:
+    - deployment: DeployRSV
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-RSV.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                deploymentType: '$(deploymentType)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                subscriptionId: '$(subscriptionID)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Key Vault and Key Authentication
+  - stage: DeployKeyVault
+    displayName: DeployKeyVault
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: var-password-secret-value
+    - group: var-azure-tenant-id
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployStorageAccounts]
+    
+    jobs:
+    - deployment: DeployKeyVault
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-KeyVault.yml
+              parameters:
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceName: '$(subscriptionServiceName)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                subscriptionId: '$(subscriptionID)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                localAdminPassword: '$(dc-cfsadmin-secret)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Firewall
+  - stage: DeployFirewall
+    displayName: DeployFirewall
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'connectivity'))
+    dependsOn: [DeployVirtualNetwork]
+
+    jobs:
+    - deployment: DeployFirewall
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-Firewall.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Bastion
+  - stage: DeployBastion
+    displayName: DeployBastion
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'connectivity'))
+    dependsOn: [DeployVirtualNetwork]
+
+    jobs:
+    - deployment: DeployBastion
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-Bastion.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                landingZoneType: '$(landingZoneType)'
+
+ # Deploy LoadBalancer
+  - stage: DeployLoadBalancer
+    displayName: DeployLoadBalancer
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'identity'))
+    dependsOn: [DeployVirtualNetwork]
+
+    jobs:
+    - deployment: DeployLoadBalancer
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-AzureLoadBalancer.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(serviceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Resource Groups
+  - stage: DeployResourceGroup
+    displayName: DeployResourceGroup
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: []
+    
+    jobs:
+    - deployment: DeployResourceGroup
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-ResourceGroup.yml
+              parameters:
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceName: '$(subscriptionServiceName)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Resource Groups Locks
+  - stage: DeployResourceGroupLocks
+    displayName: DeployResourceGroupLocks
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [ DeployResourceGroup ]
+
+    jobs:
+    - deployment: DeployResourceGroupLocks
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-ResourceGroupLock.yml
+              parameters:
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceName: '$(subscriptionServiceName)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy VM Backup
+  - stage: DeployVMBackup
+    displayName: DeployVMBackup
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), not(eq('${{ parameters.subscriptionServiceId }}', 'CFSCo')))
+    dependsOn: [DeployRSV]
+    
+    jobs:
+    - deployment: DeployVMBackup
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-VMBackup.yml
+              parameters:
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceName: '$(subscriptionServiceName)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Policy Assignment
+  - stage: DeployPolicyAssignment
+    displayName: DeployPolicyAssignments
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'CFSCo'))
+    dependsOn: []
+
+    jobs:
+    - deployment: DeployPolicyAssignment
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: templates/steps-tasks/deploy-PolicyAssignment.yml
+              parameters:
+                landingZoneType: '$(landingZoneType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                deploymentType: '$(deploymentType)'
+                service: 'x'
+
+  # Deploy Policy Exemption
+  - stage: DeployPolicyExemption
+    displayName: DeployPolicyExemption
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'CFSCo'))
+    dependsOn: []
+
+    jobs:
+    - deployment: DeployPolicyExemption
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: templates/steps-tasks/deploy-PolicyExemption.yml
+              parameters:
+                landingZoneType: '$(landingZoneType)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                deploymentType: '$(deploymentType)'
+                service: 'x'
+
+  # Deploy Role Assignment To Management Group
+  - stage: deployRoleAssignmentToManagementGroup
+
+    displayName: DeployRoleAssignmentToManagementGroup
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployRoleAssignment
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-RoleAssignmentToManagementGroup.yml
+              parameters:
+                serviceName: '$(managementGroupId)'
+                managementGroupId: '$(managementGroupId)'
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceConnection: '$(managementSubscServiceConnection)'
+
+## THIS DOES NOT WORK YET - it requires passing credential to Connect-AzureAD
+#  # Deploy SecurityGroups
+#  - stage: DeploySecurityGroups
+#    displayName: DeploySecurityGroups
+#    variables:
+#    - group: var-azure-platform
+#    - group: var-service-principle-secrets
+#    pool:
+#      vmImage: windows-latest
+#    dependsOn: []
+#    jobs:
+#    - deployment: DeploySecurityGroups
+#      workspace:
+#        clean: all
+#      environment: $(AzureDevOpsEnvironments)
+#      strategy:
+#        runOnce:
+#          deploy:
+#            steps:
+#  
+#            - task: DownloadPackage@1
+#              displayName: DownloadArtifacts
+#              inputs:
+#                packageType: 'nuget'
+#                feed: '$(artifactFeed)'
+#                definition: '$(artifactDefinition)'
+#                version: '$(artifactVersion)'
+#                extract: true
+#                downloadPath: '$(System.ArtifactsDirectory)'
+#  
+#            - task: AzurePowerShell@5
+#              displayName: DeploySecurityGroups
+#              inputs:
+#                azureSubscription: $(connectivitySubscServiceConnection)
+#                azurePowerShellVersion: latestVersion
+#                pwsh: true
+#                ScriptType: 'InlineScript'
+#                Inline: |
+#                  if (!(Get-Module AzureAD))
+#                  {
+#                    Install-Module AzureAD -SkipPublisherCheck -Force -AllowClobber
+#                    Import-Module AzureAD
+#                  }
+#                  #TODO Need to call Connect-AzureAD and pass it credentials
+#                  $secGroups = Get-Content -Path $(System.ArtifactsDirectory)\$(scripts)\sg-list.json | ConvertFrom-Json
+#                  foreach ($sg in $secGroups) {
+#                    $(System.ArtifactsDirectory)\$(scripts)\addSecurityGroup.ps1 `
+#                      -sgName $sg.name `
+#                      -Description $sg.description `
+#                      -SecurityEnabled $sg.securityEnabled `
+#                      -MailEnabled $sg.mailEnabled `
+#                      -MailNickName $sg.mailNickName `
+#                      -IsForManagementGroupRoleAssignment $sg.isForManagementGroupRoleAssignment
+#                  }
+#                preferredAzurePowerShellVersion: '1.0.1'
+
+  # Deploy Availability Set
+  - stage: DeployAvailabilitySet
+    displayName: DeployAvailabilitySet
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: var-workspace
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'identity'))
+    dependsOn: []
+
+    jobs:
+    - deployment: DeployAvailabilitySet
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-AvailabilitySet.yml
+              parameters:
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceName: '$(subscriptionServiceName)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                landingZoneType: '$(landingZoneType)'
+
+  # Deploy Private DNS Zone
+  - stage: DeployPrivateDNSZone
+    displayName: DeployPrivateDNSZone
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: var-workspace
+
+    pool:
+      vmImage: windows-latest
+
+    condition: and(succeeded(), eq('${{ parameters.subscriptionServiceId }}', 'connectivity'))
+    dependsOn: []
+
+    jobs:
+    - deployment: DeployPrivateDNSZone
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - template: templates/steps-tasks/deploy-PrivateDNSZone.yml
+              parameters:
+                serviceId: ${{ parameters.subscriptionServiceId }}
+                serviceName: '$(subscriptionServiceName)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(serviceConnection)'
+                landingZoneType: '$(landingZoneType)'
+                subscriptionId: '$(identitySubscriptionId)'

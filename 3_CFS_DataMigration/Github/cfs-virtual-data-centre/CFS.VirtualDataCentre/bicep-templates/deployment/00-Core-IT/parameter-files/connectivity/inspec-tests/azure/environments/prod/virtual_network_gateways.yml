@@ -1,0 +1,11 @@
+# Australia East
+- name: ERGW
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: vgw-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+
+# Australia South East
+
+- name: ERGW
+  resource_group: rg-prd-sdc-hub-netw-001

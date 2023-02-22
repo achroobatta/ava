@@ -1,0 +1,35 @@
+#deploy-storageAccount.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: landingZoneType
+  type: string
+  
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Storage Account in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-StorageAccount.bicep `
+                    --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\03-Storage-Account\Storage-Account-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json

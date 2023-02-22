@@ -1,0 +1,20 @@
+#Template Format
+#- name: stonpedcbkof001
+#  resource_group: rg-np-edc-bkof-stor-001
+
+# Australia East
+- name: netskopedmofyxr3y5j2a
+  resource_group: rg-np-edc-sec-sec-001
+
+- name: stonpedcdiagnlogs003
+  resource_group: rg-np-edc-sec-stor-001
+
+- name: stonpedcsec001
+  resource_group: rg-np-edc-sec-stor-001
+
+# Australia South East
+- name: stonpsdcdiagnlogs003
+  resource_group: rg-np-sdc-sec-stor-001
+
+- name: stonpsdcsec001
+  resource_group: rg-np-sdc-sec-stor-001

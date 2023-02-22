@@ -1,0 +1,308 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: subscriptionServiceId
+    displayName: Subscription Service Id (e.g. "bkof" or "fcp" or "fwp")
+    type: string
+    default: ""
+    values:
+     - "bkof"
+     - "fcp"
+     - "fwp"
+     - "connectivity"
+     - "security"
+     - "operations"
+     - "identity"
+
+  - name: taskNumber
+    displayName: Azure DevOps Task Number (e.g. "ABXXX" or "AB130")
+    type: string
+    default: ""
+
+  - name: vmOSType
+    displayName: VM Type 
+    type: string
+    default: ""
+    values:
+     - "Windows"
+     - "Linux"
+     - "Qualys"
+     - "SailpointVA"
+     - "NTT"
+
+  - name: vmDeploymentType
+    displayName: VM Deployment Type 
+    type: string
+    default: 'newbuild'
+    values:
+     - 'newbuild'
+     - 'rebuild'
+
+  - name: keyVaultName
+    displayName: Key Vault Name
+    type: string
+    default: ""
+
+  - name: vmLocation
+    displayName: Target VM Location Abbreviation
+    type: string
+    default: ""
+    values:
+     - "edc"
+     - "sdc"
+
+  - name: vmServiceName
+    displayName: Virtual Machine Service Name (e.g. "Sentinel")
+    type: string
+    default: ""
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: lz-var-service-principle-secrets
+ - group: var-service-principle-secrets
+ - group: var-azure-tenant-id
+ - group: var-domain-join-password
+
+ #workspaces are in edc only
+ - name: workspaceLocationPrefix
+   value: "edc"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Azure DevOps Service Connection Name
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+ #  Subscription ID
+ - name: subscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'bkof' ) }}:
+       value: $(subsc-np-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-np-${{ parameters.subscriptionServiceId }}-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'bkof' ) }}:
+       value: $(subsc-prd-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-prd-${{ parameters.subscriptionServiceId }}-sid)
+
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Security Service Connection
+ - name: securityServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-security-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-security-001"
+
+ # Azure DevOps Landing Zone Service Connection Name
+ - name: serviceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-${{ parameters.subscriptionServiceId }}-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-${{ parameters.subscriptionServiceId }}-001"
+
+ # Domain Join Password
+ - name: domainJoinPassword
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "$(np-domain-join-password)"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "$(prd-domain-join-password)"
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ # Azure Owner 
+ - name: Owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+
+stages:
+
+  # Deploy Virtual Machine
+  - stage: deployVirtualMachine
+    displayName: deployVirtualMachine
+
+    variables:
+    - group: var-azure-platform
+    - group: lz-var-service-principle-secrets
+    - group: var-service-principle-secrets
+    - group: var-domain-join-password
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployVirtualMachine
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - ${{ if eq(parameters.vmOSType, 'Linux') }}:    
+              #VM Deployment template for Linux
+              - template: templates/steps-tasks/linux-vm-deployment.yml
+                parameters:
+                  vmServiceName: '${{ parameters.vmServiceName }}'
+                  subscriptionServiceId: '${{ parameters.subscriptionServiceId }}'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  securitySubscriptionId: '$(securitySubscriptionId)'
+                  taskNumber: '${{ parameters.taskNumber }}'
+                  vmOSType: '${{ parameters.vmOSType }}'
+                  vmLocation: '${{ parameters.vmLocation }}'
+                  securityServiceConnection: '$(securityServiceConnection)'
+
+            - ${{ if eq(parameters.vmOSType, 'Windows') }}:    
+              #VM Deployment template for Windows
+              - template: templates/steps-tasks/windows-vm-deployment.yml
+                parameters:
+                  vmServiceName: '${{ parameters.vmServiceName }}'
+                  subscriptionServiceId: '${{ parameters.subscriptionServiceId }}'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  securitySubscriptionId: '$(securitySubscriptionId)'
+                  taskNumber: '${{ parameters.taskNumber }}'
+                  vmOSType: '${{ parameters.vmOSType }}'
+                  vmLocation: '${{ parameters.vmLocation }}'
+                  keyVaultName: '${{ parameters.keyVaultName }}'
+                  vmDeploymentType: '${{ parameters.vmDeploymentType }}'
+            
+            - ${{ if eq(parameters.vmOSType, 'Qualys') }}:    
+              #VM Deployment template for Qualys
+              - template: templates/steps-tasks/qualys-vm-deployment.yml
+                parameters:
+                  vmServiceName: '${{ parameters.vmServiceName }}'
+                  subscriptionServiceId: '${{ parameters.subscriptionServiceId }}'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  taskNumber: '${{ parameters.taskNumber }}'
+                  vmOSType: '${{ parameters.vmOSType }}'
+                  vmLocation: '${{ parameters.vmLocation }}'
+
+            - ${{ if eq(parameters.vmOSType, 'SailpointVA') }}:    
+              #VM Deployment template for SailpointVA
+              - template: templates/steps-tasks/sailpointVA-vm-deployment.yml
+                parameters:
+                  vmServiceName: '${{ parameters.vmServiceName }}'
+                  subscriptionServiceId: '${{ parameters.subscriptionServiceId }}'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  taskNumber: '${{ parameters.taskNumber }}'
+                  vmOSType: '${{ parameters.vmOSType }}'
+                  vmLocation: '${{ parameters.vmLocation }}'
+
+            - ${{ if eq(parameters.vmOSType, 'NTT') }}:    
+              #VM Deployment template for NTT
+              - template: templates/steps-tasks/NTT-vm-deployment.yml
+                parameters:
+                  vmServiceName: '${{ parameters.vmServiceName }}'
+                  subscriptionServiceId: '${{ parameters.subscriptionServiceId }}'
+                  serviceConnection: '$(serviceConnection)'
+                  deploymentType: '$(deploymentType)'
+                  taskNumber: '${{ parameters.taskNumber }}'
+                  vmOSType: '${{ parameters.vmOSType }}'
+                  vmLocation: '${{ parameters.vmLocation }}'

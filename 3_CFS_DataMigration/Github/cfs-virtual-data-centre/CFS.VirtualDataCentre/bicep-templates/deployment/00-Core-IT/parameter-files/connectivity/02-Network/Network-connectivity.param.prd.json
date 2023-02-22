@@ -1,0 +1,618 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                                        {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "connectivity",
+                        "firewallTierSKU": "Premium",
+                        "isFirewallAZenable": true,
+                        "firewallPolicyTier": "Premium",
+                        "isForceTunnelingEnabled": true,
+                        "fwpinstance": 2,
+                        "serviceAbbrv": "hub",
+                        "appName": "",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "addressSpaces": [ 
+                            "10.20.0.0/23",
+                            "10.20.5.0/24",
+                            "10.20.6.0/24",
+                            "10.20.7.0/24"
+                        ],
+                        "customDnsServers": [
+                            "10.20.0.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "GatewaySubnet",
+                              "location": "australiaeast",
+                              "service": "",
+                              "instance" : "",
+                              "addressPrefix": "10.20.0.0/26",
+                              "networkSecurityGroup": "",
+                              "routeTable": "rt-GatewaySubnet",
+                              "routes": [],
+                              "serviceEndpoints": [],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "AzureFirewallSubnet",
+                              "location": "australiaeast",
+                              "service": "",
+                              "instance" : "",
+                              "addressPrefix": "10.20.0.64/26",
+                              "networkSecurityGroup": "",
+                              "routeTable": "rt-AzureFirewallSubnet",
+                              "routes": [
+                                {
+                                    "name": "Default-AzureFirewallSubnet-Route",
+                                    "properties": {
+                                        "nextHopType": "Internet",
+                                        "addressPrefix": "0.0.0.0/0",
+                                        "nextHopIpAddress": ""
+                                    }
+                                }
+                              ],
+                              "serviceEndpoints": [],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "AzureBastionSubnet",
+                              "location": "australiaeast",
+                              "service": "",
+                              "instance" : "",
+                              "addressPrefix": "10.20.0.128/26",
+                              "networkSecurityGroup": "nsg-AzureBastionSubnet",
+                              "routeTable": "",
+                              "routes": [],
+                              "serviceEndpoints": [],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-prd-edc-mgmt-001",
+                              "location": "australiaeast",
+                              "service": "mgmt",
+                              "instance" : "1",
+                              "addressPrefix": "10.20.1.0/24",
+                              "networkSecurityGroup": "nsg-prd-edc-mgmt-001",
+                              "routeTable": "rt-prd-edc-mgmt-001",
+                              "routes": [],
+                              "serviceEndpoints": [],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                            "name": "sub-prd-edc-mgmt-002",
+                            "location": "australiaeast",
+                            "service": "mgmt",
+                            "instance" : "2",
+                            "addressPrefix": "10.20.0.192/26",
+                            "networkSecurityGroup": "nsg-prd-edc-mgmt-002",
+                            "routeTable": "rt-prd-edc-mgmt-002",
+                            "routes": [],
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "securityRules": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {		
+                            "name": "sub-prd-edc-fn-001",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "1",		
+                            "addressPrefix": "10.20.5.0/26", 		
+                            "networkSecurityGroup": "nsg-prd-edc-fn-001",		
+                            "routeTable": "rt-prd-edc-fn-001",		
+                            "routes": [],		
+                            "serviceEndpoints": [],           		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-edc-fn-002",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "2",		
+                            "addressPrefix": "10.20.5.64/26", 		
+                            "networkSecurityGroup": "nsg-prd-edc-fn-002",		
+                            "routeTable": "rt-prd-edc-fn-002",		
+                            "routes": [],		
+                            "serviceEndpoints": [],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-edc-fn-003",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "3",		
+                            "addressPrefix": "10.20.5.128/26", 		
+                            "networkSecurityGroup": "nsg-prd-edc-fn-003",		
+                            "routeTable": "rt-prd-edc-fn-003",		
+                            "routes": [],		
+                            "serviceEndpoints": [],             		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-edc-fn-004",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "4",		
+                            "addressPrefix": "10.20.5.192/26", 		
+                            "networkSecurityGroup": "nsg-prd-edc-fn-004",		
+                            "routeTable": "rt-prd-edc-fn-004",		
+                            "routes": [],		
+                            "serviceEndpoints":[],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-edc-fn-005",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "5",		
+                            "addressPrefix": "10.20.6.0/26",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-005",		
+                            "routeTable": "rt-prd-edc-fn-005",		
+                            "routes": [],		
+                            "serviceEndpoints":[],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },    
+                          {		
+                            "name": "sub-prd-edc-fn-006",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "6",		
+                            "addressPrefix": "10.20.6.64/26",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-006",		
+                            "routeTable": "rt-prd-edc-fn-006",		
+                            "routes": [],		
+                            "serviceEndpoints":[],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },     
+                          {		
+                            "name": "sub-prd-edc-fn-007",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "7",		
+                            "addressPrefix": "10.20.6.128/28",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-007",		
+                            "routeTable": "rt-prd-edc-fn-007",		
+                            "routes": [],		
+                            "serviceEndpoints":[],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },  
+                          {		
+                            "name": "sub-prd-edc-fn-008",		
+                            "location": "australiaeast",		
+                            "service": "fn",		
+                            "instance" : "8",		
+                            "addressPrefix": "10.20.6.144/28",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-008",		
+                            "routeTable": "rt-prd-edc-fn-008",		
+                            "routes": [],		
+                            "serviceEndpoints":[],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },                                                                                                   
+                          {
+                            "name": "AzureFirewallManagementSubnet",
+                            "location": "australiaeast",
+                            "service": "",
+                            "instance" : "",
+                            "addressPrefix": "10.20.7.0/26",
+                            "networkSecurityGroup": "",
+                            "routeTable": "",
+                            "routes": [],
+                            "serviceEndpoints": [],
+                            "delegations": [],
+                            "securityRules": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                          } 
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "connectivity",
+                        "firewallTierSKU": "Premium",
+                        "isFirewallAZenable": false,
+                        "firewallPolicyTier": "Premium",
+                        "isForceTunnelingEnabled": true,
+                        "fwpinstance": 2,
+                        "serviceAbbrv": "hub",
+                        "appName": "",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "addressSpaces": [ 
+                            "10.30.0.0/23",
+                            "10.30.5.0/24",
+                            "10.30.6.0/24",
+                            "10.30.7.0/24"
+                        ],
+                        "customDnsServers": [
+                            "10.30.0.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "GatewaySubnet",
+                              "location": "australiasoutheast",
+                              "service": "",
+                              "instance" : "",
+                              "addressPrefix": "10.30.0.0/26",
+                              "networkSecurityGroup": "",
+                              "routeTable": "rt-GatewaySubnet",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                  "service": "Microsoft.Storage",
+                                  "locations": [
+                                      "australiaeast",
+                                      "australiasoutheast"
+                                  ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "AzureFirewallSubnet",
+                              "location": "australiasoutheast",
+                              "service": "",
+                              "instance" : "",
+                              "addressPrefix": "10.30.0.64/26",
+                              "networkSecurityGroup": "",
+                              "routeTable": "rt-AzureFirewallSubnet",
+                              "routes": [
+                                {
+                                    "name": "Default-AzureFirewallSubnet-Route",
+                                    "properties": {
+                                        "nextHopType": "Internet",
+                                        "addressPrefix": "0.0.0.0/0",
+                                        "nextHopIpAddress": ""
+                                    }
+                                }
+                              ],
+                              "serviceEndpoints": [
+                                {
+                                  "service": "Microsoft.Storage",
+                                  "locations": [
+                                      "australiaeast",
+                                      "australiasoutheast"
+                                  ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "AzureBastionSubnet",
+                              "location": "australiasoutheast",
+                              "service": "",
+                              "instance" : "",
+                              "addressPrefix": "10.30.0.128/26",
+                              "networkSecurityGroup": "nsg-AzureBastionSubnet",
+                              "routeTable": "",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                  "service": "Microsoft.Storage",
+                                  "locations": [
+                                      "australiaeast",
+                                      "australiasoutheast"
+                                  ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-prd-sdc-mgmt-001",
+                              "location": "australiasoutheast",
+                              "service": "mgmt",
+                              "instance" : "1",
+                              "addressPrefix": "10.30.1.0/24",
+                              "networkSecurityGroup": "nsg-prd-sdc-mgmt-001",
+                              "routeTable": "rt-prd-sdc-mgmt-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                  "service": "Microsoft.Storage",
+                                  "locations": [
+                                      "australiaeast",
+                                      "australiasoutheast"
+                                  ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                            "name": "sub-prd-sdc-mgmt-002",
+                            "location": "australiasoutheast",
+                            "service": "mgmt",
+                            "instance" : "2",
+                            "addressPrefix": "10.30.0.192/26",
+                            "networkSecurityGroup": "nsg-prd-sdc-mgmt-002",
+                            "routeTable": "rt-prd-sdc-mgmt-002",
+                            "routes": [],
+                            "serviceEndpoints": [
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],
+                            "delegations": [],
+                            "securityRules": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {		
+                            "name": "sub-prd-sdc-fn-001",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "1",		
+                            "addressPrefix": "10.30.5.0/26", 		
+                            "networkSecurityGroup": "nsg-prd-sdc-fn-001",		
+                            "routeTable": "rt-prd-sdc-fn-001",		
+                            "routes": [],		
+                            "serviceEndpoints": [
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],                           		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-sdc-fn-002",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "2",		
+                            "addressPrefix": "10.30.5.64/26", 		
+                            "networkSecurityGroup": "nsg-prd-sdc-fn-002",		
+                            "routeTable": "rt-prd-sdc-fn-002",		
+                            "routes": [],		
+                            "serviceEndpoints": [
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],                         		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-sdc-fn-003",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "3",		
+                            "addressPrefix": "10.30.5.128/26", 		
+                            "networkSecurityGroup": "nsg-prd-sdc-fn-003",		
+                            "routeTable": "rt-prd-sdc-fn-003",		
+                            "routes": [],		
+                            "serviceEndpoints": [
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-sdc-fn-004",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "4",		
+                            "addressPrefix": "10.30.5.192/26", 		
+                            "networkSecurityGroup": "nsg-prd-sdc-fn-004",		
+                            "routeTable": "rt-prd-sdc-fn-004",		
+                            "routes": [],		
+                            "serviceEndpoints":[
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },
+                          {		
+                            "name": "sub-prd-edc-fn-005",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "5",		
+                            "addressPrefix": "10.30.6.0/26",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-005",		
+                            "routeTable": "rt-prd-edc-fn-005",		
+                            "routes": [],		
+                            "serviceEndpoints":[
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },    
+                          {		
+                            "name": "sub-prd-edc-fn-006",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "6",		
+                            "addressPrefix": "10.30.6.64/26",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-006",		
+                            "routeTable": "rt-prd-edc-fn-006",		
+                            "routes": [],		
+                            "serviceEndpoints":[
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },     
+                          {		
+                            "name": "sub-prd-edc-fn-007",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "7",		
+                            "addressPrefix": "10.30.6.128/28",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-007",		
+                            "routeTable": "rt-prd-edc-fn-007",		
+                            "routes": [],		
+                            "serviceEndpoints":[
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },  
+                          {		
+                            "name": "sub-prd-edc-fn-008",		
+                            "location": "australiasoutheast",		
+                            "service": "fn",		
+                            "instance" : "8",		
+                            "addressPrefix": "10.30.6.144/28",
+                            "networkSecurityGroup": "nsg-prd-edc-fn-008",		
+                            "routeTable": "rt-prd-edc-fn-008",		
+                            "routes": [],		
+                            "serviceEndpoints":[
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],            		
+                            "delegations": [],		
+                            "securityRules": [],		
+                            "privateEndpointNetworkPolicies": "Enabled",		
+                            "privateLinkServiceNetworkPolicies": "Enabled"		
+                          },                                                                                                   
+                          {
+                            "name": "AzureFirewallManagementSubnet",
+                            "location": "australiasoutheast",
+                            "service": "",
+                            "instance" : "",
+                            "addressPrefix": "10.30.7.0/26",
+                            "networkSecurityGroup": "",
+                            "routeTable": "",
+                            "routes": [],
+                            "serviceEndpoints": [
+                              {
+                                "service": "Microsoft.Storage",
+                                "locations": [
+                                    "australiaeast",
+                                    "australiasoutheast"
+                                ]
+                              }
+                            ],
+                            "delegations": [],
+                            "securityRules": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                          } 
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

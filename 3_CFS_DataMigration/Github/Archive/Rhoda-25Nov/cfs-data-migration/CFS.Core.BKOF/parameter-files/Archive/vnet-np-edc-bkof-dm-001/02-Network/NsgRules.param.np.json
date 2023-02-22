@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters":  {
+      "nsgObject": {
+          "value": { 
+              "nsgValues": [
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "bkof",
+                    "component": "netw",
+                    "instance": 1,
+                      "nsgName": "nsg-np-edc-bkof-001",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-bkof-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-bkof-001",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.1.224/27",
+                              "10.60.1.224/27"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        }
+                      ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "bkof",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-np-sdc-bkof-001",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-bkof-001",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-bkof-001",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.40.1.224/27",
+                            "10.60.1.224/27"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  }
+              ]
+          }
+      }
+  }
+}

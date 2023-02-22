@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "appName": {
+            "value": "Infra"
+        },
+        "owner": {
+            "value": "Infra"
+        },
+        "rgArray": {
+            "value": [                
+                {
+                    "name": "rg-np-edc-bkof-dm-vm-001",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "dm",
+                    "serviceAbbrv": "bkof",
+                    "appName": "Infra"
+                },
+                {
+                    "name": "rg-np-sdc-bkof-dm-vm-001",
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "dm",
+                    "serviceAbbrv": "bkof",
+                    "appName": "Infra"
+                },
+                {
+                    "name": "rg-np-edc-bkof-dm-image-001",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "dm",
+                    "serviceAbbrv": "bkof",
+                    "appName": "Infra"
+                },
+                {
+                    "name": "rg-np-sdc-bkof-dm-image-001",
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "dm",
+                    "serviceAbbrv": "bkof",
+                    "appName": "Infra"
+                }
+            ]
+        }
+    }
+}

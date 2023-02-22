@@ -1,0 +1,1912 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+
+## If we want to read from trunk branch directly not using artifact version packages
+#resources:
+#  repositories:
+#  - repository: cfsnp
+#    type: github
+#    name: cfsnp/cfs-virtual-data-centre
+#    endpoint: cfsnp
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: var-service-principle-secrets
+ - group: var-azure-tenant-id
+
+ #workspaces are in edc only
+ - name: workspaceLocationPrefix
+   value: "edc"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.VirtualDataCentre"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Azure DevOps Service Connection Name
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: connectivitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-connectivity-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-connectivity-001"
+  
+
+ # Azure DevOps Connectivity Service Connection Name
+ - name: managementSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-mg-cfsco-nprd"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-mg-cfsco-prd"
+
+ # Azure DevOps Group Management Id
+ - name: managementGroupId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "CFSCoNonProd"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "CFSCoProd"
+
+ # Azure DevOps Identity Service Connection Name
+ - name: identitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-identity-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-identity-001"
+
+ # Azure DevOps Operations Service Connection Name
+ - name: operationsSubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-operations-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-operations-001"
+
+ # Azure DevOps Security Service Connection Name
+ - name: securitySubscServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-security-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-security-001"
+
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Connectivity Subscription ID
+ - name: connectivitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-connectivity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-connectivity-sid)
+
+ # Operations Subscription ID
+ - name: operationsSubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-operations-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-operations-sid)
+
+ # Identity Subscription ID
+ - name: identitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-identity-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-identity-sid)
+
+ # Azure Tenant ID
+ - name: azureTenantIdvar
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(np-azure-tenant-id)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(prd-azure-tenant-id)
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ # Azure Owner 
+ - name: Owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+
+stages:
+
+  # Automate Manual Configurations and Resource Providers
+  - stage: EnableRequiredResourceProviders
+    displayName: EnableResourceProviders
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: EnableResourceProviders
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Enable Resource Providers on Operations Subscription
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\EnableResourceProviders.sh
+
+            - task: AzureCLI@2
+              displayName : Enable Resource Providers on Identity Subscription
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\EnableResourceProviders.sh
+
+            - task: AzureCLI@2
+              displayName : Enable Resource Providers on Connectivity Subscription
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\EnableResourceProviders.sh
+
+            - task: AzureCLI@2
+              displayName : Enable Resource Providers on Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\EnableResourceProviders.sh
+
+            - task: AzureCLI@2
+              displayName : Enable Microsoft.Network on Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az provider register  ^
+                              --namespace 'Microsoft.Network'
+
+            - task: AzureCLI@2
+              displayName : Enable Microsoft.Insights on Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az provider register  ^
+                              --namespace 'Microsoft.Insights'
+
+  # Deploy Log Analytics Workspace first to build and deploy
+  - stage: DeployLogAnalyticsWorkspace
+    displayName: DeployLogAnalyticsWorkspace
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [EnableRequiredResourceProviders]
+    jobs:
+    - deployment: DeployLogAnalyticsWorkspace
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Log Analytics Workspace
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-LogAnalyticsWorkspace\deploy-LogAnalyticsWorkspace.bicep ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-LogAnalyticsWorkspace\deploy-LogAnalyticsWorkspace.param.json
+
+  # Deploy Resource Groups
+  - stage: DeployResourceGroups
+    displayName: DeployResourceGroups
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [EnableRequiredResourceProviders]
+    jobs:
+    - deployment: DeployResourceGroups
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Groups
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-RG\deployRG.bicep ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-RG\connectivity.param.json
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Groups
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-RG\deployRG.bicep ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-RG\identity.param.json
+
+  # Enable Microsoft Defender for Cloud and Automate the Process
+  - stage: EnableMicrosoftDefenderForCloud
+    displayName: EnableMicrosoftDefenderForCloud
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployLogAnalyticsWorkspace]
+    jobs:
+    - deployment: EnableMicrosoftDefenderForCloud
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Ingest Azure Resources to Microsoft Defender for Cloud in Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentre.sh
+
+            - task: AzureCLI@2
+              displayName : Ingest Azure Resources to Microsoft Defender for Cloud in Connectivity Subscription
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentre.sh
+
+            - task: AzureCLI@2
+              displayName : Ingest Azure Resources to Microsoft Defender for Cloud in Identity Subscription
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentre.sh
+
+            - task: AzureCLI@2
+              displayName : Ingest Azure Resources to Microsoft Defender for Cloud in Operations Subscription
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentre.sh
+
+            #- task: AzureCLI@2
+            #  displayName : Enable Workspace on Security Subscription Microsoft Defender for Cloud Security Logs
+            #  inputs:
+            #    azureSubscription: $(securitySubscServiceConnection)
+            #    scriptType: 'pscore'
+            #    scriptLocation: 'inlineScript'
+            #    inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentreWorkspace.sh $(AzureEnvironmentPrefix) $(securitySubscriptionId)
+
+            #- task: AzureCLI@2
+            #  displayName : Enable Workspace on Connectivity Subscription Microsoft Defender for Cloud Security Logs
+            #  inputs:
+            #    azureSubscription: $(connectivitySubscServiceConnection)
+            #    scriptType: 'pscore'
+            #    scriptLocation: 'inlineScript'
+            #    inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentreWorkspace.sh $(AzureEnvironmentPrefix) $(securitySubscriptionId)
+
+            #- task: AzureCLI@2
+            #  displayName : Enable Workspace on Identity Subscription Microsoft Defender for Cloud Security Logs
+            #  inputs:
+            #    azureSubscription: $(identitySubscServiceConnection)
+            #    scriptType: 'pscore'
+            #    scriptLocation: 'inlineScript'
+            #    inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentreWorkspace.sh $(AzureEnvironmentPrefix) $(securitySubscriptionId)
+
+            #- task: AzureCLI@2
+            #  displayName : Enable Workspace on Operations Subscription Microsoft Defender for Cloud Security Logs
+            #  inputs:
+            #    azureSubscription: $(operationsSubscServiceConnection)
+            #    scriptType: 'pscore'
+            #    scriptLocation: 'inlineScript'
+            #    inlineScript: bash $(System.ArtifactsDirectory)\content\scripts\AzureSecurityCentreWorkspace.sh $(AzureEnvironmentPrefix) $(securitySubscriptionId)
+
+  # Deploy Storage Accounts
+  - stage: DeployStorageAccounts
+    displayName: DeployStorageAccounts
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployLogAnalyticsWorkspace]
+    jobs:
+    - deployment: DeployStorageAccounts
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Storage Accounts in Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\deploy-storageAccount.bicep ^
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\security-storageAccount.param.$(AzureEnvironmentPrefix).json
+            
+            - task: AzureCLI@2
+              displayName : Deploy Storage Accounts in Connectivity Subscription
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\deploy-storageAccount.bicep ^
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\conn-storageAccount.param.$(AzureEnvironmentPrefix).json
+            
+            - task: AzureCLI@2
+              displayName : Deploy Storage Accounts in Identity Subscription
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\deploy-storageAccount.bicep ^
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\identity-storageAccount.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy Storage Accounts in Operations Subscription
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\deploy-storageAccount.bicep ^
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-storageAccount\operations-storageAccount.param.$(AzureEnvironmentPrefix).json
+
+  # Deploy RT and NSG
+  - stage: DeployRTandNSG
+    displayName: DeployRTandNSG
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployStorageAccounts]
+    jobs:
+    - deployment: DeployRTandNSG
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy RT and NSG in Connectivity Subscription
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deployRTandNSG.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\connectivity.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy RT and NSG in Identity Subscription
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deployRTandNSG.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\identity.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy RT and NSG in Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deployRTandNSG.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\security.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy RT and NSG in Operations Subscription
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deployRTandNSG.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\operations.param.$(AzureEnvironmentPrefix).json
+
+
+  # Deploy VDC Virtual Network Bundle
+  - stage: DeployVDCVirtualNetwork
+    displayName: DeployVDCVirtualNetwork
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployRTandNSG]
+    jobs:
+    - deployment: DeployVDCVirtualNetwork
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy VDC Connectivity Network
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deploy-VDCVirtualNetwork.bicep `
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\connectivity.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy VDC Identity Network
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deploy-VDCVirtualNetwork.bicep `
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\identity.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy VDC Security Network
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deploy-VDCVirtualNetwork.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\security.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : Deploy VDC Operations Network
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deploy-VDCVirtualNetwork.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\operations.param.$(AzureEnvironmentPrefix).json
+
+  # Deploy VDC Virtual Network Peerings
+  - stage: DeployVirtualNetworkPeerings
+    displayName: DeployVirtualNetworkPeerings
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployVirtualNetworkPeerings
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : HubToHubVirtualNetworkPeering
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters localVirtualNetworkSubscriptionId='$(connectivitySubscriptionId)' ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(connectivitySubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToHubVnetPeering\deploy-HubToHubVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToHubVnetPeering\deploy-HubToHubVnetPeering.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : HubToIdentiySpokeVirtualNetworkPeering
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(identitySubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-HubToSpokeVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-HubToIdentitySpoke.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : HubToOperationsSpokeVirtualNetworkPeering
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(operationsSubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-HubToSpokeVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-HubToOperationsSpoke.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : HubToSecuritySpokeVirtualNetworkPeering
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(securitySubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-HubToSpokeVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-HubToSecuritySpoke.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : IdentitySpokeToHubVnetPeering
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(connectivitySubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-SpokeToHubVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-IdentitySpokeToHub.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : OperationsSpokeToHubVnetPeering
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(connectivitySubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-SpokeToHubVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-OperationsSpokeToHub.param.$(AzureEnvironmentPrefix).json
+
+            - task: AzureCLI@2
+              displayName : SecuritySpokeToHubVnetPeering
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --parameters remoteVirtualNetworkSubscriptionId='$(connectivitySubscriptionId)' ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-SpokeToHubVnetPeering.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-HubToSpokeVnetPeering\deploy-SecuritySpokeToHub.param.$(AzureEnvironmentPrefix).json
+
+  # Deploy Network UDR Rules
+  - stage: DeployNetworkUDRRules
+    displayName: DeployVDCUDRRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployVDCNetworkUDR
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : ConnectivityNetworkUDR
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\deployUDR.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\connectivityRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : IdentityNetworkUDR
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\deployUDR.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\identityRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : SecurityNetworkUDR
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\deployUDR.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\securityRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : OperationsNetworkUDR
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\deployUDR.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-UDR\operationsRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+  # Deploy Virtual Network Security Groups Rules
+  - stage: DeployNetworkNSGRules
+    displayName: DeployVDCNSGRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployVDCNetworkSecurityGroups
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : ConnectivityNetworkNSGRules
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\deployNSGRule.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\connectivityNSGRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : IdentityNetworkNSGRules
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\deployNSGRule.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\identityNSGRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : SecurityNetworkNSGRules
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\deployNSGRule.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\securityNSGRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : OperationsNetworkNSGRules
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\deployNSGRule.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NSG\operationsNSGRules.param.$(AzureEnvironmentPrefix).json `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+  # Deploy Recovery Service Vault
+  - stage: DeployRecoveryServiceVault
+    displayName: DeployRSV
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployStorageAccounts]
+    jobs:
+    - deployment: DeployRSV
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Recovery Service Vault in Identity Subscription
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-RSV\deployRSV.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-RSV\identity.rsv.param.$(AzureEnvironmentPrefix).json `
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Recovery Service Vault in Operations Subscription
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-RSV\deployRSV.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-RSV\operations.rsv.param.$(AzureEnvironmentPrefix).json `
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Recovery Service Vault in Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-RSV\deployRSV.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-RSV\security.rsv.param.$(AzureEnvironmentPrefix).json `
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+  # Deploy VDC Keyvaults
+  - stage: DeployKeyvault
+    displayName: DeployKeyVault
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: var-password-secret-value
+    - group: var-azure-tenant-id
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployNetworkUDRRules]
+    jobs:
+    - deployment: DeployKeyvault
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #security
+            - template: templates/steps-tasks/key-vault.yml
+              parameters:
+                service: 'security'
+                serviceSubscriptionId: '$(securitySubscriptionId)'
+                serviceSubscServiceConnection: '$(securitySubscServiceConnection)'
+                localAdminPassword: '$(dc-cfsadmin-secret)'
+
+            #connectivity
+            - template: templates/steps-tasks/key-vault.yml
+              parameters:
+                service: 'connectivity'
+                serviceSubscriptionId: '$(connectivitySubscriptionId)'
+                serviceSubscServiceConnection: '$(connectivitySubscServiceConnection)'
+                localAdminPassword: '$(paw-cfsadmin-secret)'
+
+            #identity
+            - template: templates/steps-tasks/key-vault.yml
+              parameters:
+                service: 'identity'
+                serviceSubscriptionId: '$(identitySubscriptionId)'
+                serviceSubscServiceConnection: '$(identitySubscServiceConnection)'
+                localAdminPassword: '$(dc-cfsadmin-secret)'
+
+            #operations
+            - template: templates/steps-tasks/key-vault.yml
+              parameters:
+                service: 'operations'
+                serviceSubscriptionId: '$(operationsSubscriptionId)'
+                serviceSubscServiceConnection: '$(operationsSubscServiceConnection)'
+                localAdminPassword: '$(dc-cfsadmin-secret)'
+
+  # Deploy Domain Controllers and Availability Set
+  - stage: DeployDomainControllers
+    displayName: DeployDCsandAVS
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: var-workspace
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployDomainControllers
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : AvailabilitySetDeployment
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-availabilitySet\deploy-availabilitySet.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-availabilitySet\deploy-availabilitySet.param.json ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : EDCDomainControllerVMDeployment
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                              "Setting input Variables"
+                              $servicePrefix='identity'
+                              $locationPrefix='edc'
+                              $keyEncryptionUrl = "az keyvault key list-versions --vault-name kv-$(AzureEnvironmentPrefix)-$($locationPrefix)-$($servicePrefix)-001 --name keyEncrypt --query [].kid --output tsv"
+                              $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                              $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                              "Cleaning input variables"
+                              Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                              Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                              Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                              "Starting az deployment"
+                              az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-DomainControllerServer\deploy-DomainControllerServer.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-DomainControllerServer\DC-$($locationPrefix).param.$(AzureEnvironmentPrefix).json `
+                              --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                              --parameters workspaceId=$WorkspaceIdOutput `
+                              --parameters workspaceKey=$WorkspaceKeyOutput `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : SDCDomainControllerVMDeployment
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                              "Setting input Variables"
+                              $servicePrefix='identity'
+                              $locationPrefix='sdc'
+                              $keyEncryptionUrl = "az keyvault key list-versions --vault-name kv-$(AzureEnvironmentPrefix)-$($locationPrefix)-$($servicePrefix)-001 --name keyEncrypt --query [].kid --output tsv"
+                              $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                              $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                              "Cleaning input variables"
+                              Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                              Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                              Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                              "Starting az deployment"
+                              az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-DomainControllerServer\deploy-DomainControllerServer.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-DomainControllerServer\DC-$($locationPrefix).param.$(AzureEnvironmentPrefix).json `
+                              --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                              --parameters workspaceId=$WorkspaceIdOutput `
+                              --parameters workspaceKey=$WorkspaceKeyOutput `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : EDCAADVMDeployment
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                              "Setting input Variables"
+                              $servicePrefix='identity'
+                              $locationPrefix='edc'
+                              $keyEncryptionUrl = "az keyvault key list-versions --vault-name kv-$(AzureEnvironmentPrefix)-$($locationPrefix)-$($servicePrefix)-001 --name keyEncrypt --query [].kid --output tsv"
+                              $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                              $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                              "Cleaning input variables"
+                              Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                              Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                              Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                              "Starting az deployment"
+                              az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-AADServer\deploy-AADServer.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-AADServer\AAD-$($locationPrefix).param.$(AzureEnvironmentPrefix).json `
+                              --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                              --parameters workspaceId=$WorkspaceIdOutput `
+                              --parameters workspaceKey=$WorkspaceKeyOutput `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : SDCAADVMDeployment
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                              "Setting input Variables"
+                              $servicePrefix='identity'
+                              $locationPrefix='sdc'
+                              $keyEncryptionUrl = "az keyvault key list-versions --vault-name kv-$(AzureEnvironmentPrefix)-$($locationPrefix)-$($servicePrefix)-001 --name keyEncrypt --query [].kid --output tsv"
+                              $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                              $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                              "Cleaning input variables"
+                              Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                              Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                              Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                              "Starting az deployment"
+                              az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-AADServer\deploy-AADServer.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-AADServer\AAD-$($locationPrefix).param.$(AzureEnvironmentPrefix).json `
+                              --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                              --parameters workspaceId=$WorkspaceIdOutput `
+                              --parameters workspaceKey=$WorkspaceKeyOutput `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+  # Deploy Virtual Machine Backup
+  - stage: DeployVirtualMachineBackup
+    displayName: DeployVirtualMachineBackup
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployRecoveryServiceVault]
+    jobs:
+    - deployment: DeployVirtualMachineBackup
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Virtual Machine Backup for Identity Subscription
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VMBackup\deployVMBackup.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-VMBackup\identity-deployVMBackup.param.$(AzureEnvironmentPrefix).json ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Virtual Machine Backup for Security Subscription
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VMBackup\deployVMBackup.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-VMBackup\security-deployVMBackup.param.$(AzureEnvironmentPrefix).json ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+  # Deploy Policy Assignment
+  - stage: DeployPolicyAssignment
+    displayName: DeployPolicyAssignments
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployPolicyAssignment
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: templates/steps-tasks/policy-assignment.yml
+              parameters:
+                service: 'x'
+
+  # Deploy Policy Exemption
+  - stage: DeployPolicyExemption
+    displayName: DeployPolicyExemption
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployPolicyExemption
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: templates/steps-tasks/policy-exemption.yml
+              parameters:
+                service: 'x'
+
+  # Deploy Resource Locks
+  - stage: DeployResourceLocks
+    displayName: DeployResourceLocks
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+    # make it last stage requirement so RG exist
+    dependsOn: []
+    jobs:
+    - deployment: DeployResourceLocks
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Locks for Connectivity RG
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\deployResourceLock.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\connectivity.param.json ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' 
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Locks for Identity RG
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\deployResourceLock.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\identity.param.json ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' 
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Locks for Operations RG
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\deployResourceLock.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\operations.param.json ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' 
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Locks for Security RG
+              inputs:
+                azureSubscription: $(securitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\deployResourceLock.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-ResourceLocktoRG\security.param.json ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' 
+
+  # Deploy Firewall
+  - stage: DeployFirewall
+    displayName: DeployFirewall
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployFirewall
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Firewall
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deploy-Firewall.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\connectivity.param.$(AzureEnvironmentPrefix).json 
+
+  # Deploy Bastion
+  - stage: DeployBastion
+    displayName: DeployBastion
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployBastion
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Bastion
+              inputs:
+                azureSubscription: $(connectivitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-VDCVirtualNetwork\deploy-Bastion.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\connectivity.param.$(AzureEnvironmentPrefix).json
+
+ # Deploy LoadBalancer
+  - stage: DeployLoadBalancer
+    displayName: DeployLoadBalancer
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [DeployVDCVirtualNetwork]
+    jobs:
+    - deployment: DeployLoadBalancer
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy LoadBalancer
+              inputs:
+                azureSubscription: $(identitySubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-LoadBalancer\deployAzureLoadBalancer.bicep ^
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-LoadBalancer\identity-lb.param.$(AzureEnvironmentPrefix).json
+
+
+## THIS DOES NOT WORK YET - it requires passing credential to Connect-AzureAD
+#  # Deploy SecurityGroups
+#  - stage: DeploySecurityGroups
+#    displayName: DeploySecurityGroups
+#    variables:
+#    - group: var-azure-platform
+#    - group: var-service-principle-secrets
+#    pool:
+#      vmImage: windows-latest
+#    dependsOn: []
+#    jobs:
+#    - deployment: DeploySecurityGroups
+#      workspace:
+#        clean: all
+#      environment: $(AzureDevOpsEnvironments)
+#      strategy:
+#        runOnce:
+#          deploy:
+#            steps:
+#  
+#            - task: DownloadPackage@1
+#              displayName: DownloadArtifacts
+#              inputs:
+#                packageType: 'nuget'
+#                feed: '$(artifactFeed)'
+#                definition: '$(artifactDefinition)'
+#                version: '$(artifactVersion)'
+#                extract: true
+#                downloadPath: '$(System.ArtifactsDirectory)'
+#  
+#            - task: AzurePowerShell@5
+#              displayName: DeploySecurityGroups
+#              inputs:
+#                azureSubscription: $(connectivitySubscServiceConnection)
+#                azurePowerShellVersion: latestVersion
+#                pwsh: true
+#                ScriptType: 'InlineScript'
+#                Inline: |
+#                  if (!(Get-Module AzureAD))
+#                  {
+#                    Install-Module AzureAD -SkipPublisherCheck -Force -AllowClobber
+#                    Import-Module AzureAD
+#                  }
+#                  #TODO Need to call Connect-AzureAD and pass it credentials
+#                  $secGroups = Get-Content -Path $(System.ArtifactsDirectory)\$(scripts)\sg-list.json | ConvertFrom-Json
+#                  foreach ($sg in $secGroups) {
+#                    $(System.ArtifactsDirectory)\$(scripts)\addSecurityGroup.ps1 `
+#                      -sgName $sg.name `
+#                      -Description $sg.description `
+#                      -SecurityEnabled $sg.securityEnabled `
+#                      -MailEnabled $sg.mailEnabled `
+#                      -MailNickName $sg.mailNickName `
+#                      -IsForManagementGroupRoleAssignment $sg.isForManagementGroupRoleAssignment
+#                  }
+#                preferredAzurePowerShellVersion: '1.0.1'
+
+  # Deploy AVD Request
+  - stage: DeployAVDRequest
+
+    displayName: DeployAVDRequest
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployAVDRequest
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Group
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-AVDRequest\deployResourceGroup.bicep ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-AVDRequest\resourceGroup.param.json ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Storage Accounts in Operations Subscription
+              inputs:
+                azureSubscription: $(operationsSubscServiceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                              --name $(deploymentName) ^
+                              --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-AVDRequest\deployStorageAccount.bicep ^
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                              --parameters owner='$(Owner)' ^
+                              --parameters costCenter='$(costCenterCode)' ^
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                              --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-AVDRequest\storageAccount.param.$(AzureEnvironmentPrefix).json
+
+
+  # Deploy Role Assignment To Management Group
+  - stage: deployRoleAssignmentToManagementGroup
+
+    displayName: DeployRoleAssignmentToManagementGroup
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployRoleAssignment
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #(CFSCoNonProd or CFSCoProd) Management Group 
+            - template: templates/steps-tasks/deployRoleAssignmentToManagementGroup.yml
+              parameters:
+                service: '$(managementGroupId)'
+                managementGroupId: '$(managementGroupId)'
+                managementSubscServiceConnection: '$(managementSubscServiceConnection)'
+
+            #(Connectivity) Management Group 
+            - template: templates/steps-tasks/deployRoleAssignmentToManagementGroup.yml
+              parameters:
+                service: 'connectivity'
+                managementGroupId: 'mg-$(AzureEnvironmentPrefix)-connectivity-001'
+                managementSubscServiceConnection: '$(managementSubscServiceConnection)'
+
+            #(Identity) Management Group 
+            - template: templates/steps-tasks/deployRoleAssignmentToManagementGroup.yml
+              parameters:
+                service: 'identity'
+                managementGroupId: 'mg-$(AzureEnvironmentPrefix)-identity-001'
+                managementSubscServiceConnection: '$(managementSubscServiceConnection)'
+
+            #(Operations) Management Group 
+            - template: templates/steps-tasks/deployRoleAssignmentToManagementGroup.yml
+              parameters:
+                service: 'operations'
+                managementGroupId: 'mg-$(AzureEnvironmentPrefix)-operations-001'
+                managementSubscServiceConnection: '$(managementSubscServiceConnection)'
+
+            #(Security) Management Group 
+            - template: templates/steps-tasks/deployRoleAssignmentToManagementGroup.yml
+              parameters:
+                service: 'security'
+                managementGroupId: 'mg-$(AzureEnvironmentPrefix)-security-001'
+                managementSubscServiceConnection: '$(managementSubscServiceConnection)'

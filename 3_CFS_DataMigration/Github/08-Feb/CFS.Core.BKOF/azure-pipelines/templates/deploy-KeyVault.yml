@@ -1,0 +1,33 @@
+#deploy-KeyVault.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+
+- name: serviceName
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : 'Deploy Key Vault in ${{ parameters.serviceName }} Subscription'
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-KeyVault.bicep `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\03-Key-Vault\KeyVault-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters owner='$(owner)' `
+                    --parameters azureTenantId='$(azureTenantId)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters appName='$(appName)'

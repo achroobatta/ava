@@ -1,0 +1,48 @@
+# Australia East
+- name: rg-np-edc-fcp-comp-001
+
+- name: rg-np-edc-fcp-fndev0-001
+
+- name: rg-np-edc-fcp-fndev0-0010
+
+- name: rg-np-edc-fcp-fndev0-0011
+
+- name: rg-np-edc-fcp-fndev0-0012
+
+- name: rg-np-edc-fcp-fndev0-002
+
+- name: rg-np-edc-fcp-fndev0-003
+
+- name: rg-np-edc-fcp-fndev0-004
+
+- name: rg-np-edc-fcp-fndev0-005
+
+- name: rg-np-edc-fcp-fndev0-006
+
+- name: rg-np-edc-fcp-fndev0-007
+
+- name: rg-np-edc-fcp-fndev0-008
+
+- name: rg-np-edc-fcp-fndev0-009
+
+- name: rg-np-edc-fcp-kv-001
+
+- name: rg-np-edc-fcp-netw-001
+
+- name: rg-np-edc-fcp-rsv-001
+
+- name: rg-np-edc-fcp-sec-001
+
+- name: rg-np-edc-fcp-stor-001
+
+# Australia South East
+
+- name: rg-np-sdc-fcp-comp-001
+
+- name: rg-np-sdc-fcp-kv-001
+
+- name: rg-np-sdc-fcp-netw-001
+
+- name: rg-np-sdc-fcp-rsv-001
+
+- name: rg-np-sdc-fcp-stor-001

@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiasoutheast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "iden"
+        },
+        "kv_service": {
+            "value": "identity"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiasoutheast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "IQS",
+                        "vmInstance": "1",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Standard_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D2s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "iden",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "3",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "IQS",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"StandardSSD_LRS",
+                        "domainName":"dev.cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@dev.cfs.com.au",
+                        "isEnableDomainJoin": false,
+                        "OUPAth": "",
+                        "dataDiskResources": {
+                            "value": []
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

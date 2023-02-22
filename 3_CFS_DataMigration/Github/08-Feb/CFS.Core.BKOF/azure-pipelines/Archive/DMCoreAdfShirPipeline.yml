@@ -1,0 +1,51 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+variables:
+
+  # Azure DevOps Landing Zone Service Connection Name
+ - name: landingZoneServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-${{ parameters.landingZoneServiceId }}-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-${{ parameters.landingZoneServiceId }}-001"
+
+stages:
+
+# Deploy ShirVM
+  - stage: deployShirVM
+    displayName: DeployShirVM 
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: []
+    jobs:
+    - deployment: DeployShirVM
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            # - task: DownloadPackage@1
+            #   displayName: DownloadArtifacts
+            #   inputs:
+            #     packageType: 'nuget'
+            #     feed: '$(artifactFeed)'
+            #     definition: '$(artifactDefinition)'
+            #     version: '$(artifactVersion)'
+            #     extract: true
+            #     downloadPath: '$(System.ArtifactsDirectory)'            
+
+            #ShirVM
+            - template: ./DMOnDemandPipeline.yml
+              parameters:                              
+                serviceConnection: '$(landingZoneServiceConnection)'

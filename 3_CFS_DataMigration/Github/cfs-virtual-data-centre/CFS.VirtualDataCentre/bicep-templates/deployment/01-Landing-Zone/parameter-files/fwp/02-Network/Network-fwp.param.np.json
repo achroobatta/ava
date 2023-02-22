@@ -1,0 +1,210 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fwp",
+                        "serviceAbbrv": "fwp",
+                        "appName": "CFS Wrap",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ "10.42.0.0/16" ],
+                        "customDnsServers": [
+                            "10.40.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-edc-fwp-001",
+                              "location": "australiaeast",
+                              "service": "fwp",
+                              "instance" : "1",
+                              "addressPrefix": "10.42.0.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-fwp-001",
+                              "routeTable": "rt-np-edc-fwp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-np-edc-fwp-002",
+                              "location": "australiaeast",
+                              "service": "fwp",
+                              "instance" : "2",
+                              "addressPrefix": "10.42.1.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-fwp-002",
+                              "routeTable": "rt-np-edc-fwp-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [
+                                  {
+                                      "name": "delegation",
+                                      "type": "Microsoft.Network/virtualNetworks/subnets/delegations",
+                                      "properties": {
+                                          "serviceName": "Microsoft.Web/serverfarms"
+                                      }
+                                  }
+                              ],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-np-edc-fwp-003",
+                              "location": "australiaeast",
+                              "service": "fwp",
+                              "instance" : "3",
+                              "addressPrefix": "10.42.2.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-fwp-003",
+                              "routeTable": "rt-np-edc-fwp-003",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [
+                                  {
+                                      "name": "delegation",
+                                      "type": "Microsoft.Network/virtualNetworks/subnets/delegations",
+                                      "properties": {
+                                          "serviceName": "Microsoft.Web/serverfarms"
+                                      }
+                                  }
+                              ],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-np-edc-fwp-004",
+                              "location": "australiaeast",
+                              "service": "fwp",
+                              "instance" : "4",
+                              "addressPrefix": "10.42.3.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-fwp-004",
+                              "routeTable": "rt-np-edc-fwp-004",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [
+                                  {
+                                      "name": "delegation",
+                                      "type": "Microsoft.Network/virtualNetworks/subnets/delegations",
+                                      "properties": {
+                                          "serviceName": "Microsoft.Web/serverfarms"
+                                      }
+                                  }
+                              ],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fwp",
+                        "serviceAbbrv": "fwp",
+                        "appName": "CFS Wrap",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ "10.62.0.0/16" ],
+                        "customDnsServers": [
+                            "10.60.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-sdc-fwp-001",
+                              "location": "australiasoutheast",
+                              "service": "fwp",
+                              "instance" : "1",
+                              "addressPrefix": "10.62.0.0/24",
+                              "networkSecurityGroup": "nsg-np-sdc-fwp-001",
+                              "routeTable": "rt-np-sdc-fwp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-np-sdc-fwp-002",
+                              "location": "australiasoutheast",
+                              "service": "fwp",
+                              "instance" : "2",
+                              "addressPrefix": "10.62.1.0/24",
+                              "networkSecurityGroup": "nsg-np-sdc-fwp-002",
+                              "routeTable": "rt-np-sdc-fwp-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

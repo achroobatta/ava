@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "fwd",
+                        "serviceAbbrv": "fwd",
+                        "appName": "CFS Wrap Data",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "fwd",
+                        "serviceAbbrv": "fwd",
+                        "appName": "CFS Wrap Data",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
+

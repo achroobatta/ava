@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\0_PROJECT\0_CFS\WebApi\WebApi\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
+    <History>True|2022-06-10T13:44:29.1555129Z;True|2022-06-10T20:39:03.6203701+10:00;</History>
+  </PropertyGroup>
+</Project>

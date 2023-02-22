@@ -1,0 +1,27 @@
+#deploy-ResourceGroup.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Resource Group in ${{ parameters.serviceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(templateDirectory)\03-Virtual-Environment\deployment-templates\deploy-ResourceGroup.bicep `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters $(parameterDirectory)\00-Resource-Group\Resource-Group.param.$(AzureEnvironmentPrefix).json    

@@ -1,0 +1,122 @@
+[
+	{
+		"name": "SG-AA-OPS-CFSCoManagementGroup-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-CFSCoManagementGroup-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-CFSCoManagementGroup-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-conn-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-conn-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-conn-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-iden-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-iden-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-iden-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-oper-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-oper-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-oper-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-sec-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-sec-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-sec-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-bkof-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-bkof-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-bkof-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-CFSCoManagementGroup-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-CFSCoManagementGroup-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-CFSCoManagementGroup-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-conn-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-conn-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-conn-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-fcp-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-fcp-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-fcp-reader",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-fwp-contributor",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-fwp-owner",
+		"isForManagementGroupRoleAssignment": true
+	},
+	{
+		"name": "SG-AA-OPS-fwp-reader",
+		"isForManagementGroupRoleAssignment": true
+	}	
+]

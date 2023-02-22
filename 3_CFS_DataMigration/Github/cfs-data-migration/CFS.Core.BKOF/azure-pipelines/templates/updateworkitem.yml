@@ -1,0 +1,40 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+    dependsOn: ''
+    workItemComment: ''
+    condition: ''
+    workItemId: ''
+    workItemState: ''
+    processed: 'false'
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+
+  steps:
+      - checkout: self
+
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Update Work Item'
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -WorkItemId ${{ parameters.workItemId}} -PAT $(PAT) -WorkItemState "${{ parameters.workItemState}}" -WorkItemComment "${{ parameters.workItemComment}}" -Processed "${{ parameters.processed}}"
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'

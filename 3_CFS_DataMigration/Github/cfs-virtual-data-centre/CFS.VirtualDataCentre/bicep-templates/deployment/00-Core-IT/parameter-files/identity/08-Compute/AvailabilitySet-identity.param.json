@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "availabilitySetObject": {
+            "value": {
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "comp",
+                        "service": "iden",
+                        "rg_instance": 1,
+                        "availabilitySets": [
+                            {
+                                "availabilitySet_abbv": "dc",
+                                "platformFaultDomainCount": 2,
+                                "platformUpdateDomainCount": 2,
+                                "appName": "DC"
+                            },
+                            {
+                                "availabilitySet_abbv": "iqs",
+                                "platformFaultDomainCount": 2,
+                                "platformUpdateDomainCount": 2,
+                                "appName": "IQS"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "comp",
+                        "service": "iden",
+                        "rg_instance": 1,
+                        "availabilitySets": [
+                            {
+                                "availabilitySet_abbv": "dc",
+                                "platformFaultDomainCount": 2,
+                                "platformUpdateDomainCount": 2,
+                                "appName": "DC"
+                            }
+                        ]
+                    }
+                ]
+            }
+
+        }
+    }
+}

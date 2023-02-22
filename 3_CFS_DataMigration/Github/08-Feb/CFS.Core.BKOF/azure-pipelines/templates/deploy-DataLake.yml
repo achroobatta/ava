@@ -1,0 +1,103 @@
+#deploy-DataLake.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: resourceLocation
+  type: string
+
+- name: deploymentName
+  type: string
+
+- name: owner
+  type: string
+
+- name: costCenterCode
+  type: string
+
+- name: appName
+  type: string
+
+- name: AustraliaEastOffsetSymbol
+  type: string
+
+- name: AzureEnvironmentPrefix
+  type: string
+
+- name: destStorageAccountName
+  type: string
+
+- name: rootContainerName
+  type: string
+
+- name: warrantyPeriod
+  type: string
+
+- name: rgName
+  type: string
+
+- name: connRg
+  type: string
+
+- name: subId
+  type: string
+
+- name: connSubId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Data Lake Gen2 Storage Account in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.resourceLocation }} `
+                    --name ${{ parameters.deploymentName }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-DataLakeGen2.bicep `
+                    --parameters environmentPrefix='${{ parameters.AzureEnvironmentPrefix }}' `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\05-DataLake\datalake-${{ parameters.serviceId }}.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters resourceLocation='${{ parameters.resourceLocation }}' `
+                    --parameters dlstorageAccountName='${{ parameters.destStorageAccountName }}' `
+                    --parameters dlRootContainterName='${{ parameters.rootContainerName }}' `
+                    --parameters warrantyPeriod='${{ parameters.warrantyPeriod }}'
+
+  - task: AzureCLI@2
+    displayName : Add A Record in DNS Zone
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $location = "${{ parameters.resourceLocation }}"
+        $storageAcct = "${{ parameters.destStorageAccountName }}"
+        $endpoint = "pve-$location-$storageAcct"
+        $dnsZoneGrp = "default"
+        $bkofRgName = "${{ parameters.rgName }}"
+        $backOfcSubId = "${{ parameters.subId }}"
+        $connSubId = "${{ parameters.connSubId }}"
+        $connRgName = "${{ parameters.connRg }}"
+        $dnsZoneName = "privatelink.blob.core.windows.net"
+
+        az account set --subscription $backOfcSubId
+        $privateIp = az network private-endpoint dns-zone-group show --endpoint-name $endpoint -n $dnsZoneGrp -g $bkofRgName --query privateDnsZoneConfigs[].recordSets[].ipAddresses[] --output tsv
+        $privateIp
+
+        az account set --subscription $connSubId
+        az network private-dns record-set a list -g $connRgName -z $dnsZoneName
+        az network private-dns record-set a add-record -g $connRgName -a $privateIp -n $storageAcct -z $dnsZoneName

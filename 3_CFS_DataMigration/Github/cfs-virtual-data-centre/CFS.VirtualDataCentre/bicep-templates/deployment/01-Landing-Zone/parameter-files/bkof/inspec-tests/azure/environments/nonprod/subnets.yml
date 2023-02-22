@@ -1,0 +1,20 @@
+#Template Format
+#- name: GatewaySubnet
+#  resource_group: rg-prod-ae-network
+#  vnet: vn-prod-ae-hub-01
+#  prefix: 10.10.0.0/26
+#  nsg: null
+
+# Australia East
+- name: sub-np-edc-bkof-001
+  resource_group: rg-np-edc-bkof-netw-001
+  vnet: vnet-np-edc-bkof-001
+  prefix: 10.43.0.0/24
+  nsg: nsg-np-edc-bkof-001
+
+# Australia South East
+- name: sub-np-sdc-bkof-001
+  resource_group: rg-np-sdc-bkof-netw-001
+  vnet: vnet-np-sdc-bkof-001
+  prefix: 10.63.0.0/24
+  nsg: nsg-np-sdc-bkof-001

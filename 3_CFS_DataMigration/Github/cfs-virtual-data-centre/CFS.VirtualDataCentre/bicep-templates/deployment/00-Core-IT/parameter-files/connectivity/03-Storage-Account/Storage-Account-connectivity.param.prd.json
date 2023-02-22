@@ -1,0 +1,92 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiasoutheast",
+                        "component": "stor",
+                        "service": "connectivity",
+                        "serviceAbbrv": "hub",
+                        "appName": "Connectivity",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stoprdsdchub001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "connectivity",
+                        "serviceAbbrv": "hub",
+                        "appName": "Connectivity",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stoprdedchub001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "stor",
+                        "service": "connectivity",
+                        "serviceAbbrv": "conn",
+                        "appName": "Connectivity",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stoprdsdcconn001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "connectivity",
+                        "serviceAbbrv": "conn",
+                        "appName": "Connectivity",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stoprdedcconn001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

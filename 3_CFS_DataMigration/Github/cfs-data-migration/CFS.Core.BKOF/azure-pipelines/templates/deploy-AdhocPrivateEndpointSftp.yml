@@ -1,0 +1,121 @@
+#deploy-AdhocPE for Sftp
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: resourceLocation
+  type: string
+
+- name: deploymentName
+  type: string
+
+- name: owner
+  type: string
+
+- name: costCenterCode
+  type: string
+
+- name: appName
+  type: string
+
+- name: AustraliaEastOffsetSymbol
+  type: string
+
+- name: AzureEnvironmentPrefix
+  type: string
+
+- name: destStorageAccountName
+  type: string
+
+- name: rgName
+  type: string
+
+- name: connRg
+  type: string
+
+- name: subId
+  type: string
+
+- name: connSubId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy PE and A record for Storage Account in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.resourceLocation }} `
+                    --name ${{ parameters.deploymentName }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-AdhocPE.bicep `
+                    --parameters environmentPrefix='${{ parameters.AzureEnvironmentPrefix }}' `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\04-SFTP\sftp-${{ parameters.serviceId }}.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters resourceLocation='${{ parameters.resourceLocation }}' `
+                    --parameters dlstorageAccountName='${{ parameters.destStorageAccountName }}' `
+                    --parameters connRg='${{ parameters.connRg }}' `
+                    --parameters connSubId='${{ parameters.connSubId }}' `
+                    --parameters rgName='${{ parameters.rgName }}'
+
+  # - task: AzureCLI@2
+  #   #condition: eq('${{ parameters.deployEnvironment }}', 'Non-Production')
+  #   displayName : Add A Record in DNS Zone
+  #   inputs:
+  #     azureSubscription: ${{ parameters.serviceConnection }}
+  #     scriptType: 'pscore'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: |
+  #       $location = "${{ parameters.resourceLocation }}"
+  #       $storageAcct = "${{ parameters.destStorageAccountName }}"
+  #       $endpoint = "pve-$location-$storageAcct"
+  #       $dnsZoneGrp = "default"
+  #       $bkofRgName = "${{ parameters.rgName }}"
+  #       $backOfcSubId = "${{ parameters.subId }}"
+  #       $connSubId = "${{ parameters.connSubId }}"
+  #       $connRgName = "${{ parameters.connRg }}"
+  #       $dnsZoneName = "privatelink.blob.core.windows.net"
+
+  #       Write-Output '***************************************************************************'
+  #       Write-Output 'Location:' $location
+  #       Write-Output 'Resource:' $storageAcct
+  #       Write-Output 'Endpoint:' $endpoint
+  #       Write-Output 'DnsZoneGroup:' $dnsZoneGrp
+  #       Write-Output 'bkofResourceGroup:' $bkofRgName
+  #       Write-Output 'bkofSubscriptionId:' $backOfcSubId
+  #       Write-Output 'connSubscriptionId:' $connSubId
+  #       Write-Output 'connResourceGroup:' $connRgName
+  #       Write-Output 'DnsZoneName:' $dnsZoneName
+
+  #       az account set --subscription $backOfcSubId
+  #       $privateIp = az network private-endpoint dns-zone-group show --endpoint-name $endpoint -n $dnsZoneGrp -g $bkofRgName --query privateDnsZoneConfigs[].recordSets[].ipAddresses[] --output tsv
+  #       $privateIp
+
+  #       Write-Output 'PrivateIP:' $privateIp
+
+  #       if ($null -eq $privateIp) {
+  #         Write-Error "Unable to fetch privateIP"
+  #       }
+  #       else {
+  #         Write-Output "Entering into Else"
+  #         az account set --subscription $connSubId
+  #         Write-Output "Account set to Connectivity subscription"
+  #         az network private-dns record-set a list -g $connRgName -z $dnsZoneName
+  #         Write-Output "List of dns in connectivity RG completed"
+  #         az network private-dns record-set a add-record -g $connRgName -a $privateIp -n $storageAcct -z $dnsZoneName
+  #       }
+  #       Write-Output '***************************************************************************'

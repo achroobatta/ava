@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "Operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "vmRGcomponent": "rsv",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "vmRGcomponent": "snow",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "MID001"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 5,
+                        "vmBackup": [
+                            {
+                                "vmName": "PGW001"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "DIG001"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "Operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "vmRGcomponent": "rsv",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "operations",
+                        "serviceAbbrv": "oper",
+                        "appName": "Operations",
+                        "vmRGcomponent": "snow",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "MID001"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
+

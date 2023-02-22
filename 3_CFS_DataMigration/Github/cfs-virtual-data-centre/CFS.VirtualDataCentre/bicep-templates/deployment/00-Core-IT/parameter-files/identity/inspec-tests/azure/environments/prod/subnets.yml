@@ -1,0 +1,44 @@
+#Template Format
+#- name: GatewaySubnet
+#  resource_group: rg-prod-ae-network
+#  vnet: vn-prod-ae-hub-01
+#  prefix: 10.10.0.0/26
+#  nsg: null
+
+# Australia East
+- name: sub-prd-edc-identity-001
+  resource_group: rg-prd-edc-iden-netw-001
+  vnet: vnet-prd-edc-identity-001
+  prefix: 10.20.2.0/25
+  nsg: nsg-prd-edc-identity-001
+
+- name: sub-prd-edc-identity-002
+  resource_group: rg-prd-edc-iden-netw-001
+  vnet: vnet-prd-edc-identity-001
+  prefix: 10.20.2.128/26
+  nsg: nsg-prd-edc-identity-002
+
+- name: sub-prd-edc-identity-003
+  resource_group: rg-prd-edc-iden-netw-001
+  vnet: vnet-prd-edc-identity-001
+  prefix: 10.20.2.192/26
+  nsg: nsg-prd-edc-identity-003
+
+# Australia South East
+- name: sub-prd-sdc-identity-001
+  resource_group: rg-prd-sdc-iden-netw-001
+  vnet: vnet-prd-sdc-identity-001
+  prefix: 10.30.2.0/25
+  nsg: nsg-prd-sdc-identity-001
+
+- name: sub-prd-sdc-identity-002
+  resource_group: rg-prd-sdc-iden-netw-001
+  vnet: vnet-prd-sdc-identity-001
+  prefix: 10.30.2.128/26
+  nsg: nnsg-prd-sdc-identity-002
+
+- name: sub-prd-sdc-identity-003
+  resource_group: rg-prd-sdc-iden-netw-001
+  vnet: vnet-prd-sdc-identity-001
+  prefix: 10.30.2.192/26
+  nsg: nnsg-prd-sdc-identity-003

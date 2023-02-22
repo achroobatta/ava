@@ -1,0 +1,254 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "virtualNetworkObject": {
+        "value": {
+          "virtualNetwork": [
+            {
+              "location": "australiaeast",
+              "workspaceLocation": "australiaeast",
+              "component": "netw",
+              "service": "bkof",
+              "serviceAbbrv": "bkof",
+              "appName": "Infra",
+              "instance": 1,
+              "StorageAccountInstance": 1,
+              "addressSpaces": [
+                "10.23.0.0/16"
+              ],
+              "customDnsServers": [
+                "10.20.0.68"
+              ],
+              "ddosProtectionPlan": "",
+              "ddosProtectionPlanRg": "",
+              "subnets": [
+                {
+                  "name": "sub-prd-edc-bkof-001",
+                  "location": "australiaeast",
+                  "service": "bkof",
+                  "instance": "1",
+                  "addressPrefix": "10.23.0.0/24",
+                  "networkSecurityGroup": "nsg-prd-edc-bkof-001",
+                  "routeTable": "rt-prd-edc-bkof-001",
+                  "routes": [],
+                  "serviceEndpoints": [
+                    {
+                      "service": "Microsoft.Storage",
+                      "locations": [
+                          "australiaeast"
+                      ]
+                    }
+                  ],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "AzureBastionSubnet",
+                  "location": "australiaeast",
+                  "service": "bkof",
+                  "instance": "2",
+                  "addressPrefix": "10.23.1.0/26",
+                  "networkSecurityGroup": "",
+                  "routeTable": "",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-edc-bkof-dm-sftp-001",
+                  "location": "australiaeast",
+                  "service": "bkof-dm-sftp",
+                  "instance": "1",
+                  "addressPrefix": "10.23.4.0/24",
+                  "networkSecurityGroup": "nsg-prd-edc-bkof-dm-sftp-001",
+                  "routeTable": "rt-prd-edc-bkof-dm-sftp-001",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-edc-bkof-dm-com-002",
+                  "location": "australiaeast",
+                  "service": "bkof-dm-com",
+                  "instance": "2",
+                  "addressPrefix": "10.23.3.0/24",
+                  "networkSecurityGroup": "nsg-prd-edc-bkof-dm-com-002",
+                  "routeTable": "rt-prd-edc-bkof-dm-com-002",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-edc-bkof-dm-vmsub-003",
+                  "location": "australiaeast",
+                  "service": "bkof-dm-vmsub",
+                  "instance": "3",
+                  "addressPrefix": "10.23.2.0/24",
+                  "networkSecurityGroup": "nsg-prd-edc-bkof-dm-vmsub-003",
+                  "routeTable": "rt-prd-edc-bkof-dm-vmsub-003",
+                  "routes": [],
+                  "serviceEndpoints": [
+                    {
+                      "service": "Microsoft.Storage",
+                      "locations": [
+                          "australiaeast",
+                          "australiasoutheast"
+                      ]
+                    },
+                    {
+                      "service": "Microsoft.KeyVault",
+                      "locations": [
+                          "australiaeast",
+                          "australiasoutheast"
+                      ]
+                    }
+                  ],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-edc-bkof-dm-blob-001",
+                  "location": "australiaeast",
+                  "service": "bkof-dm-blob",
+                  "instance": "1",
+                  "addressPrefix": "10.23.5.0/24",
+                  "networkSecurityGroup": "nsg-prd-edc-bkof-dm-blob-001",
+                  "routeTable": "rt-prd-edc-bkof-dm-blob-001",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              ]
+            },
+            {
+              "location": "australiasoutheast",
+              "workspaceLocation": "australiaeast",
+              "component": "netw",
+              "service": "bkof",
+              "serviceAbbrv": "bkof",
+              "appName": "Infra",
+              "instance": 1,
+              "StorageAccountInstance": 1,
+              "addressSpaces": [
+                "10.33.0.0/16"
+              ],
+              "customDnsServers": [
+                "10.30.0.68"
+              ],
+              "ddosProtectionPlan": "",
+              "ddosProtectionPlanRg": "",
+              "subnets": [
+                {
+                  "name": "sub-prd-sdc-bkof-001",
+                  "location": "australiasoutheast",
+                  "service": "bkof",
+                  "instance": "1",
+                  "addressPrefix": "10.33.0.0/24",
+                  "networkSecurityGroup": "nsg-prd-sdc-bkof-001",
+                  "routeTable": "rt-prd-sdc-bkof-001",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-sdc-bkof-dm-sftp-001",
+                  "location": "australiasoutheast",
+                  "service": "bkof-dm-sftp",
+                  "instance": "1",
+                  "addressPrefix": "10.33.4.0/24",
+                  "networkSecurityGroup": "nsg-prd-sdc-bkof-dm-sftp-001",
+                  "routeTable": "rt-prd-sdc-bkof-dm-sftp-001",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-sdc-bkof-dm-com-002",
+                  "location": "australiasoutheast",
+                  "service": "bkof-dm-com",
+                  "instance": "2",
+                  "addressPrefix": "10.33.3.0/24",
+                  "networkSecurityGroup": "nsg-prd-sdc-bkof-dm-com-002",
+                  "routeTable": "rt-prd-sdc-bkof-dm-com-002",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-sdc-bkof-dm-vmsub-003",
+                  "location": "australiasoutheast",
+                  "service": "bkof-dm-vmsub",
+                  "instance": "3",
+                  "addressPrefix": "10.33.2.0/24",
+                  "networkSecurityGroup": "nsg-prd-sdc-bkof-dm-vmsub-003",
+                  "routeTable": "rt-prd-sdc-bkof-dm-vmsub-003",
+                  "routes": [],
+                  "serviceEndpoints": [
+                    {
+                      "service": "Microsoft.Storage",
+                      "locations": [
+                          "australiaeast",
+                          "australiasoutheast"
+                      ]
+                    },
+                    {
+                      "service": "Microsoft.KeyVault",
+                      "locations": [
+                          "australiaeast",
+                          "australiasoutheast"
+                      ]
+                    }
+                  ],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                },
+                {
+                  "name": "sub-prd-sdc-bkof-dm-blob-001",
+                  "location": "australiasoutheast",
+                  "service": "bkof-dm-blob",
+                  "instance": "1",
+                  "addressPrefix": "10.33.5.0/24",
+                  "networkSecurityGroup": "nsg-prd-sdc-bkof-dm-blob-001",
+                  "routeTable": "rt-prd-sdc-bkof-dm-blob-001",
+                  "routes": [],
+                  "serviceEndpoints": [],
+                  "delegations": [],
+                  "securityRules": [],
+                  "privateEndpointNetworkPolicies": "Enabled",
+                  "privateLinkServiceNetworkPolicies": "Enabled"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+}

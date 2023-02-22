@@ -1,0 +1,10 @@
+param vNetName string
+param subnetName string
+param subnetAddressSpace string
+
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' = {
+  name: '${vNetName}/${subnetName}'
+  properties: {
+    addressPrefix: subnetAddressSpace
+  }
+}

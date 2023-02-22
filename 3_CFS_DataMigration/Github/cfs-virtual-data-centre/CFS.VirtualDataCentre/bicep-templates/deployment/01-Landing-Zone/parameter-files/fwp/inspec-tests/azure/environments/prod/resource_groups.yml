@@ -1,0 +1,50 @@
+# Template Format
+#- name: rg-np-edc-bkof-comp-001
+#  location: australiaeast
+  
+# Australia East
+- name: AzureBackupRG_australiaeast_1
+  location: australiaeast
+
+- name: NetworkWatcherRG
+  location: australiaeast
+  
+- name: rg-prd-edc-fwp-comp-001
+  location: australiaeast
+  
+- name: rg-prd-edc-fwp-fa-001
+  location: australiaeast
+
+- name: rg-prd-edc-fwp-kv-001
+  location: australiaeast
+  
+- name: rg-prd-edc-fwp-netw-001
+  location: australiaeast
+  
+- name: rg-prd-edc-fwp-rsv-001
+  location: australiaeast
+
+- name: rg-prd-edc-fwp-sec-001
+  location: australiaeast
+  
+- name: rg-prd-edc-fwp-stor-001
+  location: australiaeast
+
+# Australia South East
+- name: AzureBackupRG_australiasoutheast_1
+  location: australiasoutheast
+
+- name: rg-prd-sdc-fwp-comp-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-fwp-kv-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-fwp-netw-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-fwp-rsv-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-fwp-stor-001
+  location: australiasoutheast

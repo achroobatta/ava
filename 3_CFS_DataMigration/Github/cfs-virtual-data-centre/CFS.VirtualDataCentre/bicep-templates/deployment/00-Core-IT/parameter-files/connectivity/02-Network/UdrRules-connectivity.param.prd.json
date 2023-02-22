@@ -1,0 +1,821 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters":  {
+      "udrObject": {
+          "value": { 
+              "routeValues": [
+                  {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-GatewaySubnet",
+                      "routeRules": [
+                          {
+                              "name": "udr-prd-edc-mgmt-001",
+                              "properties": {
+                                "addressPrefix": "10.20.1.0/24",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                            "name": "udr-prd-edc-mgmt-002",
+                            "properties": {
+                              "addressPrefix": "10.20.0.192/26",
+                              "nextHopType": "VirtualAppliance",
+                              "nextHopIpAddress": "10.20.0.68",
+                              "firewallRG": "rg-prd-edc-hub-netw-001"
+                            }
+                        },
+                          {
+                              "name": "udr-prd-edc-identity-001",
+                              "properties": {
+                                "addressPrefix": "10.20.2.0/25",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-edc-identity-002",
+                              "properties": {
+                                "addressPrefix": "10.20.2.128/26",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                            "name": "udr-prd-edc-identity-003",
+                            "properties": {
+                              "addressPrefix": "10.20.2.192/26",
+                              "nextHopType": "VirtualAppliance",
+                              "nextHopIpAddress": "10.20.0.68",
+                              "firewallRG": "rg-prd-edc-hub-netw-001"
+                            }
+                        },
+                          {
+                              "name": "udr-prd-edc-security-001",
+                              "properties": {
+                                "addressPrefix": "10.20.3.0/25",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-edc-security-002",
+                              "properties": {
+                                "addressPrefix": "10.20.3.128/25",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-edc-operations-001",
+                              "properties": {
+                                "addressPrefix": "10.20.128.0/23",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-edc-operations-002",
+                              "properties": {
+                                "addressPrefix": "10.20.130.0/23",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.20.0.68",
+                                "firewallRG": "rg-prd-edc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-hub-001",
+                              "properties": {
+                                "addressPrefix": "10.30.0.0/23",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-mgmt-001",
+                              "properties": {
+                                "addressPrefix": "10.30.1.0/24",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-identity-001",
+                              "properties": {
+                                "addressPrefix": "10.30.2.0/25",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-identity-002",
+                              "properties": {
+                                "addressPrefix": "10.30.2.128/26",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                            "name": "udr-prd-sdc-identity-003",
+                            "properties": {
+                              "addressPrefix": "10.30.2.192/26",
+                              "nextHopType": "VirtualAppliance",
+                              "nextHopIpAddress": "10.30.0.68",
+                              "firewallRG": "rg-prd-sdc-hub-netw-001"
+                            }
+                        },
+                          {
+                              "name": "udr-prd-sdc-security-001",
+                              "properties": {
+                                "addressPrefix": "10.30.3.0/25",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-security-002",
+                              "properties": {
+                                "addressPrefix": "10.30.3.128/25",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-operations-001",
+                              "properties": {
+                                "addressPrefix": "10.30.128.0/23",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          },
+                          {
+                              "name": "udr-prd-sdc-operations-002",
+                              "properties": {
+                                "addressPrefix": "10.30.130.0/23",
+                                "nextHopType": "VirtualAppliance",
+                                "nextHopIpAddress": "10.30.0.68",
+                                "firewallRG": "rg-prd-sdc-hub-netw-001"
+                              }
+                          }
+                      ]
+                  },
+                  {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "routeTable": "rt-GatewaySubnet",
+                      "routeRules": [
+                        {
+                          "name": "udr-prd-sdc-mgmt-001",
+                          "properties": {
+                            "addressPrefix": "10.30.1.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-mgmt-002",
+                          "properties": {
+                            "addressPrefix": "10.30.0.192/26",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-identity-001",
+                          "properties": {
+                            "addressPrefix": "10.30.2.0/25",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-identity-002",
+                          "properties": {
+                            "addressPrefix": "10.30.2.128/26",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-identity-003",
+                          "properties": {
+                            "addressPrefix": "10.30.2.192/26",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-security-001",
+                          "properties": {
+                            "addressPrefix": "10.30.3.0/25",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-security-002",
+                          "properties": {
+                            "addressPrefix": "10.30.3.128/25",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-operations-001",
+                          "properties": {
+                            "addressPrefix": "10.30.128.0/23",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-sdc-operations-002",
+                          "properties": {
+                            "addressPrefix": "10.30.130.0/23",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.30.0.68",
+                            "firewallRG": "rg-prd-sdc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-hub-001",
+                          "properties": {
+                            "addressPrefix": "10.20.0.0/23",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-mgmt-001",
+                          "properties": {
+                            "addressPrefix": "10.20.0.192/26",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-identity-001",
+                          "properties": {
+                            "addressPrefix": "10.20.2.0/25",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-identity-002",
+                          "properties": {
+                            "addressPrefix": "10.20.2.128/26",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-identity-003",
+                          "properties": {
+                            "addressPrefix": "10.20.2.192/26",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-security-001",
+                          "properties": {
+                            "addressPrefix": "10.20.3.0/25",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-security-002",
+                          "properties": {
+                            "addressPrefix": "10.20.3.128/25",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-operations-001",
+                          "properties": {
+                            "addressPrefix": "10.20.128.0/23",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        },
+                        {
+                          "name": "udr-prd-edc-operations-002",
+                          "properties": {
+                            "addressPrefix": "10.20.130.0/23",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.20.0.68",
+                            "firewallRG": "rg-prd-edc-hub-netw-001"
+                          }
+                        }
+                      ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-AzureFirewallSubnet",
+                    "routeRules": [
+                      {
+                        "name": "Default-AzureFirewallSubnet-Route",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.5.68"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-sdc-coreit-001",
+                        "properties": {
+                          "addressPrefix": "10.30.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-sdc-fcp-001",
+                        "properties": {
+                          "addressPrefix": "10.31.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-sdc-fwp-001",
+                        "properties": {
+                          "addressPrefix": "10.32.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-sdc-bkof-001",
+                        "properties": {
+                          "addressPrefix": "10.33.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-AzureFirewallSubnet",
+                    "routeRules": [
+                      {
+                        "name": "Default-AzureFirewallSubnet-Route",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.5.68"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-edc-coreit-001",
+                        "properties": {
+                          "addressPrefix": "10.20.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-edc-fcp-001",
+                        "properties": {
+                          "addressPrefix": "10.21.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-edc-fwp-001",
+                        "properties": {
+                          "addressPrefix": "10.22.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      },
+                      {
+                        "name": "udr-prd-edc-bkof-001",
+                        "properties": {
+                          "addressPrefix": "10.23.0.0/16",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-mgmt-001",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-mgmt-002",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-mgmt-001",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-mgmt-002",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-001",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-001",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-002",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-002",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-003",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-003",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-004",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.5.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-004",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.5.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-005",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.0.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-005",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.0.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-006",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.5.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-006",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.5.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-007",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.5.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-007",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.5.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-edc-fn-008",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.20.5.68",
+                          "firewallRG": "rg-prd-edc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "location": "australiasoutheast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "routeTable": "rt-prd-sdc-fn-008",
+                    "routeRules": [
+                      {
+                        "name": "udr-DefaultRouteToFirewall",
+                        "properties": {
+                          "addressPrefix": "0.0.0.0/0",
+                          "nextHopType": "VirtualAppliance",
+                          "nextHopIpAddress": "10.30.5.68",
+                          "firewallRG": "rg-prd-sdc-hub-netw-001"
+                        }
+                      }
+                    ]
+                  }
+              ]
+          }
+      }
+  }
+}

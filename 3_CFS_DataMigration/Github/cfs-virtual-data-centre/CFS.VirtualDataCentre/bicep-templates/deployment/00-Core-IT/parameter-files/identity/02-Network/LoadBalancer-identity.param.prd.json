@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "loadBalancerObject": {
+            "value": { 
+                "loadBalancer":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "serviceAbbrv": "iden",
+                        "rgInstance" : "1",
+                        "StorageAccountInstance" : "1",
+                        "loadBalancerName": "Ilb-prd-edc-sailpoint-001",
+                        "backendPoolName": "bep-prd-edc-sailpoint-001",
+                        "frontendIPConfigurations": [
+                            {
+                                "name": "Ilb-prd-edc-sailpoint",
+                                "properties": {
+                                    "privateIPAddress": "10.20.2.30",
+                                    "privateIPAllocationMethod": "Static",
+                                    "subnet": {
+                                        "id": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-netw-001/providers/Microsoft.Network/virtualNetworks/vnet-prd-edc-identity-001/subnets/sub-prd-edc-identity-001"
+                                    },
+                                    "privateIPAddressVersion": "IPv4"
+                                },
+                                "zones": [
+                                    "2",
+                                    "3",
+                                    "1"
+                                ]
+                            }
+                        ],
+                        "loadBalancerBackendAddresses": [
+                            {
+                                "name": "f76b6447-69dd-4faf-91e1-785fa3401bcd",
+                                "properties": {
+                                    "ipAddress": "10.20.2.12",
+                                    "virtualNetwork": {
+                                        "id": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-netw-001/providers/Microsoft.Network/virtualNetworks/vnet-prd-edc-identity-001"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "1227c844-e88c-4fca-ac39-60b37186984f",
+                                "properties": {
+                                    "ipAddress": "10.20.2.29",
+                                    "virtualNetwork": {
+                                        "id": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-netw-001/providers/Microsoft.Network/virtualNetworks/vnet-prd-edc-identity-001"
+                                    }
+                                }
+                            }
+                        ],
+                        "loadBalancingRules": [
+                            {
+                                "name": "IQ_Service_Load_Balancing",
+                                "properties": {
+                                    "frontendIPConfiguration": {
+                                        "id": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-netw-001/providers/Microsoft.Network/loadBalancers/Ilb-prd-edc-sailpoint-001/frontendIPConfigurations/Ilb-prd-edc-sailpoint"
+                                    },
+                                    "frontendPort": 5052,
+                                    "backendPort": 5052,
+                                    "enableFloatingIP": false,
+                                    "idleTimeoutInMinutes": 4,
+                                    "protocol": "Tcp",
+                                    "enableTcpReset": false,
+                                    "loadDistribution": "SourceIP",
+                                    "disableOutboundSnat": true,
+                                    "backendAddressPool": {
+                                        "id": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-netw-001/providers/Microsoft.Network/loadBalancers/Ilb-prd-edc-sailpoint-001/backendAddressPools/bep-prd-edc-sailpoint-001"
+                                    },
+                                    "probe": {
+                                        "id": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-netw-001/providers/Microsoft.Network/loadBalancers/Ilb-prd-edc-sailpoint-001/probes/Health_Probe_TCP_5052"
+                                    }
+                                }
+                            }
+                        ],
+                        "probes": [
+                            {
+                                "name": "Health_Probe_TCP_5052",
+                                "properties": {
+                                    "protocol": "Tcp",
+                                    "port": 5052,
+                                    "intervalInSeconds": 5,
+                                    "numberOfProbes": 1
+                                }
+                            }
+                        ],
+                        "inboundNatRules": [],
+                        "outboundRules": [],
+                        "inboundNatPools": []
+                    }
+                ]
+            }
+        }
+    }
+}

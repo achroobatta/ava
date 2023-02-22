@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiasoutheast",
+                        "component": "stor",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "Identity",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stonpsdciden001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Disabled",
+                                "defaultAction" : "Deny",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            },
+                            {
+                                "storageAccountName": "stonpsdciden003",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "identity",
+                        "serviceAbbrv": "iden",
+                        "appName": "Identity",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stonpedciden001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            },
+                            {
+                                "storageAccountName": "stonpedciden003",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

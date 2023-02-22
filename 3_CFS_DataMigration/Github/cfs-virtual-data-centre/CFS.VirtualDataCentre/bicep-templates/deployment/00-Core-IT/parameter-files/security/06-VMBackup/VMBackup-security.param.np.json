@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Security",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "SYSLOG01"
+                            },
+                            {
+                                "vmName": "TCS002"
+                            },
+                            {
+                                "vmName": "NCE001"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "rsv",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Security",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 2,
+                        "vmBackup": [
+                            {
+                                "vmName": "WU001"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Security",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 1,
+                        "vmBackup": [
+                            {
+                                "vmName": "SYSLOG01"
+                            },
+                            {
+                                "vmName": "TCS002"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "component": "rsv",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Security",
+                        "vmRGcomponent": "comp",
+                        "rsvinstance": 1,
+                        "vmRGinstance": 2,
+                        "vmBackup": [
+                            {
+                                "vmName": "WU001"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
+

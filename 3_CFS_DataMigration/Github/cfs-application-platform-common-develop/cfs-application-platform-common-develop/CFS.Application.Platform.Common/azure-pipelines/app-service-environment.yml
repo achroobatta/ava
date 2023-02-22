@@ -1,0 +1,310 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: deployLocation
+    displayName: Target Deployment Location
+    type: string
+    default: ""
+    values:
+     - "edc"
+     - "sdc"
+
+  - name: resourceGroup
+    displayName: Target Deployment Resource Group
+    type: string
+    default: ""
+
+  - name: isLockEnabled
+    displayName: Enable Resource Group Lock
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: subscriptionServiceId
+    displayName: Subscription Service Id (e.g. "bkof" or "fcp" or "fwp")
+    type: string
+    default: ""
+    values:
+     - "bkof"
+     - "fcp"
+     - "fwp"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: deploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: lz-var-service-principle-secrets
+ - group: var-azure-tenant-id
+
+ #workspaces are in edc only
+ #- name: workspaceLocationPrefix
+ #  value: "edc"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+ 
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-application-platform-common-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-application-platform-common-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-application-platform-common-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: "CFS.Application.Platform.Common"
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Deployment Location
+ - name: deploymentLocation_var
+   ${{ if eq(parameters.deployLocation, 'edc') }}:
+     value: "australiaeast"
+   ${{ if eq(parameters.deployLocation, 'sdc') }}:
+     value: "australiasoutheast"
+
+ # Service Name
+ - name: subscriptionServiceName
+   ${{ if eq(parameters.subscriptionServiceId, 'bkof') }}:
+     value: "Back Office"
+   ${{ if eq(parameters.subscriptionServiceId, 'fcp') }}:
+     value: "First Choice"
+   ${{ if eq(parameters.subscriptionServiceId, 'fwp') }}:
+     value: "CFS Wrap"
+
+ # Azure DevOps Service Connection Name
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "prd"
+
+ #  Subscription ID
+ - name: subscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'bkof' ) }}:
+       value: $(subsc-np-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-np-${{ parameters.subscriptionServiceId }}-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.subscriptionServiceId, 'bkof' ) }}:
+       value: $(subsc-prd-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-prd-${{ parameters.subscriptionServiceId }}-sid)
+
+ # Security Subscription ID
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: $(sc-subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: $(sc-subsc-prd-security-sid)
+
+ # Azure DevOps Landing Zone Service Connection Name
+ - name: serviceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "sc-subsc-np-${{ parameters.subscriptionServiceId }}-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "sc-subsc-prd-${{ parameters.subscriptionServiceId }}-001"
+
+ # Workspace Resource Group
+ - name: workspaceResourceGroup
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-edc-sec-sec-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-edc-sec-sec-001"
+
+ # Workspace name
+ - name: workspaceName 
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "ws-np-edc-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "ws-prd-edc-001"
+
+ # Diagnostic Settings Storage Resource Group
+ - name: storageAccountResourceGroup  
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-${{ parameters.deployLocation }}-sec-stor-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-${{ parameters.deployLocation }}-sec-stor-001"
+
+ # Diagnostic Settings Storage Account
+ - name: storageAccountName
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "stonp${{ parameters.deployLocation }}diagnlogs003"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "stonp${{ parameters.deployLocation }}diagnlogs001"
+
+ # Key Vault Resource Group
+ - name: keyVaultResourceGroup  
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "rg-np-${{ parameters.deployLocation }}-${{ parameters.subscriptionServiceId }}-kv-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "rg-prd-${{ parameters.deployLocation }}-${{ parameters.subscriptionServiceId }}-kv-001"
+
+ # Key Vault Name
+ - name: keyVaultName
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "kv-np-${{ parameters.deployLocation }}-${{ parameters.subscriptionServiceId }}-001"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "kv-prd-${{ parameters.deployLocation }}-${{ parameters.landingZoneServiceId }}-001"
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.deploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ # Azure Owner 
+ - name: Owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+ # Azure Resource Location
+ - name: resourceLocation
+   value: "australiaeast"
+
+stages:
+
+  # Deploy App Service Environment
+  - stage: DeployAppServiceEnvironment
+    displayName: DeployAppServiceEnvironment
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployAppServiceEnvironment
+      timeoutInMinutes: 240 #4 hours to run all its tasks
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: AzureCLI@2
+              displayName : Deploy Resource Groups
+              inputs:
+                azureSubscription: $(serviceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment sub create --location '$(resourceLocation)' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(modules)\Microsoft.Resources\deployResourceGroups.bicep `
+                              --parameters resourceGroupName='${{ parameters.resourceGroup }}' `
+                              --parameters location='$(deploymentLocation_var)' `
+                              --parameters appName='$(subscriptionServiceName)' `
+                              --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                              --parameters owner='$(Owner)' `
+                              --parameters costCenter='$(costCenterCode)' `
+                              --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' 
+
+            - ${{ if eq(parameters.isLockEnabled, 'true') }}:
+              - task: AzureCLI@2
+                displayName : Lock Resource Group
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  scriptType: 'pscore'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: az deployment group create --resource-group '${{ parameters.resourceGroup }}' `
+                                --name $(deploymentName) `
+                                --template-file $(System.ArtifactsDirectory)\$(modules)\Microsoft.Authorization\locks\deployResourceLock.bicep `
+                                --parameters resourceGroupName='${{ parameters.resourceGroup }}'
+
+            - task: AzureCLI@2
+              displayName : Deploy Application Service Environment
+              inputs:
+                azureSubscription: $(serviceConnection)
+                scriptType: 'pscore'
+                scriptLocation: 'inlineScript'
+                inlineScript: az deployment group $(deploymentType) --resource-group '${{ parameters.resourceGroup }}' `
+                              --name $(deploymentName) `
+                              --template-file $(System.ArtifactsDirectory)\$(application-deployment-templates)\appServiceEnvironment.bicep `
+                              --parameters $(System.ArtifactsDirectory)\$(application-parameter-files)\deploy-ASE\ASE.param.$(AzureEnvironmentPrefix).json `
+                              --parameters location='$(deploymentLocation_var)' `
+                              --parameters virtualNetworkSubscriptionId='$(subscriptionID)'
+                              --parameters resourceGroupName='${{ parameters.resourceGroup }}' `
+                              --parameters storageAccountResourceGroup='$(storageAccountResourceGroup)' `
+                              --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters storageAccountName='$(storageAccountName)' `
+                              --parameters workspaceResourceGroup='$(workspaceResourceGroup)' `
+                              --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                              --parameters workspaceName='$(workspaceName)' 
+

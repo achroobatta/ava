@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\TodoApi\TodoApi\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
+    <History>True|2022-07-01T11:20:11.8040818Z;True|2022-07-01T11:19:19.5152422+00:00;True|2022-07-01T11:17:17.4078525+00:00;True|2022-07-01T11:09:57.6125874+00:00;True|2022-07-01T11:09:35.2797742+00:00;True|2022-07-01T10:54:01.4159228+00:00;True|2022-07-01T10:51:08.3272114+00:00;True|2022-07-01T10:20:21.5347367+00:00;True|2022-07-01T10:18:57.5518482+00:00;True|2022-07-01T10:16:47.9497722+00:00;True|2022-07-01T10:14:51.0372029+00:00;True|2022-07-01T07:34:28.9260446+00:00;True|2022-06-20T08:43:13.2164543+00:00;True|2022-06-15T07:27:24.1099695+00:00;True|2022-06-15T06:58:10.8457802+00:00;True|2022-06-15T06:54:29.9042411+00:00;True|2022-06-15T06:19:51.3146461+00:00;</History>
+  </PropertyGroup>
+</Project>

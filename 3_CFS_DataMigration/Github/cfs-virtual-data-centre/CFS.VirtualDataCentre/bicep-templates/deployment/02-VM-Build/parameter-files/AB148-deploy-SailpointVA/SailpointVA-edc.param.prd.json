@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden"
+                }
+            ]
+        },
+        "vmArray":  {
+            "value":  [
+                {
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vm_instance": "1",
+                    "vmService": "VA",
+                    "osDiskType": "StandardSSD_LRS",
+                    "managedDiskID": "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e/resourceGroups/rg-prd-edc-iden-comp-001/providers/Microsoft.Compute/disks/VMPRDEDCVA001-sailpoint-va",
+                    "osDiskSize": 160,
+                    "vmSize": "Standard_D4s_v3",
+                    "vnet_instance": "1",
+                    "vnet_component": "netw",
+                    "vnet_serviceAbbrv": "identity",
+                    "sn_serviceAbbrv": "identity",
+                    "stor_instance": "1",
+                    "appName": "Sailpoint"
+                }
+            ]
+        }
+    }
+}

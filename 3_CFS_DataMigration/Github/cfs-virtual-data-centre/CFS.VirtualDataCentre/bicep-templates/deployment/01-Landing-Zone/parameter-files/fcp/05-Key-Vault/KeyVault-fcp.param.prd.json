@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "keyVaultObject": {
+            "value": { 
+                "keyVault":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "kv",
+                        "service": "fcp",
+                        "serviceAbbrv": "fcp",
+                        "appName": "First Choice",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "localAdminPasswordSecretName": "cfsadmin",
+                        "vaultkeyEncryptName": "keyEncrypt",
+                        "keyVault": [
+                            {
+                                "instance": 1
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "kv",
+                        "service": "fcp",
+                        "serviceAbbrv": "fcp",
+                        "appName": "First Choice",
+                        "instance": 1,
+                        "StorageAccountInstance": 1,
+                        "localAdminPasswordSecretName": "cfsadmin",
+                        "vaultkeyEncryptName": "keyEncrypt",
+                        "keyVault": [
+                            {
+                                "instance": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

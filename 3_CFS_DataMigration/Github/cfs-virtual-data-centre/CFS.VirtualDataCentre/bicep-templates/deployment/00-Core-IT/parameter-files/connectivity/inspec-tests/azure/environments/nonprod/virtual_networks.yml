@@ -1,0 +1,13 @@
+# Australia East
+- name: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+  address_space: ["10.40.1.0/24", "10.40.5.0/24", "10.40.6.0/24", "10.40.7.0/24"]
+  location: australiaeast
+  dns_servers: ["10.40.1.68"]
+
+# Australia South East
+- name: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+  address_space: ["10.60.1.0/24", "10.60.5.0/24", "10.60.6.0/24", "10.60.7.0/24"]
+  location: australiasoutheast
+  dns_servers: ["10.60.1.68"]

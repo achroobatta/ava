@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fcp",
+                        "serviceAbbrv": "fcp",
+                        "appName": "First Choice",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.41.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.40.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-edc-fcp-001",
+                              "location": "australiaeast",
+                              "service": "fcp",
+                              "instance" : "1",
+                              "addressPrefix": "10.41.0.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-fcp-001",
+                              "routeTable": "rt-np-edc-fcp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "fcp",
+                        "serviceAbbrv": "fcp",
+                        "appName": "First Choice",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.61.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.60.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-sdc-fcp-001",
+                              "location": "australiasoutheast",
+                              "service": "fcp",
+                              "instance" : "1",
+                              "addressPrefix": "10.61.0.0/24",
+                              "networkSecurityGroup": "nsg-np-sdc-fcp-001",
+                              "routeTable": "rt-np-sdc-fcp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

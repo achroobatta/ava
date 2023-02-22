@@ -1,0 +1,29 @@
+# Template Format
+#- name: nsg-np-edc-fcp-001
+#  resource_group: rg-np-edc-fcp-netw-001
+
+# Australia East
+- name: nsg-np-edc-fcp-001
+  resource_group: rg-np-edc-fcp-netw-001
+
+- name: nsg-np-edc-fcp-fndev0-001
+  resource_group: rg-np-edc-fcp-netw-001
+
+- name: NSG-NP-EDC-FCP-FNDEV0-002
+  resource_group: rg-np-edc-fcp-netw-001
+
+- name: NSG-NP-EDC-FCP-FNDEV0-003
+  resource_group: rg-np-edc-fcp-netw-001
+
+- name: NSG-NP-EDC-FCP-FNDEV0-004
+  resource_group: rg-np-edc-fcp-netw-001
+
+- name: NSG-NP-EDC-FCP-FNDEV0-005
+  resource_group: rg-np-edc-fcp-netw-001
+
+- name: NSG-NP-EDC-FCP-FNDEV0-006
+  resource_group: rg-np-edc-fcp-netw-001
+
+# Australia South East
+- name: nsg-np-sdc-fcp-001
+  resource_group: rg-np-sdc-fcp-netw-001

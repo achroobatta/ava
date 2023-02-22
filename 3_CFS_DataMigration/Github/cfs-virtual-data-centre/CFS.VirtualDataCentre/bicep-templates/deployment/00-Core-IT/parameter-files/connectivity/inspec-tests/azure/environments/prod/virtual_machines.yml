@@ -1,0 +1,206 @@
+# Australia East
+
+#- name: FortiManager
+#  resource_group:	rg-prd-edc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiaeast
+#  size:	Standard_DS3_v2
+#  os:	Linux
+
+- name: VMPRDEDCAPT001
+  resource_group:	rg-prd-edc-hub-comp-002
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+#- name: VMPRDEDCFAU001
+#  resource_group:	rg-prd-edc-hub-netw-001
+#  datadisk_count:	2
+#  location:	australiaeast
+#  size:	Standard_D8s_v3
+#  os:	Linux
+
+#- name: VMPRDEDCFAZ001
+#  resource_group:	rg-prd-edc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiaeast
+#  size:	Standard_DS3_v2
+#  os:	Linux
+
+#- name: VMPRDEDCFG001-FGT-A
+#  resource_group:	rg-prd-edc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiaeast
+#  size:	Standard_D16s_v3
+#  os:	Linux
+
+#- name: VMPRDEDCFG001-FGT-B
+#  resource_group:	rg-prd-edc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiaeast
+#  size:	Standard_D16s_v3
+#  os:	Linux
+
+- name: VMPRDEDCPAW000
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW001
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW002
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW003
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW004
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW005
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW006
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW007
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW008
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW009
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPAW010
+  resource_group:	rg-prd-edc-hub-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDEDCPUT001
+  resource_group:	rg-prd-edc-hub-comp-002
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+# Australia South East
+
+- name: VMPRDSDCAPT001
+  resource_group:	rg-prd-sdc-hub-comp-002
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+#- name: VMPRDSDCFAU001
+#  resource_group:	rg-prd-sdc-hub-netw-001
+#  datadisk_count:	2
+#  location:	australiasoutheast
+#  size:	Standard_D8s_v3
+#  os:	Linux
+
+#- name: VMPRDSDCFAZ001
+#  resource_group:	rg-prd-sdc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiasoutheast
+#  size:	Standard_DS3_v2
+#  os:	Linux
+
+#- name: VMPRDSDCFG001-FGT-A
+#  resource_group:	rg-prd-sdc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiasoutheast
+#  size:	Standard_D16s_v3
+#  os:	Linux
+
+#- name: VMPRDSDCFG001-FGT-B
+#  resource_group:	rg-prd-sdc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiasoutheast
+#  size:	Standard_D16s_v3
+#  os:	Linux
+
+#- name: VMPRDSDCFM001
+#  resource_group:	rg-prd-sdc-hub-netw-001
+#  datadisk_count:	1
+#  location:	australiasoutheast
+#  size:	Standard_DS3_v2
+#  os:	Linux
+
+- name: VMPRDSDCPAW000
+  resource_group:	rg-prd-sdc-hub-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDSDCPAW001
+  resource_group:	rg-prd-sdc-hub-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDSDCPAW002
+  resource_group:	rg-prd-sdc-hub-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+- name: VMPRDSDCPAW003
+  resource_group:	rg-prd-sdc-hub-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows
+  
+- name: VMPRDSDCPUT001
+  resource_group:	rg-prd-sdc-hub-comp-002
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows

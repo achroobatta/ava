@@ -1,0 +1,185 @@
+# Australia East
+
+#- name: FortiAnalyzer
+#  resource_group: rg-np-edc-hub-fn-001
+#  datadisk_count: 1
+#  location: australiaeast
+#  size: Standard_D8_v3
+#  os: Linux
+#
+#- name: FortiAuthenticatorEDC
+#  resource_group: rg-np-edc-hub-fn-001
+#  datadisk_count: 2
+#  location: australiaeast
+#  size: Standard_D8s_v3
+#  os: Linux
+#
+#- name: FortiGateSDC-FGT-A
+#  resource_group:  rg-np-sdc-hub-fn-001
+#  datadisk_count:  1
+#  location:  australiaeast
+#  size:  Standard_D16s_v3
+#  os:  Linux
+#
+#- name:  FortiGateVMEDC-FGT-A
+#  resource_group:  rg-np-edc-hub-fn-001
+#  datadisk_count: 1
+#  location: australiaeast
+#  size: Standard_D8s_v3
+#  os: Linux
+#
+#- name: FortiGateVMEDC-FGT-B
+#  resource_group:  rg-np-edc-hub-fn-001
+#  datadisk_count:  1
+#  location:  australiaeast
+#  size:  Standard_D8s_v3
+#  os:  Linux
+#
+#- name:  FortiManager
+#  resource_group:  rg-np-edc-hub-fn-001
+#  datadisk_count:  1
+#  location:  australiaeast
+#  size:  Standard_D8_v3
+#  os:  Linux
+
+- name: VMNPEDCAPT001
+  resource_group: rg-np-edc-hub-comp-002
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCFWT000
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPAW000
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPAW001
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPAW002
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPAW003
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPAW004
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPAW005
+  resource_group: rg-np-edc-hub-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPEDCPUB001
+  resource_group: rg-np-edc-hub-comp-002
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Linux
+
+- name: VMNPEDCPUT001
+  resource_group: rg-np-edc-hub-comp-002
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+# Australia South East
+
+- name: VMNPSDCAPT001
+  resource_group: rg-np-sdc-hub-comp-002
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCFWT000
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPAW000
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPAW001
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPAW002
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPAW003
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPAW004
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPAW005
+  resource_group: rg-np-sdc-hub-comp-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMNPSDCPUB001
+  resource_group: rg-np-sdc-hub-comp-002
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Linux
+
+- name: VMNPSDCPUT001
+  resource_group: rg-np-sdc-hub-comp-002
+  datadisk_count: 1
+  location: australiasoutheast
+  size: Standard_D2s_v3
+  os: Windows

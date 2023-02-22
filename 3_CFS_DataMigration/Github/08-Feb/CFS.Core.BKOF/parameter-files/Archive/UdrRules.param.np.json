@@ -1,0 +1,162 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udrObject": {
+      "value": {
+        "routeValues": [
+          {
+            "location": "australiaeast",
+            "serviceAbbrv": "bkof",
+            "component": "dm",
+            "instance": 1,
+            "routeTable": "rt-np-edc-bkof-dm-sftp-001",
+            "routeRules": [
+              {
+                "name": "udr-DefaultRouteToFirewall",
+                "properties": {
+                  "addressPrefix": "0.0.0.0/0",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.40.1.68"
+                }
+              },
+              {
+                "name": "udr-VirtualNetwork",
+                "properties": {
+                  "addressPrefix": "10.53.0.0/16",
+                  "nextHopType": "VnetLocal",
+                  "nextHopIpAddress":""                 
+                }
+              }
+            ]
+          },
+          {
+            "location": "australiaeast",
+            "serviceAbbrv": "bkof",
+            "component": "dm",
+            "instance": 1,
+            "routeTable": "rt-np-edc-bkof-dm-com-002",
+            "routeRules": [
+              {
+                "name": "udr-DefaultRouteToFirewall",
+                "properties": {
+                  "addressPrefix": "0.0.0.0/0",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.40.1.68"
+                }
+              },
+              {
+                "name": "udr-VirtualNetwork",
+                "properties": {
+                  "addressPrefix": "10.53.0.0/16",
+                  "nextHopType": "VnetLocal",
+                  "nextHopIpAddress":""            
+                }
+              }
+            ]
+          },
+          {
+            "location": "australiaeast",
+            "serviceAbbrv": "bkof",
+            "component": "dm",
+            "instance": 1,
+            "routeTable": "rt-np-edc-bkof-dm-vmsub-003",
+            "routeRules": [
+              {
+                "name": "udr-DefaultRouteToFirewall",
+                "properties": {
+                  "addressPrefix": "0.0.0.0/0",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.40.1.68"
+                }
+              },
+              {
+                "name": "udr-VirtualNetwork",
+                "properties": {
+                  "addressPrefix": "10.53.0.0/16",
+                  "nextHopType": "VnetLocal",
+                  "nextHopIpAddress":""                
+                }
+              }
+            ]
+          },
+          {
+            "location": "australiasoutheast",
+            "serviceAbbrv": "bkof",
+            "component": "dm",
+            "instance": 1,
+            "routeTable": "rt-np-sdc-bkof-dm-sftp-001",
+            "routeRules": [
+              {
+                "name": "udr-DefaultRouteToFirewall",
+                "properties": {
+                  "addressPrefix": "0.0.0.0/0",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.60.1.68"
+                }
+              },
+              {
+                "name": "udr-VirtualNetwork",
+                "properties": {
+                  "addressPrefix": "10.73.0.0/16",
+                  "nextHopType": "VnetLocal",
+                  "nextHopIpAddress":""                 
+                }
+              }
+            ]
+          },
+          {
+            "location": "australiasoutheast",
+            "serviceAbbrv": "bkof",
+            "component": "dm",
+            "instance": 1,
+            "routeTable": "rt-np-sdc-bkof-dm-com-002",
+            "routeRules": [
+              {
+                "name": "udr-DefaultRouteToFirewall",
+                "properties": {
+                  "addressPrefix": "0.0.0.0/0",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.60.1.68"
+                }
+              },
+              {
+                "name": "udr-VirtualNetwork",
+                "properties": {
+                  "addressPrefix": "10.73.0.0/16",
+                  "nextHopType": "VnetLocal",
+                  "nextHopIpAddress":""                  
+                }
+              }
+            ]
+          },
+          {
+            "location": "australiasoutheast",
+            "serviceAbbrv": "bkof",
+            "component": "dm",
+            "instance": 1,
+            "routeTable": "rt-np-sdc-bkof-dm-vmsub-003",
+            "routeRules": [
+              {
+                "name": "udr-DefaultRouteToFirewall",
+                "properties": {
+                  "addressPrefix": "0.0.0.0/0",
+                  "nextHopType": "VirtualAppliance",
+                  "nextHopIpAddress": "10.60.1.68"
+                }
+              },
+              {
+                "name": "udr-VirtualNetwork",
+                "properties": {
+                  "addressPrefix": "10.73.0.0/16",
+                  "nextHopType": "VnetLocal",
+                  "nextHopIpAddress":""                 
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+# - name: securitySubscriptionId
+#   type: string
+
+- name: keyVaultName
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Virtual Machine in ${{ parameters.serviceId }} Subscription
+
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+
+                    "Setting input Variables"
+                    $keyEncryptionUrl = "az keyvault key list-versions --vault-name ${{ parameters.keyVaultName }} --name keyEncrypt --query [].kid --output tsv"
+                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                    "Cleaning input variables"
+                    Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                    Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                    Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                    az deployment sub $(deploymentType) --location 'australiaeast' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-VM.bicep `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\06-VM\vm-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters owner='$(owner)' `
+                    --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                    --parameters workspaceId=$WorkspaceIdOutput `
+                    --parameters workspaceKey=$WorkspaceKeyOutput `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters adminPassword='$(adminP)' `
+                    --parameters domainPassword='$(domainPassword)' `
+                    --parameters fileSize='$(fileSize)' `
+                    --parameters appName='$(appName)' `
+                    --parameters dmVmName='$(dmVMName)'
+
+  # - task: AzureCLI@2
+  #   displayName : Deploy Virtual Machine in ${{ parameters.serviceId }} Subscription
+
+  #   inputs:
+  #     azureSubscription: ${{ parameters.serviceConnection }}
+  #     scriptType: 'pscore'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: |
+  #          az deployment group show \
+  #           -g $(rgName) \
+  #           -n $(deploymentName) \
+  #           --query properties.outputs.resourceID.value

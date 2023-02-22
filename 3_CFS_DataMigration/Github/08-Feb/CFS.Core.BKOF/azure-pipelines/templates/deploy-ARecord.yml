@@ -1,0 +1,50 @@
+#deploy-DataLake.yml
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: resourceLocation
+  type: string
+
+- name: destStorageAccountName
+  type: string
+
+- name: rgName
+  type: string
+
+- name: connRg
+  type: string
+
+- name: subId
+  type: string
+
+- name: connSubId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Add A Record in DNS Zone
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $location = "${{ parameters.resourceLocation }}"
+        $storageAcct = "${{ parameters.destStorageAccountName }}"
+        $endpoint = "pve-$location-$storageAcct"
+        $dnsZoneGrp = "default"
+        $bkofRgName = "${{ parameters.rgName }}"
+        $backOfcSubId = "${{ parameters.subId }}"
+        $connSubId = "${{ parameters.connSubId }}"
+        $connRgName = "${{ parameters.connRg }}"
+        $dnsZoneName = "privatelink.blob.core.windows.net"
+
+        az account set --subscription $backOfcSubId
+        $privateIp = az network private-endpoint dns-zone-group show --endpoint-name $endpoint -n $dnsZoneGrp -g $bkofRgName --query privateDnsZoneConfigs[].recordSets[].ipAddresses[] --output tsv
+        $privateIp
+
+        az account set --subscription $connSubId
+        az network private-dns record-set a list -g $connRgName -z $dnsZoneName
+        az network private-dns record-set a add-record -g $connRgName -a $privateIp -n $storageAcct -z $dnsZoneName

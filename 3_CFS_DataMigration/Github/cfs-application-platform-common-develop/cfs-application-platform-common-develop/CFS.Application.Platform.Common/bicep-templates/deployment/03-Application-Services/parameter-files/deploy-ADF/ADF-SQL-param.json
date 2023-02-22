@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerTest_name": {
+            "value": "test-sqlServer-df-edc001"
+        },
+        "dfName": {
+            "value": "test-df-edc001"
+        },
+        "location": {
+            "value": "australiaeast"
+        },
+        "sqlServerArray": {
+            "value": [
+                {
+                    "dbName": "test-sqlDB-df-edc001",
+                    "skuName": "GP_S_Gen5",
+                    "skuTier": "GeneralPurpose",
+                    "family": "Gen5",
+                    "capacity": "1",
+                    "propCollation": "SQL_Latin1_General_CP1_CI_AS",
+                    "maxSizeBytes": "34359738368",
+                    "zoneRedundant": "false",
+                    "readScale": "Disabled",
+                    "autoPauseDelay": "60",
+                    "requestedBackupStorageRedundancy": "Local",
+                    "minCapacity": "0.5",
+                    "maintenanceConfigurationId": "/subscriptions/0caf2912-0197-4ea5-968d-f517c90d5930/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
+                    "isLedgerOn": "false"
+                }
+            ]
+        }
+    }
+}

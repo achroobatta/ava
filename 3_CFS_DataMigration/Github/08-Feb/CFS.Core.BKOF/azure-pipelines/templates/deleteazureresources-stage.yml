@@ -1,0 +1,66 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    landingZoneServiceConnection: ''
+    vmName: ''
+    vmRgName: ''
+    strAccName: ''
+    prvtEndpointName: ''
+    commRGName: ''
+    subId: ''
+
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  jobs:
+
+  - template: deleterbac.yml
+    parameters:
+      name: delete_rbac
+      displayName: 'Delete RBAC'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: ''
+      landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+      vmName: ${{ parameters.vmName}}
+      commRGName: ${{ parameters.commRGName}}
+      subId: ${{ parameters.subId}}
+
+  - template: deletevm.yml
+    parameters:
+      name: delete_vm
+      displayName: 'Delete VM'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: delete_rbac
+      landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+      vmRgName: ${{ parameters.vmRgName}}
+      vmName: ${{ parameters.vmName}}
+
+  - template: deletestorageaccount.yml
+    parameters:
+      name: delete_storageaccount
+      displayName: 'Delete Storage Account'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: delete_vm
+      landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+      strAccName:  ${{ parameters.strAccName}}
+      vmRgName: ${{ parameters.vmRgName}}
+
+  - template: deleteprivateendpoint.yml
+    parameters:
+      name: delete_privateendpoint
+      displayName: 'Delete Private Endpoint'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: delete_storageaccount
+      landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+      prvtEndpointName: ${{ parameters.prvtEndpointName}}
+      vmRgName: ${{ parameters.vmRgName}}

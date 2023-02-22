@@ -1,0 +1,45 @@
+{
+    "actionGroupName": "AzureMonitor",
+    "metricAlerts":[
+        {
+            "name" : "Azure Load Balancer Data Path Availability Degraded",
+            "severity": 1,
+            "threshold": 75,
+            "timeAggregation": "Average",
+            "metricName": "availability",
+            "operator": "LessThan",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        },
+        {
+            "name" : "CFS Azure Load Balancer Data Path Availability Unavailable",
+            "severity": 0,
+            "threshold": 0,
+            "timeAggregation": "Average",
+            "metricName": "availability",
+            "operator": "Equals",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        },
+        {
+            "name" : "Azure Load Balancer Backend Health Probe Status Degraded",
+            "severity": 2,
+            "threshold": 75,
+            "timeAggregation": "Average",
+            "metricName": "availability",
+            "operator": "LessThan",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        },
+        {
+            "name" : "Azure Load Balancer Backend Health Probe Status Unavailable",
+            "severity": 1,
+            "threshold": 0,
+            "timeAggregation": "Average",
+            "metricName": "availability",
+            "operator": "Equals",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        }
+    ]
+}

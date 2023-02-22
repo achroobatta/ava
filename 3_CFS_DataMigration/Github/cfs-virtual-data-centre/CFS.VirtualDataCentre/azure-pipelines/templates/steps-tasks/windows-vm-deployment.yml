@@ -1,0 +1,68 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: vmServiceName
+  type: string
+
+- name: subscriptionServiceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+- name: taskNumber
+  type: string
+
+- name: vmOSType
+  type: string
+
+- name: vmLocation
+  type: string
+
+- name: keyVaultName
+  type: string
+
+- name: vmDeploymentType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy ${{ parameters.vmServiceName }} Virtual Machine in ${{ parameters.subscriptionServiceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Setting input Variables"
+                    $keyEncryptionUrl = "az keyvault key list-versions --vault-name ${{ parameters.keyVaultName }} --name keyEncrypt --query [].kid --output tsv"
+                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query customerId -o tsv"
+                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-sec-sec-001 --workspace-name ws-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-001 --subscription '$(securitySubscriptionId)' --query primarySharedKey --output tsv"
+
+                    "Cleaning input variables"
+                    Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                    Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null
+                    Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                    "Starting az deployment"
+                    az deployment sub $(deploymentType) --location 'australiaeast' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(vm-deployment-templates)\deploy-${{ parameters.vmOSType }}-VM-${{ parameters.vmDeploymentType }}.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(vm-parameter-files)\${{ parameters.taskNumber }}-deploy-${{ parameters.vmServiceName }}\${{ parameters.vmServiceName }}-${{ parameters.vmLocation }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
+                    --parameters workspaceId=$WorkspaceIdOutput `
+                    --parameters workspaceKey=$WorkspaceKeyOutput `
+                    --parameters domainPassword='$(domainJoinPassword)' `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)'
+
+
+   

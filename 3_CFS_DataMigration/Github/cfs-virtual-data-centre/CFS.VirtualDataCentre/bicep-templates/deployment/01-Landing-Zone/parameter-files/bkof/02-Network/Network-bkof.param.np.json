@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Back Office",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.43.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.40.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-edc-bkof-001",
+                              "location": "australiaeast",
+                              "service": "bkof",
+                              "instance" : "1",
+                              "addressPrefix": "10.43.0.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-bkof-001",
+                              "routeTable": "rt-np-edc-bkof-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Back Office",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.63.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.60.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-sdc-bkof-001",
+                              "location": "australiasoutheast",
+                              "service": "bkof",
+                              "instance" : "1",
+                              "addressPrefix": "10.63.0.0/24",
+                              "networkSecurityGroup": "nsg-np-sdc-bkof-001",
+                              "routeTable": "rt-np-sdc-bkof-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

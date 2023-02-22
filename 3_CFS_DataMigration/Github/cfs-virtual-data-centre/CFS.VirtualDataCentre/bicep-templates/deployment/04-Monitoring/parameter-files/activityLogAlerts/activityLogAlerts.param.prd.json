@@ -1,0 +1,217 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "activityLogAlertsObject": {
+            "value":{
+                "actionGroupName":  "AzureMonitor",
+                "scopes": [
+                    "/subscriptions/d29477a9-0754-4afd-9a22-82e7fad0ed3a",
+                    "/subscriptions/60d5734f-91fa-48be-b355-8bc6db6a0d5e",
+                    "/subscriptions/17a65436-bd72-46b5-aba7-7b8ec1118154",
+                    "/subscriptions/21293f4d-303b-4487-bd87-654917ebef17",
+                    "/subscriptions/0002c482-f610-4d61-8ed5-fdc70b598253",
+                    "/subscriptions/38d9f112-9695-4d5b-ac81-502a3c02fd05",
+                    "/subscriptions/f240ce61-d4b9-428d-bb77-f209151a8ec1"
+                ],
+                "activityLogAlerts":[
+                    {
+                        "enabled": true,
+                        "name": "Azure VM Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Compute/virtualMachines/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "name": "Azure SQL Database Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Sql/servers/databases/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "type": "Administrative",
+                        "name": "Azure SQL Server Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Sql/servers/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "type": "Administrative",
+                        "name": "Azure Virtual Network Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Network/virtualNetworks/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "type": "Administrative",
+                        "name": "Azure Virtual Network Gateway Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Network/virtualNetworkGateways/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "name": "Azure Firewall Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Network/azureFirewalls/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "name": "Azure Bastion Host Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Network/bastionHosts/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "name": "Azure Storage Account Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Storage/storageAccounts/delete"
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "name": "Azure Service Health Alert",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "ServiceHealth"
+                            },
+                            {
+                                "anyOf": [
+                                    {
+                                        "field": "properties.incidentType",
+                                        "equals": "Incident"
+                                    },
+                                    {
+                                        "field": "properties.incidentType",
+                                        "equals": "Security"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "enabled": true,
+                        "name": "Azure Resource Health Alert",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "ResourceHealth"
+                            },
+                            {
+                                "anyOf": [
+                                    {
+                                        "field": "properties.currentHealthStatus",
+                                        "equals": "Degraded"
+                                    },
+                                    {
+                                        "field": "properties.currentHealthStatus",
+                                        "equals": "Unavailable"
+                                    }
+                                ]
+                            },
+                            {
+                                "anyOf": [
+                                    {
+                                        "field": "properties.previousHealthStatus",
+                                        "equals": "Available"
+                                    },
+                                    {
+                                        "field": "properties.previousHealthStatus",
+                                        "equals": "Unknown"
+                                    }
+                                ]
+                            },
+                            {
+                                "field": "status",
+                                "equals": "Active"
+                            },
+                            {
+                                "field": "properties.cause",
+                                "equals": "Unknown"
+                            }
+                        ]
+                    },                    {
+                        "enabled": true,
+                        "name": "Azure Loadbalancers Deleted",
+                        "conditions":[
+                            {
+                                "field": "category",
+                                "equals": "Administrative"
+                            },
+                            {
+                                "field": "operationName",
+                                "equals": "Microsoft.Network/loadBalancers/delete"
+                            }
+                        ]
+                    }
+                ]
+            }
+
+        }
+    }
+}
+
+  

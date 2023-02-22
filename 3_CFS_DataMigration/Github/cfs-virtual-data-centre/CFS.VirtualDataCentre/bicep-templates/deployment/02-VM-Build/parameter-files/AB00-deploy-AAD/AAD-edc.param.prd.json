@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "iden"
+        },
+        "kv_service": {
+            "value": "identity"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmService": "AAD",
+                        "vmInstance": "1",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2022-datacenter-g2",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D4s_v3",
+                        "vnetRgInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "AAD",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "domainName":"dev.cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@dev.cfs.com.au",
+                        "isEnableDomainJoin": false,
+                        "dataDiskType":"StandardSSD_LRS",
+                        "OUPAth": "",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 128,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

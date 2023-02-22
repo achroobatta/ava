@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiasoutheast",
+                        "component": "stor",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Back Office",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stoprdsdcbkof001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Back Office",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stoprdedcbkof001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

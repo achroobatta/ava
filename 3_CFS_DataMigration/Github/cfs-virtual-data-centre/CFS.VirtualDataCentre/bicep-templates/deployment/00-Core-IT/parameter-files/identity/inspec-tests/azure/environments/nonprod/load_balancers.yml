@@ -1,0 +1,4 @@
+- name: Ilb-np-edc-sailpoint-001
+  resource_group: rg-np-edc-iden-netw-001
+  sku_name: Standard
+  location: australiaeast

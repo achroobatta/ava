@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "rgname": {
+            "value": "rg-np-edc-bkof-dm-001"
+          },
+          "appName": {
+            "value": "Infra"
+          },
+          "location": {
+            "value": "australiaeast"
+          },
+          "serviceAbbrv": {
+            "value": "bkof"
+          },
+          "instance": {
+            "value": "1"
+          },
+          "dataFactoryName": {
+            "value": "adf-np-edc-bkof-dm-001"
+          },
+          "vmResouceGroupLocation": {
+            "value": "australiaeast"
+          },
+          "shirVmName": {
+            "value": "VMNPEDCBKOFDMSHIR001"
+          },
+          "timeZone": {
+            "value": "UTC"
+          },
+          "identityClientID": {
+            "value": "379bd64f-d81e-4233-b7e5-479231e1ccac"
+          },
+          "adminUsername": {
+            "value": "AdministratorCFS"
+          }
+      }
+  }

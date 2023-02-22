@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "keyVaultObject": {
+            "value": { 
+                "keyVault":[
+                    {
+                        "location": "australiaeast",
+                        "component": "dm",
+                        "service": "bkof-dm",
+                        "serviceAbbrv": "bkof",
+                        "instance": 25,
+                        "rgname": "rg-prd-edc-bkof-dm-001",
+                        "kvRG":"rg-prd-edc-bkof-dm-001",
+                        "kvName":"kv-prd-edc-bkof-dm-0025",
+                        "location2": "australiasoutheast",
+                        "virtualNetworksubnetName":"sub-prd-edc-bkof-dm-vmsub-003",
+                        "virtualNetworkResourceGroup": "rg-prd-edc-bkof-netw-001",
+                        "virtualNetworkName": "vnet-prd-edc-bkof-001",
+                        "subnetName": "sub-prd-edc-bkof-dm-com-002",
+                        "rgname2": "rg-prd-sdc-bkof-dm-001",
+                        "virtualNetwork2ResourceGroup": "rg-prd-sdc-bkof-netw-001",
+                        "virtualNetwork2Name": "vnet-prd-sdc-bkof-001",
+                        "subnet2Name": "sub-prd-sdc-bkof-dm-com-002",
+                        "privateDnsZoneName": "privatelink.vaultcore.azure.net",
+                        "defaultAction": "Deny",
+                        "enabledForDeployment":true,
+                        "enabledForDiskEncryption":true,
+                        "enabledForTemplateDeployment":true,
+                        "enableSoftDelete":true,
+                        "enablePurgeProtection":true,
+                        "enableRbacAuthorization":true,
+                        "publicNetworkAccess": "Enabled"
+                    }
+                ]
+            }
+        }
+    }
+}

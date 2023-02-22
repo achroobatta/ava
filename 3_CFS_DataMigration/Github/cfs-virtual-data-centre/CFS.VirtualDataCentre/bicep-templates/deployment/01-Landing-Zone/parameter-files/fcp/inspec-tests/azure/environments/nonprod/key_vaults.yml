@@ -1,0 +1,11 @@
+# Template Format
+#- name: kv-np-edc-fcp-001
+#  resource_group: rg-np-edc-fcp-kv-001
+
+# Australia East
+- name: kv-np-edc-fcp-001
+  resource_group: rg-np-edc-fcp-kv-001
+
+# Australia South East
+- name: kv-np-sdc-fcp-001
+  resource_group: rg-np-sdc-fcp-kv-001

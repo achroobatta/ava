@@ -1,0 +1,157 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "oper",
+                        "serviceAbbrv": "oper",
+                        "appName": "",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.40.4.0/24" 
+                        ],
+                        "customDnsServers": [
+                            "10.40.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-edc-operations-001",
+                              "location": "australiaeast",
+                              "service": "operations",
+                              "instance" : "1",
+                              "addressPrefix": "10.40.4.0/25",
+                              "networkSecurityGroup": "nsg-np-edc-operations-001",
+                              "routeTable": "rt-np-edc-operations-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Disabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-np-edc-operations-002",
+                              "location": "australiaeast",
+                              "service": "operations",
+                              "instance" : "2",
+                              "addressPrefix": "10.40.4.128/25",
+                              "networkSecurityGroup": "nsg-np-edc-operations-002",
+                              "routeTable": "rt-np-edc-operations-002",
+                              "routes": [],
+							  "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  },
+                                  {
+                                      "service": "Microsoft.Sql",
+                                      "locations": [
+                                          "australiaeast"
+                                      ]
+                                  }
+								  ,
+                                  {
+                                      "service": "Microsoft.KeyVault",
+                                      "locations": [
+                                          "australiaeast"
+                                      ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Disabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "netw",
+                        "service": "oper",
+                        "serviceAbbrv": "oper",
+                        "appName": "",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.60.4.0/24" 
+                        ],
+                        "customDnsServers": [
+                            "10.60.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-sdc-operations-001",
+                              "location": "australiasoutheast",
+                              "service": "operations",
+                              "instance" : "1",
+                              "addressPrefix": "10.60.4.0/25",
+                              "networkSecurityGroup": "nsg-np-sdc-operations-001",
+                              "routeTable": "rt-np-sdc-operations-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Disabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          },
+                          {
+                              "name": "sub-np-sdc-operations-002",
+                              "location": "australiasoutheast",
+                              "service": "operations",
+                              "instance" : "2",
+                              "addressPrefix": "10.60.4.128/25",
+                              "networkSecurityGroup": "nsg-np-sdc-operations-002",
+                              "routeTable": "rt-np-sdc-operations-002",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

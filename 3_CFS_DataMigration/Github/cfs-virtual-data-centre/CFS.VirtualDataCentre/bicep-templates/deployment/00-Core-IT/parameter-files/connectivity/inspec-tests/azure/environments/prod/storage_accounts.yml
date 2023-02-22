@@ -1,0 +1,19 @@
+# Australia East
+- name: stoprdedcconn001
+  resource_group: rg-prd-edc-conn-stor-001
+
+- name: consolem7i3i4ylgdabu
+  resource_group: rg-prd-edc-hub-netw-001
+
+- name: stoprdedchub001
+  resource_group: rg-prd-edc-hub-stor-001
+
+# Australia South East
+- name: stoprdsdcconn001
+  resource_group: rg-prd-sdc-conn-stor-001
+
+- name: console4gwnpqcb6lyak
+  resource_group: rg-prd-sdc-hub-netw-001
+
+- name: stoprdsdchub001
+  resource_group: rg-prd-sdc-hub-stor-001

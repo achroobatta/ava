@@ -1,0 +1,84 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+    dependsOn: ''
+    workItemId: ''
+    appName: ''
+    costCenterCode: ''
+    emailAddress: ''
+    environment: ''
+    fileSize: ''
+    ipTobeWhiteListed: ''
+    keyVaultNameforSecret: ''
+    numberOfFiles: ''
+    owner: ''
+    secretName: ''
+    sourceSftp: ''
+    sourceSftpUser: ''
+    sourceSftpUserPassword: ''
+    targetDataType: ''
+    vendorName: ''
+    warrantyPeriod: ''
+    vendorSuppliedPubKey: ''
+    CBASFTPSourcePath: ''
+    condition: ''
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+
+  steps:
+      - checkout: self
+
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Trigger Pipeline'
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -PipelineId $(mainPipelineId) `
+           -PAT '$(PAT)' `
+           -WorkItemId ${{ parameters.workItemId}} `
+           -ResourceLocation '$(resourceLocation)' `
+           -AppName '${{ parameters.appName}}' `
+           -CostCenterCode '${{ parameters.costCenterCode}}' `
+           -EmailAddress '${{ parameters.emailAddress}}' `
+           -Environment '${{ parameters.environment}}' `
+           -FileSize '${{ parameters.fileSize}}' `
+           -IpTobeWhiteListed '${{ parameters.ipTobeWhiteListed}}' `
+           -KeyVaultNameforSecret '${{ parameters.keyVaultNameforSecret}}' `
+           -Owner '${{ parameters.owner}}' `
+           -SecretName '${{ parameters.secretName}}' `
+           -SourceLocation '${{ parameters.sourceLocation}}' `
+           -SourceDataType '${{ parameters.sourceDataType}}' `
+           -TargetDataType '${{ parameters.targetDataType}}' `
+           -VendorName '${{ parameters.vendorName}}' `
+           -WarrantyPeriod '${{ parameters.warrantyPeriod}}' `
+           -UltraSSDEnabled $(ultraSSDEnabled) `
+           -SrcSftpCtn '${{ parameters.srcSftpCtn}}' `
+           -SrcSftpAcctNm '${{ parameters.srcSftpAcctNm}}' `
+           -SrcSftpPass '${{ parameters.srcSftpPass}}' `
+           -SrcSftpKey '${{ parameters.srcSftpKey}}' `
+           -VendorSuppliedPubKey '${{parameters.vendorSuppliedPubKey}}' `
+           -CBASFTPSourcePath '${{parameters.CBASFTPSourcePath}}' `
+           -RunType '${{parameters.runType}}' `
+           -DestStorageAccount ${{ parameters.destStorageAccount }}' `
+           -DestContainer ${{ parameters.destContainer }}' `
+           -IPSubnetforInternalApps '${{ parameters.IPSubnetforInternalApps}}'
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+
+

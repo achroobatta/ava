@@ -1,0 +1,141 @@
+#- template: templates/start-agents-runners-template.yml
+parameters:
+
+  - name: deployEnvironment
+    type: string
+
+  - name: artifactVersion
+    type: string
+
+stages:
+
+- stage: startAgentRunnerVms_${{ replace(parameters.deployEnvironment, '-', '_') }}
+  displayName: startAgentRunnerVms_${{ replace(parameters.deployEnvironment, '-', '_') }}
+
+  variables:
+    - group: var-service-principle-secrets
+    - group: var-azure-platform
+    - group: var-workspace
+    - group: var-selfhosted-agents-runners
+  
+   # Artifact Package Feed Value
+    - name: artifactFeed
+  
+      # deregistering/deleting any tenant's agents/runners can be from the main branch for the pipeline yaml
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+       value: "core-it/cfs-infra-release"
+      # deregistering/deleting any tenant's agents/runners can be from the develop branch for the pipeline yaml
+      ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+       value: "core-it/cfs-infra-ci"
+      # deregistering/deleting any tenant's agents/runners can be from a feature branch for the pipeline yaml
+      # allow from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+      ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
+       value: "core-it/cfs-infra-pr-develop"
+      #branch and/or Test Pool/Runner Group are not valid -> do not pull any artifact, just let the pipeline error out
+      ${{ else }}:
+       value: ""
+  
+   # Artifact Package Definition Value
+    - name: artifactDefinition
+      value: "CFS.VirtualDataCentre"
+  
+   # Artifact Package Version Value
+    - name: artifactVersion
+      value: ${{ parameters.artifactVersion }}
+  
+    ## Azure DevOps Environments
+    #- name: AzureDevOpsEnvironments
+    #  value: ${{ parameters.deployEnvironment }}
+  
+    # Azure DevOps Service Connection Name
+    - name: AzureEnvironmentPrefix
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "np"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "prd"
+      ${{ else }}:
+        value: "invalid_AzureEnvironmentPrefix"
+  
+    # Azure DevOps Operations Service Connection Name
+    - name: operationsSubscServiceConnection
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "sc-subsc-np-operations-001"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "sc-subsc-prd-operations-001"
+      ${{ else }}:
+        value: "invalid_operationsSubscServiceConnection"
+
+  pool:
+    vmImage: windows-latest
+
+  dependsOn: []
+  jobs:
+  - job: startAgentRunnerVmsJob
+    displayName: startAgentRunnerVmsJob
+
+    steps:
+
+    - task: DownloadPackage@1
+      displayName: DownloadArtifacts
+      inputs:
+        packageType: 'nuget'
+        feed: '$(artifactFeed)'
+        definition: '$(artifactDefinition)'
+        version: '$(artifactVersion)'
+        extract: true
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: AzureCLI@2
+      displayName : 'Check Vms'
+      name : CheckVmTask
+      inputs:
+        azureSubscription: ${{ variables.operationsSubscServiceConnection }}
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        # Setting the variable : eg: echo "##vso[task.setvariable variable=<var_name>;isoutput=true]somevalue"
+        inlineScript: |
+                      "Setting input Variables"
+                      $locationPrefix='edc'
+                      
+                      $GHVmNamePattern= "VM$(AzureEnvironmentPrefix)$($locationPrefix)GH".ToUpper()
+                      $ADOVmNamePattern="VM$(AzureEnvironmentPrefix)$($locationPrefix)ADO".ToUpper()
+
+                      $VmDetails=(az resource list --query "[? (type == 'Microsoft.Compute/virtualMachines') && (contains(id ,'/providers/Microsoft.Compute/virtualMachines/$($GHVmNamePattern)') || contains(id ,'/providers/Microsoft.Compute/virtualMachines/$($ADOVmNamePattern)')) && (!ends_with(id ,'TST')) ].{rgName:resourceGroup,vmName:name}")| ConvertFrom-Json
+                      "`$VmDetails.Count='$($VmDetails.Count)'"
+                      
+                      $VmResults=@()
+                      
+                      foreach ($vm in $VmDetails)
+                      {
+                        $vm|select *
+                        if (($vm -ne $null) -And ($vm.vmName -ne $null) -And ($vm.vmName.ToLower().StartsWith("vm$(AzureEnvironmentPrefix)$($locationPrefix)ado")))
+                        {
+                          $VmResults += @{ agentType='ado'; vmName=$vm.vmName; rgName=$vm.rgName; }
+                        }
+                        elseif (($vm -ne $null) -And ($vm.vmName -ne $null) -And ($vm.vmName.ToLower().StartsWith("vm$(AzureEnvironmentPrefix)$($locationPrefix)gh")))
+                        {
+                          $VmResults += @{ agentType='gh'; vmName=$vm.vmName; rgName=$vm.rgName; }
+                        }
+                      }
+                      echo "##vso[task.setvariable variable=VmResultsJson;isoutput=true]$($VmResults|ConvertTo-Json -Compress)"
+
+    - task: AzureCLI@2
+      displayName : 'Start Vms'
+      name : StartVmsTask
+      inputs:
+        azureSubscription: ${{ variables.operationsSubscServiceConnection }}
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        workingDirectory: '$(System.ArtifactsDirectory)\$(scripts)'
+        # using variable set from the 'CheckVmTask' task in the same job
+        # variable use syntax: $(<TaskName>.<variableName>)
+        inlineScript: |
+                      'CheckVmTask.VmResultsJson output'
+                      '$(CheckVmTask.VmResultsJson)'
+                      $vms='$(CheckVmTask.VmResultsJson)' | ConvertFrom-Json
+                      
+                      Set-Location '$(System.ArtifactsDirectory)\$(scripts)'
+                      foreach ($vm in $vms) {
+                        "-----------------------------------------------------------------------"
+                        .\start-vm-if-stopped.ps1 -rgName "$($vm.rgName)" -vmName "$($vm.vmName)"
+                      }

@@ -1,0 +1,35 @@
+{
+    "actionGroupName": "AzureMonitor",
+    "metricAlerts":[
+        {
+            "name" : "Azure Firewall Unavailable",
+            "severity": 0,
+            "threshold": 0,
+            "timeAggregation": "Average",
+            "metricName": "FirewallHealth",
+            "operator": "LessThanOrEqual",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        },
+        {
+            "name" : "Azure Firewall Health Status Degraded",
+            "severity": 1,
+            "threshold": 95,
+            "timeAggregation": "Average",
+            "metricName": "FirewallHealth",
+            "operator": "GreaterThan",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        },
+        {
+            "name" : "Azure Firewall SNAT Port Utilization High",
+            "severity": 2,
+            "threshold": 95,
+            "timeAggregation": "Maximum",
+            "metricName": "SNATPortUtilization",
+            "operator": "GreaterThanOrEqual",
+            "criterionType": "StaticThresholdCriterion",
+            "dimensions":""
+        }  
+    ]
+}

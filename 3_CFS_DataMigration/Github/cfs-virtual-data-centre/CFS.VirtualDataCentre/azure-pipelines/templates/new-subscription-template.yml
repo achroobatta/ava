@@ -1,0 +1,133 @@
+#- template: templates/new-subscription-template.yml
+
+parameters:
+- name: deployEnvironment #e.g. 'Production or Non-Production'
+  type: string
+
+- name: subManagementGroupType #e.g 'Platform-Core or Landing-Zone'
+  type: string
+
+- name: artifactVersion
+  type: string
+
+- name: useWhatIfDeploymentType
+  type: boolean
+
+stages:
+
+- stage: createNewSubscription_${{ replace(parameters.deployEnvironment, '-', '_') }}_in_${{ replace(parameters.subManagementGroupType, '-', '_') }}
+  displayName: createNewSubscription_${{ replace(parameters.deployEnvironment, '-', '_') }}_in_${{ replace(parameters.subManagementGroupType, '-', '_') }}
+
+  variables:
+    - group: var-service-principle-secrets
+    - group: var-azure-platform
+
+    # Artifact Package Feed Value
+    - name: artifactFeed
+  
+      # deregistering/deleting any tenant's agents/runners can be from the main branch for the pipeline yaml
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+       value: "core-it/cfs-infra-release"
+      # deregistering/deleting any tenant's agents/runners can be from the develop branch for the pipeline yaml
+      ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+       value: "core-it/cfs-infra-ci"
+      # deregistering/deleting any tenant's agents/runners can be from a feature branch for the pipeline yaml
+      # allow from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+      ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
+       value: "core-it/cfs-infra-pr-develop"
+      #branch and/or Test Pool/Runner Group are not valid -> do not pull any artifact, just let the pipeline error out
+      ${{ else }}:
+       value: ""
+
+    # Artifact Package Definition Value
+    - name: artifactDefinition
+      value: "CFS.VirtualDataCentre"
+
+    # Artifact Package Version Value
+    - name: artifactVersion
+      value: ${{ parameters.artifactVersion }}
+
+    # Azure Resource Location
+    - name: resourceLocation
+      value: "australiaeast"
+      
+    # Azure DevOps Service Connection Name
+    - name: AzureEnvironmentPrefix
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "np"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "prd"
+      ${{ else }}:
+        value: "invalid_AzureEnvironmentPrefix"
+
+    # Azure DevOps Operations Service Connection Name
+    - name: tenantRootGroupSubscServiceConnection
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "sc-np-tenant-root-group"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "sc-prd-tenant-root-group"
+      ${{ else }}:
+        value: "invalid_tenantRootGroupSubscServiceConnection"
+
+    # Azure Main Management Group Name
+    - name: mainManagementGroupName
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "CFSCoNonProd"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "CFSCoProd"
+      ${{ else }}:
+        value: "invalid_mainManagementGroupName"
+       
+    # Azure Billing Scope
+    - name: billingScope
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "/providers/Microsoft.Billing/billingAccounts/5513952/enrollmentAccounts/284580"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "/providers/Microsoft.Billing/billingAccounts/5513952/enrollmentAccounts/304912"
+      ${{ else }}:
+        value: "invalid_billingScope"
+
+    # Deployment Type
+    - name: deploymentType
+      ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+        value: "what-if"
+      ${{ else }}:
+        value: "create"
+
+    # Azure CLI Deployment Names Dynamically Applied Per Stage
+    - name: deploymentName
+      value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
+  pool:
+    vmImage: windows-latest
+
+  dependsOn: []
+  jobs:
+  - job: createNewSubscription
+    displayName: createNewSubscription
+
+    steps:
+
+    - task: DownloadPackage@1
+      displayName: DownloadArtifacts
+      inputs:
+        packageType: 'nuget'
+        feed: '$(artifactFeed)'
+        definition: '$(artifactDefinition)'
+        version: '$(artifactVersion)'
+        extract: true
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: AzureCLI@2
+      displayName : DeployManagementGroupAndSubscriptionIn${{ parameters.subManagementGroupType }}
+      inputs:
+        azureSubscription: ${{ variables.tenantRootGroupSubscServiceConnection }}
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: az deployment tenant $(deploymentType) --location '$(resourceLocation)' `
+                      --name '$(deploymentName)' `
+                      --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-NewSubscription\deploy-NewSubscription.bicep `
+                      --parameters billingScope='$(billingScope)' `
+                      --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                      --parameters mainManagementGroupName='$(mainManagementGroupName)' `
+                      --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-NewSubscription\${{ parameters.subManagementGroupType }}.param.json

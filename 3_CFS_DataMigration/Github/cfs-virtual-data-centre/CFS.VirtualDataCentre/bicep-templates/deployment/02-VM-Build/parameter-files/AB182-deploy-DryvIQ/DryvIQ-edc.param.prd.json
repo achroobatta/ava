@@ -1,0 +1,529 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "iden"
+        },
+        "kv_service": {
+            "value": "identity"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "2",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "domainName":"cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@cfs.com.au",
+                        "isEnableDomainJoin": false,
+                        "OUPAth": "",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "3",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "4",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },{
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "5",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "6",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "7",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "8",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "9",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D8s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 512,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "comp",
+                        "vmRgServiceAbbrv": "iden",
+                        "vmRgLocation": "australiaeast",
+                        "vmInstancePrefix": "00",
+                        "vmService": "SS",
+                        "vmInstance": "1",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2019-datacenter-gensecond",
+                        "imageReferenceVersion": "latest",
+                        "vmSize": "Standard_D16s_v3",
+                        "vnetInstance": "1",
+                        "vnetRgServiceAbbrv": "identity",
+                        "vnetRgComponent": "netw",
+                        "snetServiceAbbrv": "identity",
+                        "snetInstance": "1",
+                        "storageAccInstance": "1",
+                        "timeZone": "E. Australia Standard Time",
+                        "availabilitySetName": "",
+                        "appName": "DryvIQ",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "dataDiskType":"",
+                        "dataDiskResources": {
+                            "value": [
+                                {
+                                    "lun": 0,
+                                    "createOption": "Attach",
+                                    "deleteOption": "Detach",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

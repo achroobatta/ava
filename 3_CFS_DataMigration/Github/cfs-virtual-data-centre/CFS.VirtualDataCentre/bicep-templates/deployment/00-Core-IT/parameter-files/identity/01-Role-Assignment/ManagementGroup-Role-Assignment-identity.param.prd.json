@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleAssignmentArray": {
+            "value": [
+                {
+                    "managementGroupId": "mg-prd-identity-001",
+                    "ObjectId":  "08930612-2b6d-4b9e-b56a-0b535cfc199f",
+                    "DisplayName":  "SG-AA-OPS-iden-owner"
+                },
+                {
+                    "managementGroupId": "mg-prd-identity-001",
+                    "ObjectId":  "346be21a-5c58-4296-b92d-e13e3da9940f",
+                    "DisplayName":  "SG-AA-OPS-iden-reader"
+                },
+                {
+                    "managementGroupId": "mg-prd-identity-001",
+                    "ObjectId":  "575dda6b-aaff-445f-96f0-5f3c1090a44d",
+                    "DisplayName":  "SG-AA-OPS-iden-contributor"
+                }
+            ]
+        }
+    }
+}

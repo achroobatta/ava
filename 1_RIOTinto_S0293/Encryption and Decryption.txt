@@ -1,0 +1,21 @@
+Encryption Process 
+
+To identify the current .NET Framework version and navigate to that folder, follow the steps below:
+a)	Open the CMD window on the server.
+b)	Go to Server Drive Letter that the ClearText file is located on. e.g. C: [Enter]
+c)	Enter the following in the command prompt and press [Enter]
+	reg query "HKLM\SOFTWARE\Microsoft\Net Framework Setup\NDP" /s
+d)	Scroll to the top to see the most recent .NET Framework version.
+e)	Type the following command with the .NET framework version and press [Enter].
+	CD C:\Windows\Microsoft.NET\Framework\[Framework Version]
+	e.g. C:\Windows\Microsoft.NET\Framework\v4.0.30319
+f)	In the MS Framework Folder inter the following command and press [Enter]:
+	ASPNET_REGIIS -pef "connectionStrings" "application folder path"
+	e.g. ASPNET_REGIIS -pef "connectionStrings" “E:\Sites\RTA_CRS”
+
+
+Decryption Process 
+a)	In the MS Framework Folder inter the following command and press [Enter]:
+	ASPNET_REGIIS -pef "connectionStrings" "application folder path"
+	e.g. ASPNET_REGIIS -pef "connectionStrings" “E:\Sites\RTA_CRS” 
+

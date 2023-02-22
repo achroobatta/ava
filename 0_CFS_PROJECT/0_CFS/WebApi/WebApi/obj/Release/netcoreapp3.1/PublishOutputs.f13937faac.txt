@@ -1,0 +1,8 @@
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\WebApi.exe
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\appsettings.Development.json
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\appsettings.json
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\WebApi.dll
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\WebApi.deps.json
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\WebApi.runtimeconfig.json
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\WebApi.pdb
+C:\0_PROJECT\0_CFS\WebApi\WebApi\obj\Release\netcoreapp3.1\PubTmp\Out\Newtonsoft.Json.dll

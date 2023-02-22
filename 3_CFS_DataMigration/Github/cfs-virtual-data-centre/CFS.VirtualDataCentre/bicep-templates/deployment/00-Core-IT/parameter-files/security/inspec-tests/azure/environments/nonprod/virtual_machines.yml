@@ -1,0 +1,74 @@
+# Template Format
+#- name: vmprodaedc01
+#  resource_group: rg-prod-ae-compute
+#  datadisk_count: 0
+#  location: australiaSouthEast
+#  size: Standard_B2ms
+#  os: Windows
+
+# Australia East
+- name: VMNPEDCNCE001
+  resource_group: rg-np-edc-sec-comp-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Linux
+
+- name: VMNPEDCSYSLOG01
+  resource_group: rg-np-edc-sec-comp-001
+  datadisk_count: 1
+  location:	australiaeast
+  size:	Standard_D8s_v3
+  os:	Linux
+
+- name:	VMNPEDCTCS001
+  resource_group:	rg-np-edc-sec-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_B2ms
+  os:	Windows
+
+
+- name:	VMNPEDCTCS002
+  resource_group:	rg-np-edc-sec-comp-001
+  datadisk_count:	0
+  location:	australiaeast
+  size:	Standard_B2ms
+  os:	Linux
+
+- name:	VMNPEDCWU001
+  resource_group:	rg-np-edc-sec-comp-002
+  datadisk_count:	1
+  location:	australiaeast
+  size:	Standard_D2s_v3
+  os:	Windows
+
+# Australia South East
+
+- name:	VMNPSDCSYSLOG01
+  resource_group:	rg-np-sdc-sec-comp-001
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D8s_v3
+  os:	Linux
+
+- name:	VMNPSDCTCS001
+  resource_group:	rg-np-sdc-sec-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_B2ms
+  os:	Windows
+
+- name:	VMNPSDCTCS002
+  resource_group:	rg-np-sdc-sec-comp-001
+  datadisk_count:	0
+  location:	australiasoutheast
+  size:	Standard_B2ms
+  os:	Linux
+
+- name:	VMNPSDCWU001
+  resource_group:	rg-np-sdc-sec-comp-002
+  datadisk_count:	1
+  location:	australiasoutheast
+  size:	Standard_D2s_v3
+  os:	Windows

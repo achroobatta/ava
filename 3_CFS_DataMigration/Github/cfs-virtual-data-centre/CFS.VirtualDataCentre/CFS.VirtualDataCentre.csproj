@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>CFS.VirtualDataCentre</AssemblyName>
+    <RootNamespace>CFS.VirtualDataCentre</RootNamespace>
+    <PackageId>CFS.VirtualDataCentre</PackageId>
+    <Authors></Authors>
+    <Company>CFS</Company>
+    <Product>CFS.VirtualDataCentre</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bicep-templates\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="scripts\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="yaml-templates\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="test-scripts\**\*" CopyToPublishDirectory="Always" />
+    <Content Include="README.md" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+</Project>

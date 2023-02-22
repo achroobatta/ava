@@ -1,0 +1,269 @@
+## Format
+name: $(Date:yyyyMMdd)$(Rev:.rr)
+
+# Stage Trigger
+trigger: none
+
+pr: none
+
+parameters:
+- name: taskNumber
+  displayName: 'Work Item Id'
+  type: string
+- name: environment
+  displayName: 'Environment'
+  type: string
+  values:
+    - "Non-Production"
+    - "Production"
+- name: vmName
+  displayName: 'VM Name (To be deleted)'
+  type: string
+- name: vmRgName
+  displayName: 'VM RG Name'
+  type: string
+- name: diagStorageAccount
+  displayName: 'Storage Account Name (To be deleted)'
+  type: string
+- name: resourceLocation
+  displayName: 'Resource Location'
+  type: string
+- name: receiverEmailAddress
+  displayName: 'Receiver Email Address'
+  type: string
+- name: commRGName
+  displayName: 'Comm RG Name'
+  type: string
+- name: sftpLocalUser
+  displayName: 'SFTP Local User'
+  type: string
+  default: 'placeholder'
+- name: targetDataType
+  displayName: 'Target Data Type'
+  type: string
+  values:
+    - "internal"
+    - "external"
+- name: destStorageAccount
+  displayName: 'Dest Storage Account'
+  type: string
+  default: 'placeholder'
+- name: destContainerName
+  displayName: 'Dest Container Name'
+  type: string
+  default: 'placeholder'
+- name: destFileName
+  displayName: 'Dest File Name'
+  type: string
+  default: 'placeholder'
+- name: zipFileSecretName
+  displayName: 'Zip File Secret Name'
+  type: string
+  default: 'placeholder'
+- name: keyVaultNameforSecret
+  displayName: 'Key Vault Name for Secret'
+  type: string
+  default: 'placeholder'
+
+
+
+variables:
+ - group: lz-var-service-principle-secrets
+ - group: var-password
+ - group: var-azure-tenant-id
+ - name: landingZoneServiceConnection
+   ${{ if eq(parameters.environment, 'Production') }}:
+      value: "sc-subsc-prd-bkof-001"
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+      value: "sc-subsc-np-bkof-001"
+ - name: prvtEndpointName
+   value: 'pve-${{ parameters.resourceLocation}}-${{ parameters.diagStorageAccount}}'
+ - name: sftpHostName
+   ${{ if eq(parameters.targetDataType, 'external') }}:
+      value: '${{parameters.destStorageAccount}}.blob.core.windows.net'
+   ${{ if eq(parameters.targetDataType, 'internal') }}:
+      value: ""
+ - name: sftpUserName
+   ${{ if eq(parameters.targetDataType, 'external') }}:
+      value: '${{ parameters.destStorageAccount}}.${{ parameters.sftpLocalUser}}'
+   ${{ if eq(parameters.targetDataType, 'internal') }}:
+      value: ""
+ - name: agentPool
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+    value: 'Windows-NP'
+   ${{ else }}:
+    value: 'Windows-PRD'
+ - name: subId
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+    value: $(subsc-np-backoffice-sid)
+   ${{ if eq(parameters.environment, 'Production') }}:
+    value: $(subsc-prd-backoffice-sid)
+ - name: serviceAccountP
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+    value: '$(serviceAccountNPPassword)'
+   ${{ if eq(parameters.environment, 'Production') }}:
+    value: '$(serviceAccountPRDPassword)'
+ - name: serviceAccountU
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+    value: '$(serviceAccountNPUser)'
+   ${{ if eq(parameters.environment, 'Production') }}:
+    value: '$(serviceAccountPRDUser)'
+ - name: serviceAccountUE
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+    value: '$(serviceAccountNPUserEmail)'
+   ${{ if eq(parameters.environment, 'Production') }}:
+    value: '$(serviceAccountPRDUserEmail)'
+ - name: tenantId
+   ${{ if eq(parameters.environment, 'Non-Production') }}:
+    value: $(np-azure-tenant-id)
+   ${{ if eq(parameters.environment, 'Production') }}:
+    value: $(prd-azure-tenant-id)
+
+
+stages:
+#Download Key Vault Secret
+- template: templates/download-key-vault-secret-stage.yml
+  parameters:
+    stage: 'download_key_vault_secret'
+    displayName: Download Key Vault
+    dependsOn: ''
+    agentPool: $(agentPool)
+    condition: and(succeeded(), eq('${{parameters.targetDataType }}', 'external'), eq(variables['Build.Reason'], 'Manual'))
+    keyVaultNameforSecret: ${{ parameters.keyVaultNameforSecret}}
+    zipFileSecretName: ${{ parameters.zipFileSecretName}}
+    landingZoneServiceConnection: $(landingZoneServiceConnection)
+    serviceAccountUE: $(serviceAccountUE)
+    serviceAccountP: $(serviceAccountP)
+    serviceAccountU: $(serviceAccountU)
+    vmName: ${{ parameters.vmName}}
+    tenantId: $(tenantId)
+    subId: $(subId)
+
+#Delete Azure resources Stage
+- template: templates/deleteazureresources-stage.yml
+  parameters:
+    stage: 'delete_azureresources'
+    displayName: 'Delete Azure Resources Stage'
+    dependsOn: 'download_key_vault_secret'
+    condition: |
+      and
+      (
+        eq(variables['Build.Reason'], 'Manual'),
+        or
+          (
+            eq(dependencies.download_key_vault_secret.result, 'Skipped'),
+            eq(dependencies.download_key_vault_secret.result, 'Succeeded')
+          )
+      )
+    pool:
+      vmImage: 'windows-latest'
+    landingZoneServiceConnection: $(landingZoneServiceConnection)
+    vmName: ${{ parameters.vmName}}
+    vmRgName: ${{ parameters.vmRgName}}
+    strAccName: ${{ parameters.diagStorageAccount}}
+    prvtEndpointName: $(prvtEndpointName)
+    commRGName: ${{ parameters.commRGName}}
+    subId: $(subId)
+
+#Notification Stage - Internal - Successful
+- template: templates/notification-stage-internal.yml
+  parameters:
+    stage: 'notification_on_success_internal'
+    displayName: Notification Stage on Success - Internal
+    dependsOn: 'delete_azureresources'
+    condition: |
+      and
+        (
+          eq('${{ parameters.targetDataType }}', 'internal'),
+          eq(dependencies.delete_azureresources.result, 'Succeeded')
+        )
+    pool:
+      vmImage: 'windows-latest'
+    variableGroup: var-parameter-dm-grp
+    taskNumber: ${{ parameters.taskNumber}}
+    workItemState: 'Done'
+    workItemComment: "DMT Extraction Process for Task ${{ parameters.taskNumber}} for Internal Use Completed."
+    updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
+    sendEmailDescription: 'Send Email on successful deletion of Azure Resources'
+    emailSubject: 'DMT Extraction Process for Task ${{ parameters.taskNumber}} for Internal Use Completed'
+    emailBody: 'DMT Extraction process for Task ${{ parameters.taskNumber}} for internal use completed. Extracted file ${{ parameters.destFileName}} for internal use is present in Storage Account: ${{ parameters.destStorageAccount}} and Container: ${{ parameters.destContainerName}}. Please validate.'
+    environment: ${{ parameters.environment}}
+    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
+
+#Notification Stage - External - Successful
+- template: templates/notification-stage-external.yml
+  parameters:
+    stage: 'notification_on_success_external'
+    displayName: Notification Stage on Success - External
+    dependsOn:
+      - download_key_vault_secret
+      - delete_azureresources
+    pool:
+      vmImage: 'windows-latest'
+    condition: and(succeeded(), eq('${{ parameters.targetDataType }}', 'external'))
+    variableGroup: var-parameter-dm-grp
+    taskNumber: ${{ parameters.taskNumber}}
+    workItemState: 'Done'
+    workItemComment: "DMT Extraction Process for Task ${{ parameters.taskNumber}} for External Use Completed."
+    updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
+    emailSubjectForPass: 'Password for SFTP Zip File for Task ${{ parameters.taskNumber}}'
+    emailSubjectForFile: 'DMT Extraction Process for Task ${{ parameters.taskNumber}} for External Use Completed'
+    emailBodyForFile: 'DMT Extraction Process for Task ${{ parameters.taskNumber}} for external use completed. Extracted Zipped file ${{ parameters.destFileName}} for external use is present in: <br>HostName: $(sftpHostName) <br>Username: $(sftpUserName) <br>Please Validate.'
+    environment: ${{ parameters.environment}}
+    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
+
+#Update Work Item Stage - Failure - Get KV Secret
+- template: templates/update-workitemstage.yml
+  parameters:
+    stage: 'update_workitem_on_failure_get_kv_secret'
+    displayName: Update Work Item Stage on Failure Get Kv Secret
+    dependsOn: download_key_vault_secret
+    condition: failed()
+    name: 'update_workitem_on_failure_get'
+    description: 'Update Work Item Stage on Failure getting of kv secret'
+    pool:
+      vmImage: 'windows-latest'
+    variableGroup: var-parameter-dm-grp
+    workItemId: ${{ parameters.taskNumber}}
+    workItemComment: "An issue occured while getting the key vault secret. Please see pipeline logs for more details."
+    workItemState: 'In Progress'
+
+#Update Work Item Stage - Failure - Delete Azure Resources
+- template: templates/update-workitemstage.yml
+  parameters:
+    stage: 'update_workitem_on_failure_delete_azresources'
+    displayName: Update Work Item Stage on Failure Deletion of Azure Resources
+    dependsOn: delete_azureresources
+    condition: eq(dependencies.delete_azureresources.result, 'Failed')
+    name: 'update_workitem_on_failure_delete'
+    description: 'Update Work Item Stage on Failure deletion of Azure Resources'
+    pool:
+      vmImage: 'windows-latest'
+    variableGroup: var-parameter-dm-grp
+    workItemId: ${{ parameters.taskNumber}}
+    workItemComment: "An issue occured while deleting the following Azure Resources: ${{ parameters.vmName}}, ${{ parameters.diagStorageAccount}}, $(prvtEndpointName). Please see pipeline logs for details."
+    workItemState: 'In Progress'
+
+#Update Work Item Stage - Failure - Email
+- template: templates/update-workitemstage.yml
+  parameters:
+    stage: 'update_workitem_on_failure_emailnotif'
+    displayName: Update Work Item Stage on Failure Email Notification
+    dependsOn:
+      - notification_on_success_external
+      - notification_on_success_internal
+    condition: |
+      or
+        (
+          eq(dependencies.notification_on_success_external.result, 'Failed'),
+          eq(dependencies.notification_on_success_internal.result, 'Failed')
+        )
+    name: 'update_workitem_on_failure_email'
+    description: 'Update Work Item Stage on Failure Email Notification'
+    pool:
+      vmImage: 'windows-latest'
+    variableGroup: var-parameter-dm-grp
+    workItemId: ${{ parameters.taskNumber}}
+    workItemComment: "An issue occured while sending the email notification. Please see pipeline logs for more details"
+    workItemState: 'In Progress'
+

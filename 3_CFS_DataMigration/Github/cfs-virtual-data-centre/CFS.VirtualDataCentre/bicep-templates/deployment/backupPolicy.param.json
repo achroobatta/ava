@@ -1,0 +1,16 @@
+{
+    "backupPolicy": 
+      {
+          "policyName": "VMBackup",
+          "instantRpRetentionRangeInDays": 2,
+          "scheduleRunTimes": [
+              "2022-01-16T23:30:00Z"
+          ],
+          "timeZone": "E. Australia Standard Time",
+          "dailyRetentionDurationCount": 14,
+          "daysOfTheWeek": [
+              "Sunday"
+          ],
+          "weeklyRetentionDurationCount": 4
+      }
+}

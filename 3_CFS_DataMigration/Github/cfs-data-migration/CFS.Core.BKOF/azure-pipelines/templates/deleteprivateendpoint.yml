@@ -1,0 +1,28 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    dependsOn: ''
+    landingZoneServiceConnection: ''
+    prvtEndpointName: ''
+    vmRgName: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  dependsOn: ${{ parameters.dependsOn}}
+
+  steps:
+  - task: AzureCLI@2
+    displayName: Delete Azure Private Endpoint
+    inputs:
+      azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az network private-endpoint show --name ${{ parameters.prvtEndpointName }} --resource-group ${{ parameters.vmRgName}}
+        az network private-endpoint delete -n ${{ parameters.prvtEndpointName }} -g ${{ parameters.vmRgName}}
+      failOnStandardError: true

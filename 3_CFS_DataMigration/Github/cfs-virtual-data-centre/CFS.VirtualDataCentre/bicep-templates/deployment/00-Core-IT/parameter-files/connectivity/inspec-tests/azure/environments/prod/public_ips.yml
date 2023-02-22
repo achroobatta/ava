@@ -1,0 +1,39 @@
+# Australia East
+
+- name: FGEDCextLBPublicIP
+  resource_group: rg-prd-edc-hub-netw-001
+  address: 20.5.201.244
+
+- name: pip-bastion-prd-edc-001
+  resource_group: rg-prd-edc-hub-netw-001
+  address: 20.40.120.7
+
+- name: pip-er-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+  address: 20.227.19.99
+
+- name: pip-fw-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+  address: 20.40.120.51
+
+- name: pip-vpn-prd-edc-hub-001
+  resource_group: rg-prd-edc-hub-netw-001
+  address: 20.40.190.91
+
+# Australia South East
+
+- name: FGTASDCEXTLBPUBIP
+  resource_group: rg-prd-sdc-hub-netw-001
+  address: 52.255.49.214
+
+- name: pip-bastion-prd-sdc-001
+  resource_group: rg-prd-sdc-hub-netw-001
+  address: 52.189.196.179
+
+- name: pip-er-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+  address: 20.45.153.163
+
+- name: pip-fw-prd-sdc-hub-001
+  resource_group: rg-prd-sdc-hub-netw-001
+  address: 52.189.232.184

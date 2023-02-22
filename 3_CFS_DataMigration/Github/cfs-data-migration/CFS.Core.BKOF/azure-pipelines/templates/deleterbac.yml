@@ -1,0 +1,31 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    dependsOn: ''
+    landingZoneServiceConnection: ''
+    vmName: ''
+    commRGName: ''
+    subId: ''
+    vmRgName: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  dependsOn: ${{ parameters.dependsOn}}
+
+
+  steps:
+  - task: AzureCLI@2
+    displayName: Remove VM RBAC
+    inputs:
+      azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName}}
+        az identity delete --name ${{ parameters.vmName}} --resource-group ${{ parameters.commRGName}} --subscription ${{parameters.subId}}
+      failOnStandardError: true

@@ -1,0 +1,33 @@
+#deploy-VDCVirtualNetwork.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Virtual Network in ${{ parameters.serviceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(templateDirectory)\deployment-templates\deploy-VDCVirtualNetwork.bicep `
+                    --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters $(parameterDirectory)\02-Network\Network-sftp-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json

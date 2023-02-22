@@ -1,0 +1,69 @@
+# Template Format
+#- name: vmprodaedc01
+#  resource_group: rg-prod-ae-compute
+#  datadisk_count: 0
+#  location: australiaSouthEast
+#  size:   size: Standard_B2ms
+#  os:   os: Windows
+
+# Australia East
+
+- name: VMPRDEDCADO001
+  resource_group: rg-prd-edc-oper-ado-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMPRDEDCADO1TST
+  resource_group: rg-prd-edc-oper-ado-1tst
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMPRDEDCDIG001
+  resource_group: rg-prd-edc-oper-comp-001
+  datadisk_count: 1
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMPRDEDCGH001
+  resource_group: rg-prd-edc-oper-gh-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D2s_v3
+  os: Windows
+
+- name: VMPRDEDCMID001
+  resource_group: rg-prd-edc-oper-snow-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+# This VM was failing in extension
+# This VM was not implemted via Code
+#- name: VMPRDEDCPGW001
+#  resource_group: rg-prd-edc-oper-comp-005
+#  datadisk_count: 0
+#  location: australiaeast
+#  size: Standard_D2s_v4
+#  os: Linux
+
+- name: VMPRDEDCPOC001
+  resource_group: rg-prd-edc-oper-snow-001
+  datadisk_count: 0
+  location: australiaeast
+  size: Standard_D4s_v3
+  os: Windows
+
+# Australia South East
+
+- name: VMPRDSDCMID001
+  resource_group: rg-prd-sdc-oper-snow-001
+  datadisk_count: 0
+  location: australiasoutheast
+  size: Standard_D4s_v3
+  os: Windows

@@ -1,0 +1,25 @@
+# Australia East
+- name: bastion-np-edc-001-pip
+  resource_group: rg-np-edc-hub-netw-001
+  address: 20.92.211.9
+
+- name: pip-bastion-np-edc-001
+  resource_group: rg-np-edc-hub-netw-001
+  address: 20.53.89.226
+
+- name: pip-fw-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+  address: 20.92.185.5
+
+- name: pip-vpn-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+  address: 20.28.160.9
+
+# Australia South East
+- name: pip-bastion-np-sdc-001
+  resource_group: rg-np-sdc-hub-netw-001
+  address: 52.255.44.138
+
+- name: pip-fw-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+  address: 52.189.227.206

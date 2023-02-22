@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+        "virtualEnvironmentArray": {
+            "value": [
+                {
+                    "vnetName": "vnet-np-edc-fwd-001",
+                    "vnetNetResourceGroup": "rg-np-edc-fwd-netw-001",
+                    "subnetAddressPrefix": "10.44.1.0/24",
+                    "serviceAbbrv": "fwd",
+                    "component": "fwddev0",
+                    "appName": "FWD Dev0 Environment",
+                    "count": 3,
+                    "location": "australiaeast",
+                    "contributorPrincipalId":  "3e313aa8-3bbd-4e22-9a68-aead9aab8823",
+                    "StorageAccountInstance": 3
+                }
+            ]
+        }
+    }
+}

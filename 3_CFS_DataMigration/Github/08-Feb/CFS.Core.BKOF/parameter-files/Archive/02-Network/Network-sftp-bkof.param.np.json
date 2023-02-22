@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "virtualNetworkObject": {
+            "value": { 
+                "virtualNetwork":[
+                    {
+                        "location": "australiaeast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "dm",
+                        "service": "bkof-dm-sftp",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Infra",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.83.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.40.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-edc-bkof-dm-sftp-001",
+                              "location": "australiaeast",
+                              "service": "bkof-dm-sftp",
+                              "instance" : "1",
+                              "addressPrefix": "10.83.0.0/24",
+                              "networkSecurityGroup": "nsg-np-edc-bkof-dm-sftp-001",
+                              "routeTable": "rt-np-edc-bkof-dm-sftp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "workspaceLocation": "australiaeast",
+                        "component": "dm",
+                        "service": "bkof-dm-sftp",
+                        "serviceAbbrv": "bkof",
+                        "appName": "Infra",
+                        "instance": 1,
+                        "StorageAccountInstance": 3,
+                        "addressSpaces": [ 
+                            "10.93.0.0/16" 
+                        ],
+                        "customDnsServers": [
+                            "10.60.1.68"
+                        ],
+                        "ddosProtectionPlan": "", 
+                        "ddosProtectionPlanRg": "",
+                        "subnets":[
+                          {
+                              "name": "sub-np-sdc-bkof-dm-sftp-001",
+                              "location": "australiasoutheast",
+                              "service": "bkof-dm-sftp",
+                              "instance" : "1",
+                              "addressPrefix": "10.93.0.0/24",
+                              "networkSecurityGroup": "nsg-np-sdc-bkof-dm-sftp-001",
+                              "routeTable": "rt-np-sdc-bkof-dm-sftp-001",
+                              "routes": [],
+                              "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "australiaeast",
+                                        "australiasoutheast"
+                                    ]
+                                  }
+                              ],
+                              "delegations": [],
+                              "securityRules": [],
+                              "privateEndpointNetworkPolicies": "Enabled",
+                              "privateLinkServiceNetworkPolicies": "Enabled"
+                          }
+                        ]
+                    }                    
+                ]
+            }
+        }
+    }
+}

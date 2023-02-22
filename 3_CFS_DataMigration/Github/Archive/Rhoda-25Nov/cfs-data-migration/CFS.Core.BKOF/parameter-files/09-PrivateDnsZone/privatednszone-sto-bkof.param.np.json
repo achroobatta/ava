@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "privateDnsZoneObject": {
+            "value": {
+                "privateDnsZone":[
+                    {
+                        "location": "australiaeast",
+                        "rgComponent": "dm",
+                        "rgServiceAbbrv": "bkof",
+                        "rgInstance" : "1",
+                        "privateDnsZoneName": "privatelink.blob.core.windows.net",
+                        "appName": "Infra",
+                        "virtualNetworkLinks": [
+                            {
+                                "linkName": "stolink_to_vnet-np-edc-bkof-dm-001",
+                                "vnetResourceGroup": "rg-np-edc-bkof-dm-001",
+                                "vnetName": "vnet-np-edc-bkof-dm-001",
+                                "isRegistrationEnabled": false
+                            },
+                            {
+                                "linkName": "stolink_to_vnet-np-edc-bkof-dm-sftp-001",
+                                "vnetResourceGroup": "rg-np-edc-bkof-dm-001",
+                                "vnetName": "vnet-np-edc-bkof-dm-sftp-001",
+                                "isRegistrationEnabled": false
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "rgComponent": "dm",
+                        "rgServiceAbbrv": "bkof",
+                        "rgInstance" : "1",
+                        "privateDnsZoneName": "privatelink.blob.core.windows.net",
+                        "appName": "Infra",
+                        "virtualNetworkLinks": [
+                            {
+                                "linkName": "stolink_to_vnet-np-sdc-bkof-dm-001",
+                                "vnetResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                "vnetName": "vnet-np-sdc-bkof-dm-001",
+                                "isRegistrationEnabled": false
+                            },
+                            {
+                                "linkName": "stolink_to_vnet-np-sdc-bkof-dm-sftp-001",
+                                "vnetResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                "vnetName": "vnet-np-sdc-bkof-dm-sftp-001",
+                                "isRegistrationEnabled": false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyarray": {
+            "value": [
+                {
+                    "exemptionInstance": 1,
+                    "managementGroupScope": "mg-np-operations-001",
+                    "displayName": "Operations Management Group - Allow only Australia East and Australia Southeast Location in all resources",
+                    "description": "",
+                    "category": "Waiver",
+                    "policyDescription": "Allow only Australia East and Australia Southeast Location in all resources",
+                    "policyAssignmentId": "/providers/Microsoft.Management/managementGroups/CFSCoNonProd/providers/Microsoft.Authorization/policyAssignments/AllowedLocationResources",
+                    "expiration": ""
+                }
+            ]  
+        }
+    }
+}      
+    

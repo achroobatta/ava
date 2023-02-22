@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleAssignmentArray": {
+            "value": [
+                {
+                    "managementGroupId": "CFSCoNonProd",
+                    "ObjectId":  "62f564f9-8467-4fed-83f8-ba2e4e5b8814",
+                    "DisplayName":  "SG-AA-OPS-CFSCoManagementGroup-owner"
+                },
+                {
+                    "managementGroupId": "CFSCoNonProd",
+                    "ObjectId":  "6efd0bc8-4b04-4d60-a2f8-fb823fc5509e",
+                    "DisplayName":  "SG-AA-OPS-CFSCoManagementGroup-reader"
+                },
+                {
+                    "managementGroupId": "CFSCoNonProd",
+                    "ObjectId":  "e9afc027-e016-4c6e-8a3b-df4403ecb4eb",
+                    "DisplayName":  "SG-AA-OPS-CFSCoManagementGroup-contributor"
+                }
+            ]
+        }
+    }
+}

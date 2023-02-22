@@ -1,0 +1,89 @@
+#- template: templates/security-groups-template.yml
+
+parameters:
+- name: deployEnvironment #e.g. 'Production or Non-Production'
+  type: string
+
+- name: artifactVersion
+  type: string
+
+stages:
+
+- stage: DeploySecurityGroups_${{ replace(parameters.deployEnvironment, '-', '_') }}
+  displayName: DeploySecurityGroups_${{ replace(parameters.deployEnvironment, '-', '_') }}
+
+  variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    
+    # Artifact Package Feed Value
+    - name: artifactFeed
+  
+      # deregistering/deleting any tenant's agents/runners can be from the main branch for the pipeline yaml
+      ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+       value: "core-it/cfs-infra-release"
+      # deregistering/deleting any tenant's agents/runners can be from the develop branch for the pipeline yaml
+      ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+       value: "core-it/cfs-infra-ci"
+      # deregistering/deleting any tenant's agents/runners can be from a feature branch for the pipeline yaml
+      # allow from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+      ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
+       value: "core-it/cfs-infra-pr-develop"
+      #branch and/or Test Pool/Runner Group are not valid -> do not pull any artifact, just let the pipeline error out
+      ${{ else }}:
+       value: ""
+
+    # Artifact Package Definition Value
+    - name: artifactDefinition
+      value: "CFS.VirtualDataCentre"
+
+    # Artifact Package Version Value
+    - name: artifactVersion
+      value: ${{ parameters.artifactVersion }}
+
+    # Azure DevOps Operations Service Connection Name
+    - name: tenantRootGroupSubscServiceConnection
+      ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+        value: "sc-np-tenant-root-group"
+      ${{ elseif eq(parameters.deployEnvironment, 'Production') }}:
+        value: "sc-prd-tenant-root-group"
+      ${{ else }}:
+        value: "invalid_tenantRootGroupSubscServiceConnection"
+
+  pool:
+    vmImage: windows-latest
+    
+  dependsOn: []
+  jobs:
+  - job: DeploySecurityGroups_${{ replace(parameters.deployEnvironment, '-', '_') }}
+    displayName: DeploySecurityGroups_${{ replace(parameters.deployEnvironment, '-', '_') }}
+
+    steps:
+    
+    - task: DownloadPackage@1
+      displayName: DownloadArtifacts
+      inputs:
+        packageType: 'nuget'
+        feed: '$(artifactFeed)'
+        definition: '$(artifactDefinition)'
+        version: '$(artifactVersion)'
+        extract: true
+        downloadPath: '$(System.ArtifactsDirectory)'
+        
+    - task: AzurePowerShell@5
+      displayName: DeploySecurityGroups_${{ replace(parameters.deployEnvironment, '-', '_') }}
+      inputs:
+        azureSubscription: $( )
+        ScriptType: 'InlineScript'
+        Inline: |
+          $secGroups = Get-Content -Path $(System.ArtifactsDirectory)\$(scripts)\sg-list.json | ConvertFrom-Json
+          foreach ($sg in $secGroups) {
+            $(System.ArtifactsDirectory)\$(scripts)\addSecurityGroup.ps1 `
+              -sgName $sg.name `
+              -Description $sg.description `
+              -SecurityEnabled $sg.securityEnabled `
+              -MailEnabled $sg.mailEnabled `
+              -MailNickName $sg.mailNickName `
+              -IsForManagementGroupRoleAssignment $sg.isForManagementGroupRoleAssignment
+          }
+        preferredAzurePowerShellVersion: '1.0.1'

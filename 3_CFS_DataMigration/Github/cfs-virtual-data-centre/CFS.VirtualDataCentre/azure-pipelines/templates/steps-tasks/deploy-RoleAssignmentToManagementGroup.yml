@@ -1,0 +1,27 @@
+#deploy-RoleAssignmentToManagementGroup.yml
+
+parameters:
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: managementGroupId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : 'Deploy Role Assignment to ${{ parameters.serviceName }} Management Group'
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment mg $(deploymentType) --management-group-id ${{ parameters.managementGroupId }} `
+                    --name $(deploymentName) `
+                    --location '$(resourceLocation)' `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-RoleAssignmentToManagementGroup.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\01-Role-Assignment\ManagementGroup-Role-Assignment-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json

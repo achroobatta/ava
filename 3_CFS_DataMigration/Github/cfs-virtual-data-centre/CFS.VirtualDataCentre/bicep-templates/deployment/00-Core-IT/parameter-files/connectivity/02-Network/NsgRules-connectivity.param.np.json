@@ -1,0 +1,1963 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "nsgObject": {
+            "value": { 
+                "nsgValues": [
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "hub",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-AzureBastionSubnet",
+                        "securityRules": [
+                            {
+                              "name": "AllowHttpsInbound",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow HTTPS Inbound",
+                                "protocol": "Tcp",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "443",
+                                "sourceAddressPrefix": "Internet",
+                                "destinationAddressPrefix": "*",
+                                "access": "Allow",
+                                "priority": 120,
+                                "direction": "Inbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowGatewayManagerInbound",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow Gateway Manager Inbound",
+                                "protocol": "Tcp",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "443",
+                                "sourceAddressPrefix": "GatewayManager",
+                                "destinationAddressPrefix": "*",
+                                "access": "Allow",
+                                "priority": 130,
+                                "direction": "Inbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowAzureLoadBalancerInbound",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow Azure Load Balancer Inbound",
+                                "protocol": "Tcp",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "443",
+                                "sourceAddressPrefix": "AzureLoadBalancer",
+                                "destinationAddressPrefix": "*",
+                                "access": "Allow",
+                                "priority": 140,
+                                "direction": "Inbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowBastionHostCommunication",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow Bastion Host Communication",
+                                "protocol": "*",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "",
+                                "sourceAddressPrefix": "VirtualNetwork",
+                                "destinationAddressPrefix": "VirtualNetwork",
+                                "access": "Allow",
+                                "priority": 150,
+                                "direction": "Inbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [
+                                  "8080",
+                                  "5701"
+                                ],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowSshRdpOutbound",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow SSH RDP Outbound",
+                                "protocol": "*",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "",
+                                "sourceAddressPrefix": "*",
+                                "destinationAddressPrefix": "VirtualNetwork",
+                                "access": "Allow",
+                                "priority": 100,
+                                "direction": "Outbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [
+                                  "22",
+                                  "3389"
+                                ],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowAzureCloudOutbound",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow Azure Cloud Outbound",
+                                "protocol": "Tcp",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "443",
+                                "sourceAddressPrefix": "*",
+                                "destinationAddressPrefix": "AzureCloud",
+                                "access": "Allow",
+                                "priority": 110,
+                                "direction": "Outbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowBastionCommunication",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow Bastion Communication",
+                                "protocol": "*",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "443",
+                                "sourceAddressPrefix": "VirtualNetwork",
+                                "destinationAddressPrefix": "VirtualNetwork",
+                                "access": "Allow",
+                                "priority": 120,
+                                "direction": "Outbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            },
+                            {
+                              "name": "AllowGetSessionInformation",
+                              "properties": {
+                                "description": "Azure Bastion default rule to Allow Get Session Information",
+                                "protocol": "*",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "80",
+                                "sourceAddressPrefix": "*",
+                                "destinationAddressPrefix": "Internet",
+                                "access": "Allow",
+                                "priority": 130,
+                                "direction": "Outbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": []
+                              }
+                            }
+                          ]
+                    },
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "hub",
+                        "component": "netw",
+                        "instance": 1,
+                        "nsgName": "nsg-AzureBastionSubnet",
+                        "securityRules": [
+                          {
+                            "name": "AllowHttpsInbound",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow HTTPS Inbound",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "443",
+                              "sourceAddressPrefix": "Internet",
+                              "destinationAddressPrefix": "*",
+                              "access": "Allow",
+                              "priority": 120,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowGatewayManagerInbound",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow Gateway Manager Inbound",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "443",
+                              "sourceAddressPrefix": "GatewayManager",
+                              "destinationAddressPrefix": "*",
+                              "access": "Allow",
+                              "priority": 130,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowAzureLoadBalancerInbound",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow Azure Load Balancer Inbound",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "443",
+                              "sourceAddressPrefix": "AzureLoadBalancer",
+                              "destinationAddressPrefix": "*",
+                              "access": "Allow",
+                              "priority": 140,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowBastionHostCommunication",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow Bastion Host Communication",
+                              "protocol": "*",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "VirtualNetwork",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 150,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "8080",
+                                "5701"
+                              ],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowSshRdpOutbound",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow SSH RDP Outbound",
+                              "protocol": "*",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "*",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 100,
+                              "direction": "Outbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "22",
+                                "3389"
+                              ],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowAzureCloudOutbound",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow Azure Cloud Outbound",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "443",
+                              "sourceAddressPrefix": "*",
+                              "destinationAddressPrefix": "AzureCloud",
+                              "access": "Allow",
+                              "priority": 110,
+                              "direction": "Outbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowBastionCommunication",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow Bastion Communication",
+                              "protocol": "*",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "443",
+                              "sourceAddressPrefix": "VirtualNetwork",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 120,
+                              "direction": "Outbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "AllowGetSessionInformation",
+                            "properties": {
+                              "description": "Azure Bastion default rule to Allow Get Session Information",
+                              "protocol": "*",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "80",
+                              "sourceAddressPrefix": "*",
+                              "destinationAddressPrefix": "Internet",
+                              "access": "Allow",
+                              "priority": 130,
+                              "direction": "Outbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          }
+                        ]
+                    },
+                    {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-np-edc-mgmt-001",
+                      "securityRules": [
+                          {
+                            "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-mgmt-001",
+                            "properties": {
+                              "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-mgmt-001",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 200,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "22",
+                                "3389"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.1.224/27",
+                                "10.60.1.224/27"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow WMI from MIDServer To WindowsServer",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "10.40.4.134",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 980,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445",
+                                "5985",
+                                "5986",
+                                "49152-65535"
+                              ],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow WMI from MIDServer To LinuxServer",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "10.40.4.134",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 990,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-Netskope-Pulisher-To-Netskope-Application",
+                            "properties": {
+                              "description": "Allow Netskope Pulisher to Netskope Application",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 1010,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "80",
+                                "443"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.1.199",
+                                "10.60.1.199"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "DenyAllInboundCommunication",
+                            "properties": {
+                              "description": "Deny All Inbound Communication",
+                              "protocol": "*",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "*",
+                              "destinationAddressPrefix": "*",
+                              "access": "Deny",
+                              "priority": 4096,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          }
+                      ]
+                    },
+                    {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-np-sdc-mgmt-001",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-mgmt-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-mgmt-001",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.1.224/27",
+                              "10.60.1.224/27"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-WindowsServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To WindowsServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "10.40.4.134",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 980,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "135",
+                              "139",
+                              "445",
+                              "5985",
+                              "5986",
+                              "49152-65535"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-WMI-from-MIDServer-To-LinuxServer",
+                          "properties": {
+                            "description": "Allow WMI from MIDServer To LinuxServer",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "10.40.4.134",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 990,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+
+                        {
+                          "name": "Allow-Netskope-Pulisher-To-Netskope-Application",
+                          "properties": {
+                            "description": "Allow Netskope Pulisher to Netskope Application",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1010,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "80",
+                              "443"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.1.199",
+                              "10.60.1.199"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-np-edc-mgmt-002",
+                      "securityRules": [
+                          {
+                            "name": "Allow-RDP-From-AzureBastionSubnet-To-sub-np-edc-mgmt-002",
+                            "properties": {
+                              "description": "Allow RDP From AzureBastionSubnet To sub-np-edc-mgmt-002",
+                              "protocol": "Tcp",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "3389",
+                              "sourceAddressPrefix": "10.40.1.128/26",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 1000,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "properties": {
+                              "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "22",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 600,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "TCP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 601,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "139",
+                                "445"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "properties": {
+                              "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                              "protocol": "ICMP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 603,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "properties": {
+                              "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                              "protocol": "UDP",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "",
+                              "sourceAddressPrefix": "",
+                              "destinationAddressPrefix": "VirtualNetwork",
+                              "access": "Allow",
+                              "priority": 602,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [
+                                "135",
+                                "137"
+                              ],
+                              "sourceAddressPrefixes": [
+                                "10.40.3.15",
+                                "10.60.3.8"
+                              ],
+                              "destinationAddressPrefixes": []
+                            }
+                          },
+                          {
+                            "name": "DenyAllInboundCommunication",
+                            "properties": {
+                              "description": "Deny All Inbound Communication",
+                              "protocol": "*",
+                              "sourcePortRange": "*",
+                              "destinationPortRange": "*",
+                              "sourceAddressPrefix": "*",
+                              "destinationAddressPrefix": "*",
+                              "access": "Deny",
+                              "priority": 4096,
+                              "direction": "Inbound",
+                              "sourcePortRanges": [],
+                              "destinationPortRanges": [],
+                              "sourceAddressPrefixes": [],
+                              "destinationAddressPrefixes": []
+                            }
+                          }
+                      ]
+                    },
+                    {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-np-sdc-mgmt-002",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RDP-From-AzureBastionSubnet-To-sub-np-sdc-mgmt-002",
+                          "properties": {
+                            "description": "Allow RDP From AzureBastionSubnet To sub-np-sdc-mgmt-002",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "10.60.1.128/26",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                          "properties": {
+                            "description": "Allow-SSH-from-QualysServer-To-LinuxServer",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 600,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.40.3.15",
+                              "10.60.3.8"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                          "properties": {
+                            "description": "Allow-TCPDiscovery-from-QualysServer-To-WindowsServer",
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 601,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "135",
+                              "139",
+                              "445"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.3.15",
+                              "10.60.3.8"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-ICMP-from- QualysServer-To-AllServers",
+                          "properties": {
+                            "description": "Allow-ICMP-from- QualysServer-To-AllServers",
+                            "protocol": "ICMP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 603,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [
+                              "10.40.3.15",
+                              "10.60.3.8"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                          "properties": {
+                            "description": "Allow-UDPDiscovery-from-QualysServer-To-WindowsServer",
+                            "protocol": "UDP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 602,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "135",
+                              "137"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.3.15",
+                              "10.60.3.8"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiaeast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-np-edc-fn-001",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-001",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.1.224/27",
+                              "10.60.1.224/27"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "Client Security Device",
+                          "properties": {
+                            "description": "Client Security Device",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "10.40.2.196",
+                            "destinationAddressPrefix": "",
+                            "access": "Allow",
+                            "priority": 300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "443"
+                            ],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": [
+                              "10.40.5.4",
+                              "10.40.5.5"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "location": "australiasoutheast",
+                      "serviceAbbrv": "hub",
+                      "component": "netw",
+                      "instance": 1,
+                      "nsgName": "nsg-np-sdc-fn-001",
+                      "securityRules": [
+                        {
+                          "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-001",
+                          "properties": {
+                            "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-001",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "",
+                            "sourceAddressPrefix": "",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 200,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                              "22",
+                              "3389"
+                            ],
+                            "sourceAddressPrefixes": [
+                              "10.40.1.224/27",
+                              "10.60.1.224/27"
+                            ],
+                            "destinationAddressPrefixes": []
+                          }
+                        },
+                        {
+                          "name": "DenyAllInboundCommunication",
+                          "properties": {
+                            "description": "Deny All Inbound Communication",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 4096,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                          }
+                        }
+                    ]
+                  },
+                  {
+                    "location": "australiaeast",
+                    "serviceAbbrv": "hub",
+                    "component": "netw",
+                    "instance": 1,
+                    "nsgName": "nsg-np-edc-fn-002",
+                    "securityRules": [
+                      {
+                        "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-002",
+                        "properties": {
+                          "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-002",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "",
+                          "sourceAddressPrefix": "",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [
+                            "22",
+                            "3389"
+                          ],
+                          "sourceAddressPrefixes": [
+                            "10.40.1.224/27",
+                            "10.60.1.224/27"
+                          ],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "DenyAllInboundCommunication",
+                        "properties": {
+                          "description": "Deny All Inbound Communication",
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Deny",
+                          "priority": 4096,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-002",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-002",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-002",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-003",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-003",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-003",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-003",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-003",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-003",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-004",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-004",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-004",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-004",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-004",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-004",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-005",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-005",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-005",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-005",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-005",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-005",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-006",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-006",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-006",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-006",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-006",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-006",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-007",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-007",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-007",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-007",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-007",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-007",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-008",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-008",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-008",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-008",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-008",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-008",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4096,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiaeast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-edc-fn-009",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-edc-fn-009",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-edc-fn-009",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4000,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                },
+                {
+                  "location": "australiasoutheast",
+                  "serviceAbbrv": "hub",
+                  "component": "netw",
+                  "instance": 1,
+                  "nsgName": "nsg-np-sdc-fn-009",
+                  "securityRules": [
+                    {
+                      "name": "Allow-RDP-SSH-From-sub-np-mgmt-002-To-sub-np-sdc-fn-009",
+                      "properties": {
+                        "description": "Allow RDP and SSH From EDC or SDC mgmt-002 subnet To sub-np-sdc-fn-009",
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "",
+                        "sourceAddressPrefix": "",
+                        "destinationAddressPrefix": "VirtualNetwork",
+                        "access": "Allow",
+                        "priority": 200,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [
+                          "22",
+                          "3389"
+                        ],
+                        "sourceAddressPrefixes": [
+                          "10.40.1.224/27",
+                          "10.60.1.224/27"
+                        ],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "DenyAllInboundCommunication",
+                      "properties": {
+                        "description": "Deny All Inbound Communication",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Deny",
+                        "priority": 4000,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    }
+                  ]
+                }                                                                                                  
+              ]
+            }
+        }
+    }
+}

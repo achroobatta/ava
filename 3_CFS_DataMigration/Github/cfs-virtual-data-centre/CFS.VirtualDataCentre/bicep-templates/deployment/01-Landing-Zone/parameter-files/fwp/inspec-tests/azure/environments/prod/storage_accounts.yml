@@ -1,0 +1,17 @@
+#Template Format
+#- name: stonpedcbkof001
+#  resource_group: rg-np-edc-bkof-stor-001
+
+# Australia East
+- name: stoprdedcfwp001
+  resource_group: rg-prd-edc-fwp-stor-001
+
+- name: stoprdedcfwpduncan
+  resource_group: rg-prd-edc-fwp-fa-001
+
+- name: stoprdedcfwpfa001
+  resource_group: rg-prd-edc-fwp-fa-001
+
+# Australia South East
+- name: stoprdsdcfwp001
+  resource_group: rg-prd-sdc-fwp-stor-001

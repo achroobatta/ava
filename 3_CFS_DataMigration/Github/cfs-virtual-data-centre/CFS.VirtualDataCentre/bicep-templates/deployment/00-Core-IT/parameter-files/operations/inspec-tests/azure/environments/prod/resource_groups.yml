@@ -1,0 +1,90 @@
+# Template Format
+#- name: rg-np-edc-bkof-comp-001
+#  location: australiaeast
+  
+# Australia East
+- name: DefaultResourceGroup-EAU
+  location: australiaeast
+
+- name: NetworkWatcherRG
+  location: australiaeast
+
+- name: rg-prd-edc-oper-ado-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-comp-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-comp-002
+  location: australiaeast
+
+- name: rg-prd-edc-oper-comp-003
+  location: australiaeast
+
+- name: rg-prd-edc-oper-comp-004
+  location: australiaeast
+
+- name: rg-prd-edc-oper-comp-005
+  location: australiaeast
+
+- name: rg-prd-edc-oper-gh-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-kv-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-netw-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-rsv-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-sec-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-snow-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-stor-001
+  location: australiaeast
+
+- name: rg-prd-edc-oper-stor-002
+  location: australiaeast
+
+# Australia South East
+
+- name: DefaultResourceGroup-ASE
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-comp-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-comp-002
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-comp-003
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-comp-004
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-kv-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-netw-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-rsv-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-sec-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-snow-001
+  location: australiasoutheast
+
+- name: rg-prd-sdc-oper-stor-001
+  location: australiasoutheast
+  
+- name: rg-prd-sdc-oper-stor-002
+  location: australiasoutheast

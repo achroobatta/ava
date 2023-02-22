@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+        "virtualEnvironmentArray": {
+            "value": [
+                {
+                    "vnetName": "vnet-np-edc-fcp-001",
+                    "vnetNetResourceGroup": "rg-np-edc-fcp-netw-001",
+                    "subnetAddressPrefix": "10.41.1.0/24",
+                    "serviceAbbrv": "fcp",
+                    "component": "fndev0",
+                    "appName": "First Net Dev0 Environment",
+                    "count": 12,
+                    "location": "australiaeast",
+                    "contributorPrincipalId":  "cbda08d3-4eaf-45ae-8a01-e8946d1b97d3",
+                    "StorageAccountInstance": 3
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden"
+                }
+            ]
+        },
+        "vmArray":  {
+            "value":  [
+                {
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vm_instance": "1",
+                    "vmService": "VA",
+                    "osDiskType": "StandardSSD_LRS",
+                    "managedDiskID": "/subscriptions/fb2f0e33-580d-4cc8-ada3-9c1ec175ead1/resourceGroups/rg-np-edc-iden-comp-001/providers/Microsoft.Compute/disks/VMNPEDCVA001-sailpoint-va",
+                    "osDiskSize": 160,
+                    "vmSize": "Standard_D4s_v3",
+                    "vnet_instance": "1",
+                    "vnet_component": "netw",
+                    "vnet_serviceAbbrv": "iden",
+                    "sn_serviceAbbrv": "identity",
+                    "stor_instance": "1",
+                    "appName": "Sailpoint"
+                },
+                {
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "iden",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vm_instance": "2",
+                    "vmService": "VA",
+                    "osDiskType": "StandardSSD_LRS",
+                    "managedDiskID": "/subscriptions/fb2f0e33-580d-4cc8-ada3-9c1ec175ead1/resourceGroups/rg-np-edc-iden-comp-001/providers/Microsoft.Compute/disks/VMNPEDCVA002-sailpoint-va",
+                    "osDiskSize": 160,
+                    "vmSize": "Standard_D4s_v3",
+                    "vnet_instance": "1",
+                    "vnet_component": "netw",
+                    "vnet_serviceAbbrv": "iden",
+                    "sn_serviceAbbrv": "identity",
+                    "stor_instance": "1",
+                    "appName": "Sailpoint"
+                }
+            ]
+        }
+    }
+}

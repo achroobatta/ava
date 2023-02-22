@@ -1,0 +1,48 @@
+# key-vault.yml
+
+parameters:
+- name: service #e.g. 'connectivity'
+  type: string
+
+- name: serviceSubscriptionId #e.g. '$(connectivitySubscriptionId)'
+  type: string
+
+- name: serviceSubscServiceConnection #e.g. '$(connectivitySubscServiceConnection)'
+  type: string
+
+- name: localAdminPassword #e.g. '$(dc-cfsadmin-secret)' for the majority, '$(paw-cfsadmin-secret)' for connectivity
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : 'Add keyvault role assignment in ${{ parameters.service }} Subscription'
+    inputs:
+      azureSubscription: '${{ parameters.serviceSubscServiceConnection }}'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                    --name $(deploymentName) ^
+                    --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-keyVault\deployKeyVaultAuth.bicep ^
+                    --parameters subscriptionID='${{ parameters.serviceSubscriptionId }}' ^
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\deploy-keyVault\keyVaultAuth.param.$(AzureEnvironmentPrefix).json ^
+                    --verbose
+
+  - task: AzureCLI@2
+    displayName : 'Deploy Key Vault in ${{ parameters.service }} Subscription'
+    inputs:
+      azureSubscription: '${{ parameters.serviceSubscServiceConnection }}'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub create --location '$(resourceLocation)' ^
+                    --name $(deploymentName) ^
+                    --template-file $(System.ArtifactsDirectory)\$(deployments)\deploy-keyVault\deployKeyVault.bicep ^
+                    --parameters azureTenantId='$(azureTenantIdvar)' ^
+                    --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' ^
+                    --parameters localAdminPassword='${{ parameters.localAdminPassword }}' ^
+                    --parameters '$(System.ArtifactsDirectory)\$(deployments)\deploy-keyVault\${{ parameters.service }}.KeyVault.param.$(AzureEnvironmentPrefix).json' ^
+                    --parameters owner='$(Owner)' ^
+                    --parameters costCenter='$(costCenterCode)' ^
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' ^
+                    --verbose

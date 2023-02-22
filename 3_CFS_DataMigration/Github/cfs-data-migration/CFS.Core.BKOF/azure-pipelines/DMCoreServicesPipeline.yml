@@ -1,0 +1,782 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: landingZoneServiceId
+    displayName: Landing Zone Service Id - case sensitive when matching suffix of the Nuget Package Name (e.g. "FWD" or "fwp" or "fcp" or "bkof")
+    type: string
+    default: "BKOF"
+
+  - name: resourceLocation
+    displayName: Location of the resources (australiaeast or australiasoutheast)
+    type: string
+    default: "australiaeast"
+    values:
+    - "australiaeast"
+    - "australiasoutheast"
+
+  - name: destStorageAccount
+    displayName: Name of Resource. {Adhoc Step to Create A record in Hub Dns for existing Resource}
+    type: string
+    default: ' '
+
+  - name: dnsZoneName
+    displayName: Name of DNS Zone. {Private DNS Zone in hub related to Adhoc step above}
+    type: string
+    default: 'privatelink.blob.core.windows.net'
+    values:
+     - 'privatelink.vaultcore.azure.net'
+     - 'privatelink.blob.core.windows.net'
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+variables:
+
+ - group: var-azure-tenant-id
+ - group: lz-var-service-principle-secrets
+ - group: var-service-principle-secrets
+
+ - name: azureTenantId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(np-azure-tenant-id)'
+   ${{ else }}:
+     value: '$(prd-azure-tenant-id)'
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+   # deployment to Production environment must use the main branch for the pipeline yaml
+   ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+    value: "core-it/cfs-infra-release"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+    value: "core-it/cfs-infra-ci"
+   # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+   # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+   ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+    value: "core-it/cfs-infra-pr-develop"
+   #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+   ${{ else }}:
+    value: ""
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: CFS.Core.${{ parameters.landingZoneServiceId }}
+
+ # Artifact Package Version Value
+ - name: artifactVersion
+   value: ${{ parameters.artifactVersion }}
+
+ # Azure DevOps Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Azure DevOps Environment Prefix
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "prd"
+
+ - name: resourceLocationPrefix
+   ${{ if eq(parameters.resourceLocation, 'australiaeast') }}:
+     value: edc
+   ${{ else }}:
+     value: sdc
+
+ - name: principalId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '89914055-a1ca-4256-a10e-d35d1a5e8912'
+   ${{ else }}:
+    value: '336ec514-ed8f-47bc-98cb-75eeeb0f480e'
+
+ - name: vmName
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: 'VMNPEDCADOW001'
+   ${{ else }}:
+    value: 'VMPRDEDCADOW001'
+
+ - name: landingZoneServiceIdsm
+   ${{ if eq(parameters.landingZoneServiceId, 'BKOF') }}:
+    value: 'bkof'
+   ${{ else }}:
+    value: ${{ parameters.landingZoneServiceId }}
+
+ - name: dnsZoneName
+   value: ${{ parameters.dnsZoneName }}
+
+ - name: vmRG
+   value: 'rg-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-vm-001'
+
+ - name: kvRG
+   value: 'rg-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-001'
+
+ - name: keyVaultNameforSecret
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: "kv-np-edc-bkof-dm-0028"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "kv-prd-edc-bkof-dm-0025"
+
+ - name: operationSubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: '$(subsc-np-operations-sid)'
+   ${{ else }}:
+    value: '$(subsc-prd-operations-sid)'
+
+ - name: operationsServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: 'sc-subsc-np-operations-001'
+   ${{ else }}:
+    value: 'sc-subsc-prd-operations-001'
+
+ - name: subId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(subsc-np-backoffice-sid)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: '$(subsc-prd-backoffice-sid)'
+
+ - name: connSubId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     value: '$(subsc-np-connectivity-sid)'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: '$(subsc-prd-connectivity-sid)'
+
+  # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+
+ - name: bkofSubscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: $(subsc-np-backoffice-sid)
+   ${{ else }}:
+    value: $(subsc-prd-backoffice-sid)
+
+ #  Landing Zone Subscription ID
+ - name: landingZoneSubscriptionID
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+     ${{ if contains(parameters.landingZoneServiceId, 'BKOF' ) }}:
+       value: $(subsc-np-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-np-${{ parameters.landingZoneServiceId }}-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if contains(parameters.landingZoneServiceId, 'BKOF' ) }}:
+       value: $(subsc-prd-backoffice-sid)
+     ${{ else }}:
+       value: $(subsc-prd-${{ parameters.landingZoneServiceId }}-sid)
+
+#securitySubscriptionId
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(subsc-prd-security-sid)
+
+ # Azure DevOps Landing Zone Service Connection Name
+ - name: landingZoneServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      ${{ if eq(parameters.landingZoneServiceId, 'BKOF')}}:
+        value: "sc-subsc-np-bkof-001"
+      ${{ else }}:
+        value: "sc-subsc-np-${{ parameters.landingZoneServiceId }}-001"      
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      ${{ if eq(parameters.landingZoneServiceId, 'BKOF')}}: 
+        value: "sc-subsc-prd-bkof-001"
+      ${{ else }}:
+        value: "sc-subsc-prd-${{ parameters.landingZoneServiceId }}-001"
+
+ #workspaces are in edc only
+ - name: workspaceLocationPrefix
+   ${{ if eq(parameters.resourceLocation, 'australiaeast') }}:
+    value: "edc"
+   ${{ else }}:
+    value: "sdc"
+
+ - name: virtualEnvironmentName
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: "bkof-dm-np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+    value: "bkof-dm-prd"
+
+ - name: connRg
+   value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-hub-netw-001'
+
+ - name: rgName
+   ${{ if eq(parameters.landingZoneServiceId, 'BKOF') }}:
+      value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-bkof-dm-001'
+   ${{ else }}:
+      value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-$(landingZoneServiceIdsm)-dm-001'
+#  - name: templateDirectory
+#    value: '$(System.DefaultWorkingDirectory)\CFS.VirtualDataCentre\bicep-templates\deployment'
+   
+  # Parameter Directory
+ - name: parameterDirectory
+   value: '$(System.ArtifactsDirectory)\content\parameter-files\$(virtualEnvironmentName)'
+
+ # Subscription Service Name
+ - name: subscriptionServiceName
+   value: "CFSCO Management Group" 
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ # Azure Owner 
+ - name: owner
+   value: "Robert Reakes"
+
+ # Azure Cost Center Code
+ - name: costCenterCode
+   value: "4010"
+
+  # Azure Cost Center Code
+ - name: appName
+   value: "infra"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)' 
+ 
+ - name: resourceLocation
+   value: ${{ parameters.resourceLocation }}
+
+stages:
+
+# Deploy ResourceGroup
+  - stage: deployResourceGroup
+    displayName: DeployResourceGroup
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployResourceGroup
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #PrivateDnsZone
+            - template: templates/deploy-ResourceGroup.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+
+# Deploy PrivateDnsZone
+  # - stage: deployPrivateDnsZone
+  #   displayName: DeployPrivateDnsZone
+
+  #   pool:
+  #     vmImage: windows-latest
+
+  #   dependsOn: [deployResourceGroup]
+  #   jobs:
+  #   - deployment: DeployPrivateDnsZone
+  #     workspace:
+  #       clean: all
+
+  #     environment: $(AzureDevOpsEnvironments)
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+
+  #           - checkout: self
+
+  #           - task: DownloadPackage@1
+  #             displayName: DownloadArtifacts
+  #             inputs:
+  #               packageType: 'nuget'
+  #               feed: '$(artifactFeed)'
+  #               definition: '$(artifactDefinition)'
+  #               version: '$(artifactVersion)'
+  #               extract: true
+  #               downloadPath: '$(System.ArtifactsDirectory)'
+
+  #           #PrivateDnsZone
+  #           - template: templates/deploy-PrivateDnsZoneAll.yml
+  #             parameters:
+  #               serviceName: '$(subscriptionServiceName)'
+  #               serviceConnection: '$(landingZoneServiceConnection)'
+  #               deploymentType: '$(deploymentType)'
+  #               serviceId: '$(landingZoneServiceIdsm)'
+
+# Deploy Route Table and NSG
+  - stage: deployRTandNSG
+    displayName: DeployRTandNSG
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - deployment: DeployRTandNSG
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Route Table and NSG
+            - template: templates/deploy-RTandNSG.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+# Deploy Virtual Network
+  - stage: deployVirtualNetwork
+    displayName: DeployVirtualNetwork
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [deployRTandNSG]
+    jobs:
+    - deployment: DeployVirtualNetwork
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone Virtual Network
+            - template: templates/deploy-VDCVirtualNetwork.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+# Deploy Source and diagonstic StorageAccount
+  - stage: deployStorageAccount
+    displayName: DeploySourceStorageAccount
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: []
+    jobs:
+    - deployment: DeployStorageAccount
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #StorageAccount
+            - template: templates/deploy-StorageAccount.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+                connSubId: '$(connSubId)'
+                connRg: '$(connRg)'
+                rgName: '$(rgName)'
+                resourceLocation: '$(resourceLocation)'
+
+# Deploy Dependency StorageAccount
+  - stage: deployDepStorageAccount
+    displayName: DeployDepStorageAccount
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: []
+    jobs:
+    - deployment: DeployDepStorageAccount
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Dependency StorageAccount
+            - template: templates/deploy-DepStorageAccount.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+                connSubId: '$(connSubId)'
+                connRg: '$(connRg)'
+                rgName: '$(rgName)'
+                resourceLocation: '$(resourceLocation)'
+
+
+# Deploy KeyVault
+  - stage: deployKeyVault
+    displayName: DeployKeyVault
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: []
+    jobs:
+    - deployment: DeployKeyVault
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #KeyVault
+            - template: templates/deploy-KeyVault.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+                connSubId: '$(connSubId)'
+                connRg: '$(connRg)'
+                rgName: '$(rgName)'
+                resourceLocation: '$(resourceLocation)'
+
+# Deploy RoleAssignment
+  - stage: deployRoleAssignment
+    displayName: DeployRoleAssignment
+
+    pool:
+      vmImage: windows-latest
+
+    condition: succeeded()
+    dependsOn: []
+    jobs:
+    - deployment: DeployRoleAssignment
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #KeyVault
+            - template: templates/deploy-RoleAssignment.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(operationsServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+
+  # Deploy Landing Zone UDR Rules
+  - stage: removedeleteUdrRules
+    displayName: RemoveUDRRules - specific to Location
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: RemoveUDRRules
+      workspace:
+        clean: all
+
+      steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone UDR Rules
+            - template: templates/remove-UDRRules.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+
+ # Deploy Landing Zone NSG Rules
+  - stage: deployNSGRules
+    displayName: DeployNSGRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [deployRTandNSG]
+    jobs:
+    - deployment: DeployNSGRules
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone NSG Rules
+            - template: templates/deploy-NsgRules.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+
+# Deploy Landing Zone UDR Rules
+  - stage: deployUdrRules
+    displayName: DeployUdrRules
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: [deployRTandNSG]
+    jobs:
+    - deployment: DeployUdrRules
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone UDR Rules
+            - template: templates/deploy-UdrRules.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+
+
+# Add A Record in existing DNS Zone
+  - stage: deployARecord
+    displayName: DeployARecord
+    pool:
+      vmImage: windows-latest
+    dependsOn: []
+    jobs:
+    - deployment: DeployARecord
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone UDR Rules
+            - template: templates/deploy-ARecord.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                destStorageAccountName: '${{ parameters.destStorageAccount}}'
+                rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                connSubId: '$(connSubId)'
+                privateDnsZoneName: '$(dnsZoneName)'
+                resourceLocation: '$(resourceLocation)'

@@ -1,0 +1,122 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "kv_location": {
+            "value": "australiaeast"
+        },
+        "kv_component": {
+            "value": "kv"
+        },
+        "kv_rginstance": {
+            "value": 1
+        },
+        "kv_instance": {
+            "value": 1
+        },
+        "kv_serviceAbbrv": {
+            "value": "bkof"
+        },
+        "kv_service": {
+            "value": "bkof"
+        },
+        "vnetRG": 
+        {
+            "value": "rg-np-edc-bkof-dm-001"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "dm-vm",
+                    "serviceAbbrv": "bkof"
+                }
+            ]
+        },
+        "storageArray": {
+            "value": [
+                {
+                        "instance": 1,
+                        "location": "australiaeast",
+                        "location2": "australiasoutheast",
+                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-edc-bkof-dm-001",
+                        "subnetName":"sub-np-edc-bkof-dm-com-002",
+                        "virtualNetwork2ResourceGroup": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetwork2Name":"vnet-np-sdc-bkof-dm-001",
+                        "subnet2Name":"sub-np-sdc-bkof-dm-com-002",
+                        "rgname": "rg-np-edc-bkof-dm-vm-001",
+                        "rgname2": "rg-np-sdc-bkof-dm-vm-001",
+                        "containerPrefix": "",
+                        "privateDnsZoneName": "privatelink.blob.core.windows.net",
+                        "performance": "Standard_RAGRS",
+                        "kind": "StorageV2",
+                        "publicNetworkAccess": "Disabled",
+                        "defaultAction" : "Deny",
+                        "action" : "Allow",
+                        "allowBlobPublicAccess": false,
+                        "minimumTlsVersion": "TLS1_2"
+                }
+            ]
+        },
+        "vmObject": {
+            "value": {
+                "vmValues": [
+                    {
+                        "rarg": "rg-np-edc-bkof-dm-001",
+                        "rgname": "rg-np-edc-bkof-dm-vm-001",
+                        "fileSize": 8,
+                        "vmRgInstance": "1",
+                        "vmRgComponent": "dm-vm",
+                        "vmRgServiceAbbrv": "bkof",
+                        "vmService": "BKOF",
+                        "vmInstancePrefix": "DM",
+                        "vmInstance": "1",
+                        "adminUsername": "AdministratorCFS",
+                        "osDiskType": "Premium_LRS",
+                        "osDiskSize": 128,
+                        "imageReferencePublisher" :"MicrosoftWindowsServer",
+                        "imageReferenceOffer": "WindowsServer",
+                        "imageSKU": "2022-datacenter-g2",
+                        "imageReferenceVersion": "latest",
+                        "vmSmallSize": "Standard_E8-4s_v5",
+                        "vmLargeSize": "Standard_E16-8s_v5",
+                        "timeZone": "E. Australia Standard Time",
+                        "appName": "Infra",
+                        "privateIPAllocationMethod": "Dynamic",
+                        "privateIPAddress": "",
+                        "vnetResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetworkName": "vnet-np-edc-bkof-dm-001",
+                        "subnetName": "sub-np-edc-bkof-dm-vmsub-003",
+                        "isEnableAutoShutdown": false,
+                        "autoShutdownTime": "",
+                        "autoShutdownNotificationEmail": "",
+                        "availabilitySetName":"",
+                        "domainName":"dev.cfs.com.au",
+                        "domainUserName":"ADM-AD-DOM-ADD@dev.cfs.com.au",
+                        "isEnableDomainJoin": true,
+                        "OUPAth": "OU=Applications,OU=T2-Servers,OU=Servers,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au", 
+                        "dataDiskResources": {                                                  
+                                    "createOption": "attach",
+                                    "deleteOption": "Delete",
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": false,
+                                    "id": null,
+                                    "storageAccountType": null,
+                                    "diskSizeGB": null,
+                                    "diskEncryptionSet": null,
+                                    "sku": "Premium_LRS",
+                                    "properties": {
+                                        "diskSizeGB": 1024,
+                                        "creationData": {
+                                            "createOption": "empty"
+                                        }
+                                    }                               
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,140 @@
+parameters:
+
+- name: vmName
+  type: string
+
+- name: serviceAccountUE
+  type: string
+
+- name: serviceAccountP
+  type: string
+
+- name: commRG
+  type: string
+
+- name: destStorageAccountName
+  type: string
+
+- name: rootContainerName
+  type: string
+
+- name: sftpUserName
+  type: string
+
+- name: keyVaultNameforSecret
+  type: string
+
+- name: ClientID
+  type: string
+
+- name: ClientSecret
+  type: string
+
+- name: TenantDomain
+  type: string
+
+- name: fromEmailAddress
+  type: string
+
+- name: emailAddress
+  type: string
+
+- name: clientEmailAddress
+  type: string
+
+- name: dmTaskNumber
+  type: string
+
+- name: ipTobeWhiteListed
+  type: string
+
+- name: destSftpSshKeySecret
+  type: string
+
+- name: subId
+  type: string
+
+- name: tenantId
+  type: string
+steps:
+  - task: PowerShell@2
+    name: AddLocalUserPS
+    inputs:
+      targetType: 'inline'
+      script: |
+                   # for original below line should be uncommented
+                   $computervm = '${{ parameters.vmName }}'
+                   # $computervm = 'VMnpedcdm8663'
+                   echo '******************************************************************'
+                   echo 'Add Local User, existing Public Key, password to Storage Account'
+                   echo '******************************************************************'
+                   ls $(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\*
+                   echo '******************************************************************'
+                   $User = '${{ parameters.serviceAccountUE }}'
+                   $Password = ConvertTo-SecureString -String '${{ parameters.serviceAccountP }}' -AsPlainText -Force
+                   $Credential = [pscredential]::new($User,$Password)
+                   $ToSession = New-PSSession -ComputerName "$computervm" -Credential $Credential
+                   echo '***************************************************************************'
+                   echo 'serviceAccountUserEmail:  ${{ parameters.serviceAccountUE }}'
+                   echo 'ServiceAccountPassword: ${{ parameters.serviceAccountP }}'
+                   echo 'User: ' $User
+                   echo 'Password: ' $Password
+                   echo 'Computervm: ' $computervm
+                   echo 'Credential: ' $Credential
+                   echo 'Session: ' $ToSession
+                   echo 'commRG: ${{ parameters.commRG }}'
+                   echo 'Destination Storage Account: ${{ parameters.destStorageAccountName }}'
+                   echo 'Root Container name: ${{ parameters.rootContainerName }}'
+                   echo 'sftpUserName: ${{ parameters.sftpUserName }}'
+                   echo 'keyVaultNameforSecret: ' ${{ parameters.keyVaultNameforSecret }}'
+                   echo 'ClientID: ' ${{ parameters.ClientID }}'
+                   echo 'ClientSecret: ${{ parameters.ClientSecret }}'
+                   echo 'TenantDomain: ${{ parameters.TenantDomain }}'
+                   echo 'FromEmailAddress: ${{ parameters.fromEmailAddress }}'
+                   echo 'EmailAddress: ${{ parameters.emailAddress }}'
+                   echo 'TaskNumber: ${{ parameters.dmTaskNumber }}'
+                   echo '***************************************************************************'
+                   $returnValues=Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\AddLocalUserinSftp.ps1" -ArgumentList  "${{ parameters.commRG }}","${{ parameters.destStorageAccountName }}","${{ parameters.rootContainerName }}","${{ parameters.sftpUserName }}","${{ parameters.keyVaultNameforSecret }}","${{ parameters.destSftpSshKeySecret }}","${{ parameters.tenantId}}","${{ parameters.subId}}"
+                   if ($returnValues -contains "Failed. Unable to*"){
+                    Write-Output $returnValues
+                    Write-Error "Error encountered executing script."
+                   }
+                   else{
+                   $jsonprint = ($returnValues | ConvertTo-Json)
+                   Write-Output $jsonprint
+                   $returnValuesJson = ($returnValues | ConvertTo-Json) | ConvertFrom-Json
+                   $localUserPass = $returnValuesJson[0].SshPassword
+                   Write-Output "##vso[task.setvariable variable=localUserPassword]$localUserPass"
+                   }
+
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host $(localUserPassword)
+
+  - task: GraphEmail@0
+    displayName: 'Sending sFtp Username'
+    inputs:
+      To: '${{ parameters.emailAddress }}' # The Business User who will receive the email
+      From: '${{ parameters.fromEmailAddress }}'
+      Subject: 'Sftp Local Username for taskNumber ${{ parameters.dmTaskNumber }}' # Email Subject
+      Body: "Username for sFTP is: ${{ parameters.destStorageAccountName }}.${{ parameters.sftpUserName }}. Hostname is: ${{ parameters.ipTobeWhiteListed }}. Ssh Password will be sent in seperate email. Please save these credentials for future." # Email Body
+      BodyAsHtml: true
+      ShowClientSecret: false
+      ClientID: '${{ parameters.ClientID }}'
+      ClientSecret: '${{ parameters.ClientSecret }}'
+      TenantDomain: '${{ parameters.TenantDomain }}'
+
+  - task: GraphEmail@0
+    displayName: 'Sending sFtp Password'
+    inputs:
+      To: '${{ parameters.clientEmailAddress }}' # The Client person who will receive the email
+      From: '${{ parameters.fromEmailAddress }}'
+      Subject: 'Sftp password for taskNumber ${{ parameters.dmTaskNumber }}' # Email Subject
+      Body: "Password for sFTP is: $(localUserPassword). Please save these credentials for future."  # Email Body
+      BodyAsHtml: true
+      ShowClientSecret: false
+      ClientID: '${{ parameters.ClientID }}'
+      ClientSecret: '${{ parameters.ClientSecret }}'
+      TenantDomain: '${{ parameters.TenantDomain }}'

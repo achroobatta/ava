@@ -1,0 +1,46 @@
+#deploy-RSV.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+- name: landingZoneType
+  type: string
+
+- name: subscriptionId
+  type: string
+  
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Recovery Service Vault in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-RSV.bicep `
+                    --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters subscriptionId='${{ parameters.subscriptionId }}' `
+                    --parameters owner='$(Owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\04-RSV\RSV-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json
+                    
+

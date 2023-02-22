@@ -1,0 +1,83 @@
+#deploy-PolicyAssignment.yml
+
+parameters:
+- name: service #e.g. '?'
+  type: string
+
+- name: landingZoneType
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: deploymentType
+  type: string
+
+
+steps:
+- task: DownloadPackage@1
+  displayName: DownloadArtifacts
+  inputs:
+    packageType: 'nuget'
+    feed: '$(artifactFeed)'
+    definition: '$(artifactDefinition)'
+    version: '$(artifactVersion)'
+    extract: true
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+- task: AzureCLI@2
+  displayName : Deploy Policy Assignments
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment mg $(deploymentType) --management-group-id $(subscriptionID) `
+                  --location '$(resourceLocation)' `
+                  --name $(deploymentName) `
+                  --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-Policy.bicep `
+                  --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\00-Policy\Policy-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json
+
+- task: AzureCLI@2
+  displayName : Deploy Custom Azure Policy AllowedLocationsInRG
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment mg $(deploymentType) --management-group-id $(subscriptionID) `
+                  --location '$(resourceLocation)' `
+                  --name $(deploymentName) `
+                  --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-AllowedLocationPolicyInRG.bicep
+
+- task: AzureCLI@2
+  displayName : Deploy Custom Azure Policy AllowedLocationsInResources
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment mg $(deploymentType) --management-group-id $(subscriptionID) `
+                  --location '$(resourceLocation)' `
+                  --name $(deploymentName) `
+                  --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-AllowedLocationPolicyInResources.bicep
+
+- task: AzureCLI@2
+  displayName : Deploy Blocking of Public IP Addresses
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment mg $(deploymentType) --management-group-id $(subscriptionID) `
+                  --location '$(resourceLocation)' `
+                  --name $(deploymentName) `
+                  --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-PublicIpAddressPolicy.bicep
+
+- task: AzureCLI@2
+  displayName : Deploy Custom Azure Policy Resource Tags
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment mg $(deploymentType) --management-group-id $(subscriptionID) `
+                  --location '$(resourceLocation)' `
+                  --name $(deploymentName) `
+                  --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-ResourceTagPolicy.bicep `
+                  --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\00-Policy\ResourceTag.param.json

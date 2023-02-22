@@ -1,0 +1,14 @@
+# Template Format
+#- name: vn-prod-ae-hub-01-to-vn-prod-ase-hub-01
+#  vnet: vn-prod-ae-hub-01
+#  resource_group: rg-prod-ae-network
+
+# Australia East
+- name: vnet-np-edc-fcp-001-to-vnet-np-edc-hub-001
+  vnet: vnet-np-edc-fcp-001
+  resource_group: rg-np-edc-fcp-netw-001
+
+# Australia South East
+- name: vnet-np-sdc-fcp-001-to-vnet-np-sdc-hub-001
+  vnet: vnet-np-sdc-fcp-001
+  resource_group: rg-np-sdc-fcp-netw-001

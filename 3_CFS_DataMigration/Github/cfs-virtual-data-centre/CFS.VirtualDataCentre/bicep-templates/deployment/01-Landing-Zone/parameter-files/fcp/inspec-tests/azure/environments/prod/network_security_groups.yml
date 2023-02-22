@@ -1,0 +1,11 @@
+# Template Format
+#- name: nsg-np-edc-fcp-001
+#  resource_group: rg-np-edc-fcp-netw-001
+
+# Australia East
+- name: nsg-prd-edc-fcp-001
+  resource_group: rg-prd-edc-fcp-netw-001
+
+# Australia South East
+- name: nsg-prd-sdc-fcp-001
+  resource_group: rg-prd-sdc-fcp-netw-001

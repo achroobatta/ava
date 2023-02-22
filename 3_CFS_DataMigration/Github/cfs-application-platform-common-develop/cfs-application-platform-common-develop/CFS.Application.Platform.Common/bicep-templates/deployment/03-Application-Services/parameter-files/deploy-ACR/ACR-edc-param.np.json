@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "acrName": {
+              "value": "testcfs123456"
+          },
+          "location": {
+            "value": "australiaeast"
+          },
+          "acrSku": {
+            "value": "Premium"
+          },
+          "managedIdentityName": {
+            "value": "managedIdentity1"
+          },
+          "manageIdentityResourceGroupName": {
+            "value": "rg-np-edc-bkof-comp-001"
+          },
+          "keyVaultName": {
+            "value": "kv-np-edc-bkof-001"
+          },
+          "keyVaultResourceGroupName": {
+            "value": "rg-np-edc-bkof-kv-001"
+          },
+          "key_id": {
+            "value": "https://kv-np-edc-bkof-001.vault.azure.net/keys/keyEncrypt/bdba7d7a80ac45a8b063268a4e7f568c"
+          },
+          "vnetName": {
+            "value": "vnet-np-edc-bkof-001"
+          },
+          "subnetName": {
+            "value": "sub-np-edc-bkof-001"
+          },
+          "vnetResourceGroupName": {
+            "value": "rg-np-edc-bkof-netw-001"
+          }
+    }
+  }
+
+
+

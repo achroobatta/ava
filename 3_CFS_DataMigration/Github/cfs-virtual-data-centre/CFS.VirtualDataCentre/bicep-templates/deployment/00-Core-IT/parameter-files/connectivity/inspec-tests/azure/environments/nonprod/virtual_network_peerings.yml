@@ -1,0 +1,69 @@
+# Australia East
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-fcp-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-fwp-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-sdc-hub-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-iden-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-oper-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-sec-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-fwd-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-bkof-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: vnet-np-edc-hub-001-to-vnet-np-edc-fwd-dev1-001
+  vnet: vnet-np-edc-hub-001
+  resource_group: rg-np-edc-hub-netw-001
+
+# Australia South East
+- name: vnet-np-sdc-hub-001-to-vnet-np-edc-hub-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-fcp-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-fwp-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-iden-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-oper-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-bkof-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-sec-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: vnet-np-sdc-hub-001-to-vnet-np-sdc-fwd-001
+  vnet: vnet-np-sdc-hub-001
+  resource_group: rg-np-sdc-hub-netw-001

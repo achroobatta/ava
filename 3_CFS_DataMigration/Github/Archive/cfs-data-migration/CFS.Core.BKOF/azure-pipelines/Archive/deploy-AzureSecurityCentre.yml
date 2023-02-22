@@ -1,0 +1,27 @@
+#deploy-AzureSecurityCentre.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Ingest Azure Resources to Microsoft Defender for Cloud in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: bash $(System.DefaultWorkingDirectory)\CFS.VirtualDataCentre\$(scripts)\AzureSecurityCentre.sh
+
+
+ #- task: AzureCLI@2
+ #  displayName : Enable Workspace on Security Subscription Microsoft Defender for Cloud Security Logs
+ #  inputs:
+ #    azureSubscription: $(securitySubscServiceConnection)
+ #    scriptType: 'pscore'
+ #    scriptLocation: 'inlineScript'
+ #    inlineScript: bash $(System.ArtifactsDirectory)\$(scripts)\AzureSecurityCentreWorkspace.sh $(AzureEnvironmentPrefix) $(securitySubscriptionId)

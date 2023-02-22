@@ -1,0 +1,32 @@
+#Template Format
+#- name: GatewaySubnet
+#  resource_group: rg-prod-ae-network
+#  vnet: vn-prod-ae-hub-01
+#  prefix: 10.10.0.0/26
+#  nsg: null
+
+# Australia East
+- name: sub-prd-edc-fwp-001
+  resource_group: rg-prd-edc-fwp-netw-001
+  vnet: vnet-prd-edc-fwp-001
+  prefix: 10.22.0.0/24
+  nsg: nsg-prd-edc-fwp-001
+
+- name: sub-prd-edc-fwp-002
+  resource_group: rg-prd-edc-fwp-netw-001
+  vnet: vnet-prd-edc-fwp-001
+  prefix: 10.22.1.0/24
+  nsg: nsg-prd-edc-fwp-002
+
+# Australia South East
+- name: sub-prd-sdc-fwp-001
+  resource_group: rg-prd-sdc-fwp-netw-001
+  vnet: vnet-prd-sdc-fwp-001
+  prefix: 10.32.0.0/24
+  nsg: nsg-prd-sdc-fwp-001
+
+- name: sub-prd-sdc-fwp-002
+  resource_group: rg-prd-sdc-fwp-netw-001
+  vnet: vnet-prd-sdc-fwp-001
+  prefix: 10.32.1.0/24
+  nsg: nsg-prd-sdc-fwp-002

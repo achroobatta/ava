@@ -1,0 +1,91 @@
+# Australia East
+- name: FortiAnalyzer-NSG
+  resource_group: rg-np-edc-hub-fn-001
+
+- name: FortiGateVMEDC-yjx6jtb5aiws6-NSG
+  resource_group: rg-np-edc-hub-fn-001
+
+- name: FortiManager-NSG
+  resource_group: rg-np-edc-hub-fn-001
+
+- name: nsg-AzureBastionSubnet
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-002
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-003
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-004
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-005
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-006
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-007
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-008
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-fn-009
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-mgmt-001
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-mgmt-002
+  resource_group: rg-np-edc-hub-netw-001
+
+- name: nsg-np-edc-temp-001
+  resource_group: rg-np-edc-hub-netw-001
+
+# Australia Southeast
+- name: FortiGateSDC-p6olr7ytujnc2-NSG
+  resource_group: rg-np-sdc-hub-fn-001
+
+- name: nsg-AzureBastionSubnet
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-002
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-003
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-004
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-005
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-006
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-007
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-008
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-fn-009
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-mgmt-001
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-mgmt-001-copy-for-jit-testing
+  resource_group: rg-np-sdc-hub-netw-001
+
+- name: nsg-np-sdc-mgmt-002
+  resource_group: rg-np-sdc-hub-netw-001

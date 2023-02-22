@@ -1,0 +1,36 @@
+#delete DNS
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: resourceLocation
+  type: string
+
+- name: rgName
+  type: string
+
+- name: subId
+  type: string
+
+- name: dnsNametobeDeleted
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Remove DNS
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $location = "${{ parameters.resourceLocation }}"
+        $bkofRgName = "${{ parameters.rgName }}"
+        $backOfcSubId = "${{ parameters.subId }}"
+        $dnsDeleted = '${{ parameters.dnsNametobeDeleted }}'
+        $linkName = 'vnet-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-bkof-dm-001-vnetlink'
+
+        az account set --subscription $backOfcSubId
+        $resultLink = az network private-dns link vnet delete -g $bkofRgName -z $dnsDeleted -n $linkName --yes
+        $result = az network private-dns zone delete --name $dnsDeleted --resource-group $bkofRgName --yes

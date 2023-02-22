@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups": [
+                    {
+                        "location": "australiasoutheast",
+                        "component": "stor",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Security",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stonpsdcdiagnlogs003",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Deny",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [
+                                    {
+                                        "id": "/subscriptions/7a150118-f706-488d-a94e-0f68e6523ba3/resourceGroups/rg-np-sdc-hub-netw-001/providers/Microsoft.Network/virtualNetworks/vnet-np-sdc-hub-001/subnets/sub-np-sdc-mgmt-002",
+                                        "action": "Allow"
+                                    }
+                                ],
+                                "minimumTlsVersion": "TLS1_2"
+                            },
+                            {
+                                "storageAccountName": "stonpsdcsec001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    },
+                    {
+                        "location": "australiaeast",
+                        "component": "stor",
+                        "service": "security",
+                        "serviceAbbrv": "sec",
+                        "appName": "Security",
+                        "instance": 1,
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "stonpedcdiagnlogs003",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Deny",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [
+                                    {
+                                        "id": "/subscriptions/7a150118-f706-488d-a94e-0f68e6523ba3/resourceGroups/rg-np-edc-hub-netw-001/providers/Microsoft.Network/virtualNetworks/vnet-np-edc-hub-001/subnets/sub-np-edc-mgmt-002",
+                                        "action": "Allow"
+                                    }
+                                ],
+                                "minimumTlsVersion": "TLS1_2"
+                            },
+                            {
+                                "storageAccountName": "stonpedcsec001",
+                                "performance": "Standard_LRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Allow",
+                                "allowBlobPublicAccess": true,
+                                "virtualNetworkRules": [],
+                                "minimumTlsVersion": "TLS1_2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

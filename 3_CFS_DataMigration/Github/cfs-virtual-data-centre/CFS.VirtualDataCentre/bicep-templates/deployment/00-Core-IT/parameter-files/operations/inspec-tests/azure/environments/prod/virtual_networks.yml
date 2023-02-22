@@ -1,0 +1,19 @@
+# Template Format
+#- name: vn-prod-ae-hub-01
+#  resource_group: rg-prod-ae-network
+#  address_space: 10.10.0.0/16
+#  location: australiaeast
+
+# Australia East
+- name: vnet-prd-edc-operations-001
+  resource_group: rg-prd-edc-oper-netw-001
+  address_space: 10.20.128.0/17
+  location: australiaeast
+  dns_servers: ["10.20.0.68"]
+
+# Australia South East
+- name: vnet-prd-sdc-operations-001
+  resource_group: rg-prd-sdc-oper-netw-001
+  address_space: 10.30.128.0/17
+  location: australiasoutheast
+  dns_servers: ["10.30.0.68"]

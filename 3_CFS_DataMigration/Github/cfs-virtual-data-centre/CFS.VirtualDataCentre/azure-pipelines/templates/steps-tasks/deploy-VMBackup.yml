@@ -1,0 +1,34 @@
+#deploy-VMBackup.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+
+- name: serviceName
+  type: string
+  
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+- name: landingZoneType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy VM Backup in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-VMBackup.bicep `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\06-VMBackup\VMBackup-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json

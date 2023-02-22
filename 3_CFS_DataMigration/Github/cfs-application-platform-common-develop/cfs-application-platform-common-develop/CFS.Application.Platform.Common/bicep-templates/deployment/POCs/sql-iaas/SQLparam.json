@@ -1,0 +1,55 @@
+{
+    "$Schema":  "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "adminPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/fb2f0e33-580d-4cc8-ada3-9c1ec175ead1/resourceGroups/rg-np-edc-iden-kv-001/providers/Microsoft.KeyVault/vaults/kv-np-edc-identity-001"
+                },
+                "secretName": "cfsadmin"
+            }
+        },
+        "resourceTags": {
+            "value": {
+                "appName": "TBD",
+                "environment": "TBD",
+                "owner": "TBD",
+                "costCentre": "TBD",
+                "createOnDate": "TBD"
+            }
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResourceGroupName": "rg-np-edc-back-comp-001",
+                    "vmResouceGroupLocation": "australiaeast"
+                }
+            ]
+        },
+        "vmArray":  {
+            "value":  [
+                {
+                    "vmResourceGroupName": "rg-np-edc-back-comp-001",
+                    "vmResouceGroupLocation": "australiaeast",
+                    "vmName": "testsql02",
+                    "adminUsername": "AdministratorCFS",
+                    "osDiskType": "StandardSSD_LRS",
+                    "OSDiskSize": 128,
+                    "vmSize": "Standard_D2s_v3",
+                    "vnetResourceGroup": "rg-np-edc-back-comp-001",
+                    "virtualNetworkName": "rg-np-edc-back-comp-001-sqlvnet",
+                    "subnetName": "default",
+                    "timeZone": "E. Australia Standard Time",
+                    "diagstorageName": "sqlstoragetest123",
+                    "dataPath": "F:\\SQLData",
+                    "logPath": "G:\\SQLLog",
+                    "tempDbPath": "D:\\SQLTemp",
+                    "sqlVirtualMachineName": "testsql02",
+                    "sqlDataDisksCount": 1,
+                    "sqlLogDisksCount": 1
+                }
+            ]
+        }
+    }
+}

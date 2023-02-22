@@ -1,0 +1,150 @@
+#deploy-storageAccount.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string    
+
+steps:
+  # - task: AzureCLI@2
+  #   displayName : Deploy SshKey in  Subscription
+  #   inputs:
+  #     azureSubscription: ${{ parameters.serviceConnection }}     
+  #     scriptType: 'pscore'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: |  
+  #         az --version 
+  #         az sshkey create --name '$(sshKeyName)' --ssh-public-key-name '$(sshKeyName)' --resource-group '$(rgName)' 
+  #         echo 'before'
+  #         echo '***************************************************************************'  
+  #         ls 'C:\Users\VssAdministrator\.ssh\'
+  #         rm 'C:\Users\VssAdministrator\.ssh\*.pub'
+  #         echo 'after'
+  #         echo '***************************************************************************'  
+  #         ls 'C:\Users\VssAdministrator\.ssh\'
+  #         $privateKey=Get-Content -Path "C:\Users\VssAdministrator\.ssh\*"  
+  #         echo '$(rgName)' 
+  #         echo '***************************************************************************' 
+  #         echo $privateKey
+  #         echo '***************************************************************************' 
+  #         echo "##vso[task.setvariable variable=My_Secret]$privateKey" 
+  #         Write-Output '$(My_Secret)'   
+  #         write-output '*******************************************************'           
+  #         $privateKeyInBytes = [System.Text.Encoding]::UTF8.GetBytes($privateKey)
+  #         $privateKeyEncoded = [System.Convert]::ToBase64String($privateKeyInBytes)
+  #         echo $privateKeyEncoded
+  #         echo '***************************************************************************' 
+  #         echo '$(keyVaultName)'
+  #         echo '***************************************************************************' 
+  #         echo '$(sshKeyName)'         
+  #         echo '***************************************************************************' 
+  #         echo 'Writing to keyvault now'  
+  #         echo '***************************************************************************'   
+  #         # az keyvault secret set --name '$(sshKeyName)' --value $privateKeyEncoded --vault-name '$(keyVaultName)'         
+  #         az keyvault secret set --name '$(sshKeyName)' --value '$Encoded' --vault-name '$(keyVaultName)'         
+  #         echo 'removing extra files'
+  #         echo '***************************************************************************'  
+  #         rm 'C:\Users\VssAdministrator\.ssh\*'
+  #         ls 'C:\Users\VssAdministrator\.ssh\'
+  
+  - task: AzureCLI@2
+     
+    displayName : Deploy SshKey in  Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}     
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |  
+          az --version 
+          rm 'C:\Windows\ServiceProfiles\NetworkService\.ssh\*'
+          az sshkey create --name '$(sshKeyName)' --ssh-public-key-name '$(sshKeyName)' --resource-group '$(rgName)' 
+          echo 'before'
+          echo '***************************************************************************'           
+          ls 'C:\Windows\ServiceProfiles\NetworkService\.ssh\'
+          rm 'C:\Windows\ServiceProfiles\NetworkService\.ssh\*.pub'
+          echo 'after'
+          echo '***************************************************************************'  
+          ls 'C:\Windows\ServiceProfiles\NetworkService\.ssh\'
+          $privateKey=Get-Content -Path "C:\Windows\ServiceProfiles\NetworkService\.ssh\*"  
+          echo '$(rgName)' 
+          echo '***************************************************************************' 
+          echo $privateKey
+          echo '***************************************************************************' 
+          echo "##vso[task.setvariable variable=My_Secret]$privateKey" 
+          Write-Output '$(My_Secret)'   
+          write-output '*******************************************************'           
+          $privateKeyInBytes = [System.Text.Encoding]::UTF8.GetBytes($privateKey)
+          $privateKeyEncoded = [System.Convert]::ToBase64String($privateKeyInBytes)
+          echo $privateKeyEncoded
+          echo '***************************************************************************' 
+          echo '$(keyVaultName)'
+          echo '***************************************************************************' 
+          echo '$(sshKeyName)'         
+          echo '***************************************************************************' 
+          echo 'Writing to keyvault now'  
+          echo '***************************************************************************'   
+          # # az keyvault secret set --name '$(sshKeyName)' --value $privateKeyEncoded --vault-name '$(keyVaultName)'         
+          az keyvault secret set --name '$(sshKeyName)' --value '$Encoded' --vault-name '$(keyVaultName)'         
+          echo 'removing extra files'
+          echo '***************************************************************************'  
+          rm 'C:\Windows\ServiceProfiles\NetworkService\.ssh\*'
+          ls 'C:\Windows\ServiceProfiles\NetworkService\.ssh\'
+          
+  # - task: AzureCLI@2
+  #   displayName : Deploy Sftp Storage Account in ${{ parameters.serviceName }} Subscription
+  #   inputs:
+  #     azureSubscription: ${{ parameters.serviceConnection }}
+  #     scriptType: 'pscore'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+  #                   --name $(deploymentName) `
+  #                   --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-SFTP.bicep `                    
+  #                   --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+  #                   --parameters owner='$(owner)' `
+  #                   --parameters costCenter='$(costCenterCode)' `
+  #                   --parameters sshKeyName='$(sshKeyName)' `
+  #                   --parameters appName='$(appName)' `
+  #                   --parameters resourceLocation='$(resourceLocation)' `
+  #                   --parameters sftpstorageAccountName='$(destStorageAccountName)' `
+  #                   --parameters sftpRootContainerName='$(rootContainerName)' `
+  #                   --parameters warrantyPeriod='$(warrantyPeriod)' `
+  #                   --parameters ipTobeWhiteListed='$(ipTobeWhiteListed)' `
+  #                   --parameters sftpUserName='$(sftpUserName)' `
+  #                   --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+  #                   --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\04-SFTP\sftp-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json
+  
+    
+  # - task: GraphEmail@0        
+  #   displayName: 'Sending sFtp Username using Graph Api'
+  #   inputs:
+  #     To: 'achroo.batta@dev.cfs.com.au' # The Business User who will receive the email 
+  #     From: 'svcCFSDataMigrationFactory@dev.cfs.com.au'
+  #     Subject: 'Username for sFTP ' # Email Subject
+  #     Body: "Username for sFtp is: $(sftpUserName). Ssh private key will be sent in seperate email." # Email Body
+  #     BodyAsHtml: true  
+  #     ShowClientSecret: false
+  #     ClientID: $(ClientID) 
+  #     ClientSecret: $(ClientSecret) 
+  #     TenantDomain: $(TenantDomain) 
+
+  - task: GraphEmail@0        
+    displayName: 'Sending sFtp SshKey using Graph Api'
+    inputs:
+      To: 'achroo.batta@dev.cfs.com.au' # The Business User who will receive the email 
+      From: 'svcCFSDataMigrationFactory@dev.cfs.com.au'
+      Subject: 'SSH Key for sFTP ' # Email Subject
+      Body: "Copy the below content in text file and save this file as .pem extension. \n $(My_Secret)" # Email Body
+      BodyAsHtml: false 
+      ShowClientSecret: false
+      ClientID: $(ClientID) 
+      ClientSecret: $(ClientSecret) 
+      TenantDomain: $(TenantDomain) 

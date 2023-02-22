@@ -1,0 +1,31 @@
+parameters:
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+                displayName : Deploy Single Database with Elastic Pool in ${{ parameters.serviceName }} Subscription
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  scriptType: 'pscore'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                                az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                                  --name $(deploymentName) `
+                                  --template-file $(System.ArtifactsDirectory)\bicep-templates\deployment\deployment-templates\deploy-PaasSQLwithElasticPool.bicep.bicep `
+                                  --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                                  --parameters owner='$(Owner)' `
+                                  --parameters costCenter='$(costCenterCode)' `
+                                  --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                                  --parameters $(System.ArtifactsDirectory)\bicep-templates\deployment\10-PaasSQL\PaasSQL-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json
+                            
+                                

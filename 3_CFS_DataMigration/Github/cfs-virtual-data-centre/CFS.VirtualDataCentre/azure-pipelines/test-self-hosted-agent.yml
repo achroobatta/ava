@@ -1,0 +1,73 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+variables:
+ - name: AgentPool
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     value: "Windows-PRD-Test"
+   ${{ else }}:
+     value: "Windows-NP-Test"
+
+pool:
+  name: $(AgentPool)
+
+jobs:
+- job: testSelfHostedAgent
+  displayName: Agent job 1
+
+  steps:
+  
+  - task: PowerShell@2
+    displayName: check_env_path
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+          "env:path"
+          $env:path
+  
+  - task: PowerShell@2
+    displayName: check_pwsh
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+          "Powershell Version:"
+          pwsh -Version
+  
+  - task: PowerShell@2
+    displayName: check_git
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+          "Git SCM version"
+          git --version
+  
+  - task: PowerShell@2
+    displayName: check_az_cli
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+          "Azure CLI version"
+          az version
+  
+  - task: PowerShell@2
+    displayName: check_dotnet
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+          "DotNet Version"
+          dotnet --version

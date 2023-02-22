@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subManagementGroupName": {
+            "value": "LandingZone"
+        },
+        "subManagementGroupDisplayName": {
+            "value": "Landing Zone"
+        },
+        "instance": {
+            "value": 1
+        },
+        "managementGroups": {
+            "value": [
+                {
+                    "name": "digital",
+                    "displayName": "Digital Channel Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "fcp",
+                            "workload": "Production"
+                        },
+                        {
+                            "service": "fwp",
+                            "workload": "Production"
+                        }
+                   ]
+                },
+                {
+                    "name": "data",
+                    "displayName": "Data Channel Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "fwd",
+                            "workload": "Production"
+                        }
+                   ]
+                },
+                {
+                    "name": "backoffice",
+                    "displayName": "Back Office Channel Management Group",
+                    "subscriptions": [
+                        {
+                            "service": "backoffice",
+                            "workload": "Production"
+                        }
+                   ]
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": { 
+                "resourceGroups1": [],
+                "resourceGroups2": [
+                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 6,
+                        "appName": "Infra",
+                        "rgname": "rg-prd-sdc-bkof-dm-001",
+                        "virtualNetworkResourceGroup": "rg-prd-sdc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-prd-sdc-bkof-dm-001",
+                        "privateDnsZoneName":"privatelink.database.windows.net"
+                    }
+                ]
+            }
+        }
+    }
+}

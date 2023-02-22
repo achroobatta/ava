@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "serviceAbbrv": {
+            "value": "bkof"
+        },
+        "instance": {
+            "value": 1
+        },
+        "appName": {
+            "value": "Infra"
+        },
+        "location": {
+            "value": "australiaeast"
+        },
+        "virtualNetworkName":
+        {
+            "value": "vnet-np-edc-bkof-001"
+        },
+        "virtualNetworkResourceGroup": 
+        {
+            "value": "rg-np-edc-bkof-oper-001"
+        },
+        "subnetName": {
+            "value": "sub-np-edc-bkof-002"
+        },
+        "privateDnsZoneName":
+        {
+            "value": "privatelink.datafactory.azure.net"
+        }           
+    }
+}

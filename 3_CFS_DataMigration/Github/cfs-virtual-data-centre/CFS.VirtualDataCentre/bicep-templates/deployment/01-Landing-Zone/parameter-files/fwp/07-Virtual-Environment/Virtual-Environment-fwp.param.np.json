@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+        "virtualEnvironmentArray": {
+            "value": [
+                {
+                    "vnetName": "vnet-np-edc-fwp-001",
+                    "vnetNetResourceGroup": "rg-np-edc-fwp-netw-001",
+                    "subnetAddressPrefix": "10.42.1.0/24",
+                    "serviceAbbrv": "fwp",
+                    "component": "fwpdev0",
+                    "appName": "FWP Dev0 Environment",
+                    "count": 3,
+                    "location": "australiaeast",
+                    "contributorPrincipalId":  "0c098f04-ed80-46b3-b4ef-ec1df91e5288",
+                    "StorageAccountInstance": 3
+                }
+            ]
+        }
+    }
+}

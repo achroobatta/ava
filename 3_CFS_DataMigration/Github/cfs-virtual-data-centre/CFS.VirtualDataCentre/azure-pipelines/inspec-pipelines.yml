@@ -1,0 +1,186 @@
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+     
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: subscriptionServiceId
+    displayName: Subscription Service Id (e.g. "bkof" or "fcp" or "fwp")
+    type: string
+    default: ""
+    values:
+     - "bkof"
+     - "fcp"
+     - "fwp"
+     - "connectivity"
+     - "identity"
+     - "operations"
+     - "security"
+
+variables:
+  - name: poolType
+    value: hosted # alternative is hosted
+
+  # Inspec Test Environment Type
+  - name: environmentType
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "nonprod"
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "prod"
+
+  # Subscription ID
+  - name: landingZoneType
+    ${{ if or( eq(parameters.subscriptionServiceId, 'connectivity'), eq(parameters.subscriptionServiceId, 'identity'), eq(parameters.subscriptionServiceId, 'operations'), eq(parameters.subscriptionServiceId, 'security')) }}:
+      value: "00-Core-IT"
+    ${{ else }}:
+      value: "01-Landing-Zone"
+
+  # Artifact Package Feed Value
+  - name: artifactFeed
+  
+    # deployment to Production environment must use the main branch for the pipeline yaml
+    ${{ if and( eq(parameters.deployEnvironment, 'Production'), eq(variables['Build.SourceBranch'], 'refs/heads/main') ) }}:
+      value: "core-it/cfs-infra-release"
+    # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+    ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), eq(variables['Build.SourceBranch'], 'refs/heads/develop') ) }}:
+      value: "core-it/cfs-infra-ci"
+    # deployment to Non-Production environment can be from the develop or a feature branch for the pipeline yaml
+    # allow deployment to non-production from a feature branch, using the PR build (a PR needs to be raised on the feature branch, and wait for it to finish building a deployment artifact).
+    ${{ elseif and( eq(parameters.deployEnvironment, 'Non-Production'), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') ) }}:
+      value: "core-it/cfs-infra-pr-develop"
+    #branch and/or deployEnvironment are not valid -> do not pull any artifact, just let the pipeline error out
+    ${{ else }}:
+      value: ""
+
+  # Artifact Package Definition Value
+  - name: artifactDefinition
+    value: "CFS.VirtualDataCentre"
+
+  # Artifact Package Version Value
+  - name: artifactVersion
+    value: ${{ parameters.artifactVersion }}
+  
+  #  Subscription ID
+  - name: subscriptionID
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      ${{ if contains(parameters.subscriptionServiceId, 'bkof' ) }}:
+        value: $(subsc-np-backoffice-sid)
+      ${{ else }}:
+        value: $(subsc-np-${{ parameters.subscriptionServiceId }}-sid)
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      ${{ if contains(parameters.subscriptionServiceId, 'bkof' ) }}:
+        value: $(subsc-prd-backoffice-sid)
+      ${{ else }}:
+        value: $(subsc-prd-${{ parameters.subscriptionServiceId }}-sid)
+
+  #  Azure Client ID
+  - name: azureClientId
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(AZURE_CLIENT_ID_NPRD)
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(AZURE_CLIENT_ID_PRD)
+
+  #  Azure Client Secret
+  - name: azureClientSecret
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(AZURE_CLIENT_SECRET_NPRD)
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(AZURE_CLIENT_SECRET_PRD)
+
+  #  Azure Tenant Id
+  - name: azureTenantId
+    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(AZURE_TENANT_ID_NPRD)
+    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(AZURE_TENANT_ID_PRD)
+
+  # Azure DevOps Environments
+  - name: AzureDevOpsEnvironments
+    value: ${{ parameters.deployEnvironment }}
+
+  - group: inspec-prod
+  - group: var-azure-platform-linux-version
+  - group: lz-var-service-principle-secrets
+
+stages:
+- stage: test
+  displayName: test inspec deployment
+
+  pool:
+    vmImage: ubuntu-latest
+
+  jobs:
+    - deployment: Inspec_tests_${{ parameters.subscriptionServiceId }}
+      workspace:
+        clean: all
+
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+                
+            #Install tasks
+            - task: UseRubyVersion@0
+              condition: eq(variables.poolType, 'hosted')
+              displayName: 'Install Ruby on hosted agent'
+              inputs:
+                versionSpec: '>= 2.5'
+                addToPath: true
+
+            - task: Bash@3
+              condition: eq(variables.poolType, 'selfHosted')
+              displayName: 'Install Ruby on self-hosted agent'
+              inputs:
+                targetType: inline
+                script: |
+                  sudo apt update
+                  sudo apt install ruby-full -y
+            - script: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec
+              displayName: 'Install Inspec'
+            - script: sudo wget https://github.com/mikefarah/yq/releases/download/v4.27.2/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+              displayName: 'Install yq'
+
+          # Run Tests for Azure
+          # TODO : Automate multiple subscription capability
+            - task: Bash@3
+              displayName: 'Run azure inspec tests'
+              inputs:
+                targetType: inline
+                script: |
+                  export AZURE_SUBSCRIPTION_ID=$(subscriptionID)
+                  export AZURE_CLIENT_ID=$(azureClientId)
+                  export AZURE_CLIENT_SECRET=$(azureClientSecret)
+                  export AZURE_TENANT_ID=$(azureTenantId)
+                  chmod -R 755 $(System.ArtifactsDirectory)
+                  cp $(System.ArtifactsDirectory)/$(deployments)/$(landingZoneType)/parameter-files/${{ parameters.subscriptionServiceId }}/inspec-tests/azure/environments/$(environmentType)/*.yml $(System.ArtifactsDirectory)/content/test-scripts/Deployment/inspec-tests/azure/files/
+                  inspec exec $(System.ArtifactsDirectory)/content/test-scripts/Deployment/inspec-tests/azure -t azure:// --chef-license=accept --reporter cli junit2:test-azure.xml
+
+            - task: PublishTestResults@2
+              displayName: Publish azure inspec test results
+              condition: succeededOrFailed()
+              inputs:
+                testResultsFiles: '**/test-azure.xml'
+                mergeTestResults: true

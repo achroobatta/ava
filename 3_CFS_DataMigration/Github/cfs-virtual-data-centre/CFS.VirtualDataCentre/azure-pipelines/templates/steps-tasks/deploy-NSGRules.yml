@@ -1,0 +1,31 @@
+#deploy-NSGRules.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: serviceId
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: landingZoneType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy NSG Rules in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\$(bicep-deployment-templates)\deploy-NsgRule.bicep `
+                    --parameters $(System.ArtifactsDirectory)\$(deployments)\$(landingZoneType)\parameter-files\${{ parameters.serviceId }}\02-Network\NsgRules-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)'

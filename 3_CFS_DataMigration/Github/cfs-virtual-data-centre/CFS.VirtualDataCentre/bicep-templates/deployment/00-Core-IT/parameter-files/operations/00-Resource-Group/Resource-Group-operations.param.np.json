@@ -1,0 +1,157 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "2",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Personal-BLUE"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "3",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Shared-GREEN"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "4",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Personal-GREEN"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "5",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "kv",
+                    "serviceAbbrv": "oper",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "2",
+                    "component": "kv",
+                    "serviceAbbrv": "oper",
+                    "appName": "Key Vault"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "oper",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "oper",
+                    "appName": "Operations"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "oper",
+                    "appName": ""
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "snow",
+                    "serviceAbbrv": "oper",
+                    "appName": "Compute"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVDFSLOGIX"
+                },
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "2",
+                    "component": "stor",
+                    "serviceAbbrv": "oper",
+                    "appName": "Operations"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Shared-BLUE"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "2",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Personal-BLUE"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "3",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Shared-GREEN"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "4",
+                    "component": "comp",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVD-RG-Personal-GREEN"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "netw",
+                    "serviceAbbrv": "oper",
+                    "appName": "Network"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "rsv",
+                    "serviceAbbrv": "oper",
+                    "appName": "Operations"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "sec",
+                    "serviceAbbrv": "oper",
+                    "appName": ""
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "stor",
+                    "serviceAbbrv": "oper",
+                    "appName": "AVDFSLOGIX"
+                }
+            ]
+        }
+    }
+}

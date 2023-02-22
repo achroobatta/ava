@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+          "virtualNetworkName": {
+            "value": "vnet-np-edc-bkof-001"
+          },
+          "virtualNetworkResourceGroup": {
+            "value": "rg-np-edc-bkof-netw-001"
+          },
+          "subnetName": {
+            "value": "sub-np-edc-bkof-001"
+          },
+          "administratorLogin": {
+            "value": "sqladmin"
+          },
+          "sqlServerName": {
+            "value": "sql-np-edc-bkof-poc-001"
+          },
+          "elasticPoolName": {
+            "value": "ep-np-edc-bkof-001"
+          },
+          "skuName": {
+            "value": "GP_Gen5"
+          },
+          "tier": {
+            "value": "GeneralPurpose"
+          },
+          "poolLimit": {
+            "value": 2
+          },
+          "minCapacity": {
+            "value": 0
+          },
+          "maxCapacity": {
+            "value": 2
+          },
+          "poolSize": {
+            "value": 34359738368
+          },
+          "zoneRedundant": {
+            "value": false
+          },
+          "licenseType": {
+            "value": "LicenseIncluded"
+          },
+          "databaseName": {
+            "value": "db-np-edc-bkof-poc-001"
+          },
+          "sqlDbTierName": {
+            "value": "GeneralPurpose"
+          }
+      }
+  }

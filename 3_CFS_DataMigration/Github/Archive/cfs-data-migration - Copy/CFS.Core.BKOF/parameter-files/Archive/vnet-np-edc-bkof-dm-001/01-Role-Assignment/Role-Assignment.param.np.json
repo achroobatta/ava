@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleAssignmentArray": {
+            "value": [
+                {
+                    "principalId":  "f74177a3-54dc-4487-ad69-ddcd82b5d45f",
+                    "DisplayName":  "SG-AA-OPS-bkof-owner"
+                },
+                {
+                    "principalId":  "eb8c7046-1cfb-4a7a-916c-ed16fce667e8",
+                    "DisplayName":  "SG-AA-OPS-bkof-reader"
+                },
+                {
+                    "principalId":  "a7f6487a-d1e1-4dc4-9c9a-43bd9b871f3b",
+                    "DisplayName":  "SG-AA-OPS-bkof-contributor"
+                }
+            ]
+        }
+    }
+}

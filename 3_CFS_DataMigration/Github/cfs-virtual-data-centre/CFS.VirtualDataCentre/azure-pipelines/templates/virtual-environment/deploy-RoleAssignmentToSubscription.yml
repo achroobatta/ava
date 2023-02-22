@@ -1,0 +1,28 @@
+#deployRoleAssignmentToSubscription.yml
+
+parameters:
+- name: serviceId 
+  type: string
+  
+- name: subscriptionId #e.g. ''
+  type: string
+
+- name: serviceConnection #e.g. ''
+  type: string
+
+- name: deploymentType
+  type: string
+
+
+steps:
+  - task: AzureCLI@2
+    displayName : 'Deploy Role Assignment to ${{ parameters.serviceId }} Management Group'
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --parameters subscriptionId='${{ parameters.subscriptionId }}' `
+                    --template-file $(templateDirectory)\01-Landing-Zone\deployment-templates\deploy-RoleAssignmentToSubscription.bicep `
+                    --parameters $(parameterDirectory)\01-Role-Assignment\Role-Assignment.param.$(AzureEnvironmentPrefix).json

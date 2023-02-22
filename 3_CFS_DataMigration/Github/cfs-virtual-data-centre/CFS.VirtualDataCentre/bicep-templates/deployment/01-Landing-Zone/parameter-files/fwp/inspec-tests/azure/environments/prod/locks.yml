@@ -1,0 +1,25 @@
+# Australia East
+- name: rg-prd-edc-fwp-comp-001
+  
+- name: rg-prd-edc-fwp-fa-001
+
+- name: rg-prd-edc-fwp-kv-001
+  
+- name: rg-prd-edc-fwp-netw-001
+  
+- name: rg-prd-edc-fwp-rsv-001
+
+- name: rg-prd-edc-fwp-sec-001
+  
+- name: rg-prd-edc-fwp-stor-001
+
+# Australia South East
+- name: rg-prd-sdc-fwp-comp-001
+
+- name: rg-prd-sdc-fwp-kv-001
+
+- name: rg-prd-sdc-fwp-netw-001
+
+- name: rg-prd-sdc-fwp-rsv-001
+
+- name: rg-prd-sdc-fwp-stor-001

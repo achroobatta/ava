@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "roleAssignmentArray": {
+            "value": [
+                {
+                    "managementGroupId": "mg-prd-security-001",
+                    "ObjectId":  "c2c8682e-7fbb-4c3b-9123-7dd1003928f9",
+                    "DisplayName":  "SG-AA-OPS-sec-owner"
+                },
+                {
+                    "managementGroupId": "mg-prd-security-001",
+                    "ObjectId":  "4e244e67-eece-4992-bff8-f28d92e9d291",
+                    "DisplayName":  "SG-AA-OPS-sec-reader"
+                },
+                {
+                    "managementGroupId": "mg-prd-security-001",
+                    "ObjectId":  "24ad0bba-4fce-4169-bdda-5b19b8243b80",
+                    "DisplayName":  "SG-AA-OPS-sec-contributor"
+                }
+            ]
+        }
+    }
+}

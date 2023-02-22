@@ -1,0 +1,4 @@
+- name: FortiGateVMEDC-InternalLoadBalancer
+  resource_group: rg-np-edc-hub-fn-001
+  sku_name: Standard
+  location: australiaeast

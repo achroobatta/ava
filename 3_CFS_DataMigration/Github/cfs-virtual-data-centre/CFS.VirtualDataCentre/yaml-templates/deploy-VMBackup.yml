@@ -1,0 +1,65 @@
+name: deploy-VMBackup
+
+#trigger:
+#  branches:
+#    include: 
+#    - develop
+#trigger:
+#- develop
+
+#pr:
+#  branches:
+#    exclude:
+#    - '*'  # must quote since "*" is a YAML reserved character
+  
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds entirely; will not disable CI triggers
+
+parameters:
+- name: identitySubscServiceConnection
+  type: string
+  default: sc-subsc-sbx-identity-001
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+###CFS-INFRA-RELEASE FEED
+##- task: DownloadPackage@1
+#  displayName: DownloadArtifacts
+#  inputs:
+#    packageType: 'nuget'
+#    feed: '7ffa7e9b-e57d-4966-b624-45dcfc3d485b/e786ca8c-128f-48ca-a03a-013b2f886637'
+#    view: '14bbe0c7-7c46-49c1-abe5-b8d0e45a7951'
+#    definition: 'f1138903-e131-47b4-858d-1c74404bcd07'
+#    version: 'latest'
+#    downloadPath: '$(System.ArtifactsDirectory)'
+
+#CFS-INFRA-CI FEED
+
+- task: DownloadPackage@1
+  displayName: DownloadArtifacts
+  inputs:
+    packageType: 'nuget'
+    feed: '7ffa7e9b-e57d-4966-b624-45dcfc3d485b/2df4c8df-3a69-48a6-954e-3633fd744c8d'
+    view: '016dc007-a6d1-4778-a6bd-6bfedef8c877'
+    definition: '5e015a88-3836-4113-a814-64e2d0d2c35d'
+    version: 'latest'
+    extract: true
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+- task: Bash@3
+  displayName: ChangeArtifactsPermission
+  inputs:
+    targetType: 'inline'
+    script: 'chmod -R 777 $(System.ArtifactsDirectory)/*'
+  
+- task: AzureCLI@2
+  displayName: DeployVMBackup
+  inputs:
+    azureSubscription: ${{parameters.identitySubscServiceConnection}}
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: az deployment sub create --location australiaeast --template-file $(System.ArtifactsDirectory)/content/bicep-templates/deployment/deploy-VMBackup/deployVMBackup.bicep --parameter $(System.ArtifactsDirectory)/content/bicep-templates/deployment/deploy-VMBackup/deployVMBackup.param.np.json
