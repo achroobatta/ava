@@ -1,0 +1,133 @@
+#vm-deployment.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: deploymentName
+  type: string
+
+- name: vmLocation
+  type: string
+
+- name: projectPfx
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+- name: numberOfInstance
+  type: number
+
+- name: startingPoint
+  type: number
+
+- name: AustraliaEastOffsetSymbol
+  type: string
+
+- name: owner
+  type: string
+
+- name: costCenterCode
+  type: string
+
+- name: appName
+  type: string
+
+- name: AzureEnvironmentPrefix
+  type: string
+
+- name: locationPfx
+  type: string
+
+- name: fileSize
+  type: string
+
+- name: hostPoolName
+  type: string
+
+- name: hostPoolType
+  type: string
+
+- name: hostPoolRg
+  type: string
+
+- name: vmLane
+  type: string
+steps:
+
+  # Run a PowerShell script
+  - task: AzurePowerShell@5
+    displayName: 'Generate Registration Key'
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      ScriptType: 'FilePath'
+      ScriptPath: 'CFS.Core.BKOF/scripts/AVDDeployment.ps1'
+      ScriptArguments: -hostPoolRg '${{ parameters.hostPoolRg}}' -hostPoolName '${{ parameters.hostPoolName}}'
+      errorActionPreference: 'stop'
+      FailOnStandardError: true
+      azurePowerShellVersion: 'LatestVersion'
+
+  - task: AzureCLI@2
+    displayName : Deploy Virtual Machine in ${{ parameters.serviceId }} Subscription
+
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Values of Variables"
+                    echo '*******************************************************************************'
+                    echo 'serviceConnection: ${{ parameters.serviceConnection }}'
+                    echo 'deploymentType: ${{ parameters.deploymentType }}'
+                    echo 'deploymentName: ${{ parameters.deploymentName }}'
+                    echo 'projectPfx: ${{ parameters.projectPfx }}'
+                    echo 'vmLocation: ${{ parameters.vmLocation }}'
+                    echo 'deploymentName: ${{ parameters.deploymentName }}'
+                    echo 'numberOfInstance: ${{ parameters.numberOfInstance }}'
+                    echo 'startingPoint: ${{ parameters.startingPoint }}'
+                    echo 'AustraliaEastOffsetSymbol: ${{ parameters.AustraliaEastOffsetSymbol }}'
+                    echo 'owner: ${{ parameters.owner }}'
+                    echo 'costCenterCode: ${{ parameters.costCenterCode }}'
+                    echo 'appName: ${{ parameters.appName }}'
+                    echo 'AzureEnvironmentPrefix: ${{ parameters.AzureEnvironmentPrefix }}'
+                    echo 'locationPfx: ${{ parameters.locationPfx }}'
+                    echo 'fileSize: ${{ parameters.fileSize }}'
+                    echo 'hostPoolName: ${{ parameters.hostPoolName }}'
+                    echo 'hostPoolType: ${{ parameters.hostPoolType }}'
+                    echo '*******************************************************************************'
+
+                    #WorkSpaceId
+                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.locationPfx }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.locationPfx }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query customerId -o tsv"
+                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.locationPfx }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.locationPfx }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query primarySharedKey --output tsv"
+                    Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
+                    Invoke-Expression $WorkspaceId | Tee-Object -Variable WorkspaceIdOutput | Out-Null
+
+                    az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.vmLocation }} `
+                    --name ${{ parameters.deploymentName }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-AvdVM.bicep `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\00-AVD\avdvm.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters resourceLocation='${{ parameters.vmLocation}}' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\00-AVD\${{ parameters.projectPfx }}vm.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters numberOfInstance='${{ parameters.numberOfInstance}}' `
+                    --parameters startingPoint='${{ parameters.startingPoint}}' `
+                    --parameters workspaceId=$WorkspaceIdOutput `
+                    --parameters workspaceKey=$WorkspaceKeyOutput `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters environmentPfx='${{ parameters.AzureEnvironmentPrefix }}' `
+                    --parameters locationPfx='${{ parameters.locationPfx }}' `
+                    --parameters fileSize='${{ parameters.fileSize }}' `
+                    --parameters hostPoolName='${{ parameters.hostPoolName}}' `
+                    --parameters hostPoolType='${{ parameters.hostPoolType}}' `
+                    --parameters registrationKey=$(RegistrationKey) `
+                    --parameters vmLane='${{ parameters.vmLane}}'

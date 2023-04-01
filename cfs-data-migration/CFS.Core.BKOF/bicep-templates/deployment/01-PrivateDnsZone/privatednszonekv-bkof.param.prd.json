@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": {
+                "resourceGroups1": [
+                    {
+                        "location": "australiaeast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 1,
+                        "appName": "Infra",
+                        "rgname": "rg-prd-edc-hub-netw-001",
+                        "virtualNetworkResourceGroup": "rg-prd-edc-hub-netw-001",
+                        "virtualNetworkName":"vnet-prd-edc-hub-001",
+                        "privateDnsZoneName":"privatelink.vaultcore.azure.net"
+                    }
+                ],
+                "resourceGroups2": [                    {
+                        "location": "australiasoutheast",
+                        "serviceAbbrv": "bkof",
+                        "instance": 1,
+                        "appName": "Infra",
+                        "rgname": "rg-prd-sdc-hub-netw-001",
+                        "virtualNetworkResourceGroup": "rg-prd-sdc-hub-netw-001",
+                        "virtualNetworkName":"vnet-prd-sdc-hub-001",
+                        "privateDnsZoneName":"privatelink.vaultcore.azure.net"
+                    }
+                ]
+            }
+        }
+    }
+}

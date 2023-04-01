@@ -1,0 +1,67 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    landingZoneServiceConnection: ''
+    vmName: ''
+    vmRgName: ''
+    subId: ''
+    resourceLocation: ''
+
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  jobs:
+
+  - template: deleterbac.yml
+    parameters:
+      name: delete_rbac
+      displayName: 'Delete RBAC'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: ''
+      landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+      vmName: ${{ parameters.vmName}}
+      subId: ${{ parameters.subId}}
+      vmRgName: ${{ parameters.vmRgName}}
+
+  # - template: deleteprivateendpoint.yml
+  #   parameters:
+  #     name: delete_privateendpoint
+  #     displayName: 'Delete Private Endpoint'
+  #     pool: ${{ parameters.pool}}
+  #     continueOnError: false
+  #     dependsOn: delete_rbac
+  #     landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+  #     vmRgName: ${{ parameters.vmRgName}}
+  #     vmName: ${{ parameters.vmName}}
+  #     resourceLocation: ${{ parameters.resourceLocation}}
+
+  # - template: deletestorageaccount.yml
+  #   parameters:
+  #     name: delete_storageaccount
+  #     displayName: 'Delete Storage Account'
+  #     pool: ${{ parameters.pool}}
+  #     continueOnError: false
+  #     dependsOn: delete_privateendpoint
+  #     landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+  #     vmRgName: ${{ parameters.vmRgName}}
+  #     vmName: ${{ parameters.vmName}}
+
+  - template: deletevm.yml
+    parameters:
+      name: delete_vm
+      displayName: 'Delete VM'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: delete_rbac
+      landingZoneServiceConnection: ${{ parameters.landingZoneServiceConnection }}
+      vmRgName: ${{ parameters.vmRgName}}
+      vmName: ${{ parameters.vmName}}
+
+

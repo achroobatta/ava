@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "edcNetworkobj":
+        {
+            "value": {
+                "subnetName": "sub-np-edc-operations-001",
+                "vnetName": "vnet-np-edc-oper-001",
+                "vnetRg": "rg-np-edc-oper-netw-001"
+            }
+        },
+        "sdcNetworkobj":
+        {
+            "value": {
+                "subnetName": "sub-np-sdc-operations-001",
+                "vnetName": "vnet-np-sdc-oper-001",
+                "vnetRg": "rg-np-sdc-oper-netw-001"
+            }
+        },
+        "personalSessionHostType": {
+            "value": "P"
+        },
+        "sharedSessionHostType": {
+            "value": "S"
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {      
+        "owner": {
+            "value": "Robert Reakes"
+        },
+        "rgArray": {
+            "value": [
+                {
+                    "vmResouceGroupLocation": "australiaeast",
+                    "instance": "1",
+                    "component": "dm",
+                    "serviceAbbrv": "bkof",
+                    "appName": "infra"
+                },
+                {
+                    "vmResouceGroupLocation": "australiasoutheast",
+                    "instance": "1",
+                    "component": "dm",
+                    "serviceAbbrv": "bkof",
+                    "appName": "infra"                    
+                }
+            ]
+        }
+    }
+}

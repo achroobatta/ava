@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "resourceGroupObject": {
+            "value": {
+                "resourceGroups": [
+                    {
+                        "location": "australiaeast",
+                        "location2": "australiasoutheast",
+                        "component": "dm",
+                        "service": "bkof",
+                        "serviceAbbrv": "bkof",
+                        "stoprefix": "sstor",
+                        "locationAbbrv": "edc",
+                        "instance": 1,
+                        "virtualNetworkName_RG":"vnet-np-edc-bkof-dm-001",
+                        "virtualNetwork2Name_RG":"vnet-np-sdc-bkof-dm-001",
+                        "virtualNetworksubnetName":"sub-np-edc-bkof-dm-vmsub-003",
+                        "virtualNetwork2subnetName":"sub-np-sdc-bkof-dm-vmsub-003",
+                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "virtualNetwork2ResourceGroup": "rg-np-sdc-bkof-dm-001",
+                        "virtualNetworkName":"vnet-np-edc-bkof-dm-001",
+                        "virtualNetwork2Name":"vnet-np-sdc-bkof-dm-001",
+                        "subnetName":"sub-np-edc-bkof-dm-com-002",
+                        "subnet2Name":"sub-np-sdc-bkof-dm-com-002",
+                        "rgname": "rg-np-edc-bkof-dm-001",
+                        "rgname2": "rg-np-sdc-bkof-dm-001",
+                        "storageAccountName": "sstornpedcbkofdm001",
+                        "storage2AccountName": "sstornpsdcbkofdm001",
+                        "containerPrefix": "source",
+                        "privateDnsZoneName": "privatelink.blob.core.windows.net",
+                        "storageAccount": [
+                            {
+                                "storageAccountName": "sstornpedcbkofdm001",
+                                "performance": "Standard_RAGRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Deny",
+                                "action" : "Allow",
+                                "allowBlobPublicAccess": false,
+                                "minimumTlsVersion": "TLS1_2",
+                                "virtualNetworkRules": [
+                                    {
+                                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                                        "virtualNetworkName_RG": "vnet-np-edc-bkof-dm-001",
+                                        "virtualNetworksubnetName": "sub-np-edc-bkof-dm-vmsub-003"
+                                    }
+                                ]
+                            }
+                        ],
+                        "storage2Account": [
+                            {
+                                "storageAccountName": "sstornpsdcbkofdm001",
+                                "performance": "Standard_RAGRS",
+                                "kind": "StorageV2",
+                                "publicNetworkAccess": "Enabled",
+                                "defaultAction" : "Deny",
+                                "action" : "Allow",
+                                "allowBlobPublicAccess": false,
+                                "minimumTlsVersion": "TLS1_2",
+                                "virtualNetworkRules": [
+                                    {
+                                        "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                        "virtualNetworkName_RG": "vnet-np-sdc-bkof-dm-001",
+                                        "virtualNetworksubnetName": "sub-np-sdc-bkof-dm-vmsub-003"
+                                    },
+                                    {
+                                        "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                        "virtualNetworkName_RG": "vnet-np-sdc-bkof-dm-001",
+                                        "virtualNetworksubnetName": "sub-np-sdc-bkof-001"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

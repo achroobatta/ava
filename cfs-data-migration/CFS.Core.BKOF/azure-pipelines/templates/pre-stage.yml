@@ -1,0 +1,27 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    variableGroup: ''
+
+
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  jobs:
+
+  - template: getworkitemdetails.yml
+    parameters:
+      name: get_work_item_details
+      displayName: 'Pre Stage'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/GetWorkItemDetails.ps1'
+
+

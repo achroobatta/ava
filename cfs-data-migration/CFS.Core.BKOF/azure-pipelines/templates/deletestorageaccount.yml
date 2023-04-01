@@ -1,0 +1,32 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    dependsOn: ''
+    landingZoneServiceConnection: ''
+    vmRgName: ''
+    vmName: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  dependsOn: ${{ parameters.dependsOn}}
+
+  steps:
+  - task: AzureCLI@2
+    displayName: Delete Azure Storage Account
+    inputs:
+      azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $vmInfo = az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName }} | ConvertFrom-Json
+        $vmResources = $vmInfo.resources | Where-Object {$_.publisher -eq "Microsoft.Azure.Diagnostics"}
+        $strAccName = $vmResources.settings.StorageAccount
+        $strAccName
+        az storage account show -g ${{ parameters.vmRgName}} -n $strAccName
+        az storage account delete -n $strAccName -g ${{ parameters.vmRgName}} --yes
+      failOnStandardError: true

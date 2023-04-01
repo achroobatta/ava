@@ -1,0 +1,346 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    artifactName: ''
+    variableGroup: ''
+    techEmailSupport: ''
+
+
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  variables:
+    - name: workItemId
+      value: $[ stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemId'] ]
+    - name: workItemState
+      value: $[ stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemState'] ]
+    - name: excelFileName
+      value: $[ stageDependencies.download_and_publish_stage.download_and_publish_excel_file.outputs['Download_Work_Item_Attachment.ExcelFileName'] ]
+    - name: runType
+      value: $[ dependencies.update_variables.outputs['update_variables.runType'] ]
+    - name: destStorageAccount
+      value: $[ dependencies.update_variables.outputs['update_variables.destStorageAccount'] ]
+    - name: appName
+      value: $[ dependencies.update_variables.outputs['update_variables.appName'] ]
+    - name: owner
+      value: $[ dependencies.update_variables.outputs['update_variables.owner'] ]
+    - name: costCenterCode
+      value: $[ dependencies.update_variables.outputs['update_variables.costCenterCode'] ]
+    - name: warrantyPeriod
+      value: $[ dependencies.update_variables.outputs['update_variables.warrantyPeriod'] ]
+    - name: environment
+      value: $[ dependencies.update_variables.outputs['update_variables.deployEnvironment'] ]
+    - name: fileSize
+      value: $[ dependencies.update_variables.outputs['update_variables.fileSize'] ]
+    - name: sourceDataType
+      value: $[ dependencies.update_variables.outputs['update_variables.sourceDataType'] ]
+    - name: sourceLocation
+      value: $[ dependencies.update_variables.outputs['update_variables.sourceLocation'] ]
+    - name: sourceStorageAccountFromPipeline
+      value: $[ dependencies.update_variables.outputs['update_variables.sourceStorageAccountFromPipeline'] ]
+    - name: srcSftpCtn
+      value: $[ dependencies.update_variables.outputs['update_variables.srcSftpCtn'] ]
+    - name: srcSftpAcctNm
+      value: $[ dependencies.update_variables.outputs['update_variables.srcSftpAcctNm'] ]
+    - name: srcSftpPass
+      value: $[ dependencies.update_variables.outputs['update_variables.srcSftpPass'] ]
+    - name: srcSftpKey
+      value: $[ dependencies.update_variables.outputs['update_variables.srcSftpKey'] ]
+    - name: CBASFTPSourcePath
+      value: $[ dependencies.update_variables.outputs['update_variables.CBASFTPSourcePath'] ]
+    - name: secretName
+      value: $[ dependencies.update_variables.outputs['update_variables.secretName'] ]
+    - name: keyVaultNameforSecret
+      value: $[ dependencies.update_variables.outputs['update_variables.keyVaultNameforSecret'] ]
+    - name: targetDataType
+      value: $[ dependencies.update_variables.outputs['update_variables.targetDataType'] ]
+    - name: vendorName
+      value: $[ dependencies.update_variables.outputs['update_variables.vendorName'] ]
+    - name: ipTobeWhiteListed
+      value: $[ dependencies.update_variables.outputs['update_variables.ipTobeWhiteListed'] ]
+    - name: ExternalHighPortForSFTP
+      value: $[ dependencies.update_variables.outputs['update_variables.ExternalHighPortForSFTP'] ]
+    - name: vendorSuppliedPubKey
+      value: $[ dependencies.update_variables.outputs['update_variables.vendorSuppliedPubKey'] ]
+    - name: emailAddress
+      value: $[ dependencies.update_variables.outputs['update_variables.emailAddress'] ]
+    - name: ExternalVendorEmailContact
+      value: $[ dependencies.update_variables.outputs['update_variables.ExternalVendorEmailContact'] ]
+    - name: ValidationResult
+      value: $[ dependencies.validate_parameters.outputs['validate_parameters.ValidationResult'] ]
+  jobs:
+
+  - template: updatevariables.yml
+    parameters:
+      name: update_variables
+      displayName: 'Update Variable Values'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/ExcelValuestoVariables.ps1'
+      artifactName: ${{ parameters.artifactName}}
+      condition: |
+        and
+        (
+          eq(stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemState'], 'To Do'),
+          ne(stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.SkippedDownload'], 'true')
+        )
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_on_failure_mapping_of_variables
+      displayName: 'Email Notification for Failure Mapping of Variables'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn: update_variables
+      emailSubject: 'Trigger Pipeline for $(appName) has failed. DMT Extraction process has stopped for Task number $(workItemId)'
+      emailBody: '<p>Trigger Pipeline Failed. Extraction process is stopped.</p><p></p><p>Please refer OpsGuide for common failed scenario and fix.</p><p></p><p>Please Contact Tech Support ${{ parameters.techEmailSupport }} to look at <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)">$(Build.BuildId)</a></p><p>This task if for $(appName)</p>'
+      environment: "$(environment)"
+      receiverEmailAddress: $(emailAddress)
+      condition: failed()
+      variableGroup: var-password
+
+  - template: validateparameters.yml
+    parameters:
+      name: validate_parameters
+      displayName: 'Validate Parameters'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/ValidateParameters.ps1'
+      artifactName: ${{ parameters.artifactName}}
+      dependsOn: update_variables
+      runType: $(runType)
+      destStorageAccount: $(destStorageAccount)
+      appName: $(appName)
+      owner: $(owner)
+      costCenterCode: $(costCenterCode)
+      warrantyPeriod: $(warrantyPeriod)
+      environment: $(environment)
+      fileSize: $(fileSize)
+      sourceDataType: $(sourceDataType)
+      sourceLocation: $(sourceLocation)
+      srcSftpCtn: $(srcSftpCtn)
+      srcSftpAcctNm: $(srcSftpAcctNm)
+      srcSftpPass: $(srcSftpPass)
+      srcSftpKey: $(srcSftpKey)
+      CBASFTPSourcePath: $(CBASFTPSourcePath)
+      secretName: $(secretName)
+      keyVaultNameforSecret: $(keyVaultNameforSecret)
+      targetDataType: $(targetDataType)
+      vendorName: $(vendorName)
+      ipTobeWhiteListed: $(ipTobeWhiteListed)
+      ExternalHighPortForSFTP: $(ExternalHighPortForSFTP)
+      vendorSuppliedPubKey: $(vendorSuppliedPubKey)
+      emailAddress: $(emailAddress)
+      ExternalVendorEmailContact: $(ExternalVendorEmailContact)
+      sourceStorageAccountFromPipeline: $(sourceStorageAccountFromPipeline)
+      condition: succeeded()
+
+  - template: triggerpipeline.yml
+    parameters:
+      name: trigger_pipeline
+      displayName: 'Trigger Pipeline'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/TriggerPipeline.ps1'
+      artifactName: ${{ parameters.artifactName}}
+      dependsOn:
+      - validate_parameters
+      - update_variables
+      workItemId: $(workItemId)
+      runType: $(runType)
+      destStorageAccount: $(destStorageAccount)
+      appName: $(appName)
+      owner: $(owner)
+      costCenterCode: $(costCenterCode)
+      warrantyPeriod: $(warrantyPeriod)
+      environment: $(environment)
+      fileSize: $(fileSize)
+      sourceDataType: $(sourceDataType)
+      sourceLocation: $(sourceLocation)
+      sourceStorageAccountFromPipeline: $(sourceStorageAccountFromPipeline)
+      srcSftpCtn: $(srcSftpCtn)
+      srcSftpAcctNm: $(srcSftpAcctNm)
+      srcSftpPass: $(srcSftpPass)
+      srcSftpKey: $(srcSftpKey)
+      CBASFTPSourcePath: $(CBASFTPSourcePath)
+      secretName: $(secretName)
+      keyVaultNameforSecret: $(keyVaultNameforSecret)
+      targetDataType: $(targetDataType)
+      vendorName: $(vendorName)
+      ipTobeWhiteListed: $(ipTobeWhiteListed)
+      ExternalHighPortForSFTP: $(ExternalHighPortForSFTP)
+      vendorSuppliedPubKey: $(vendorSuppliedPubKey)
+      emailAddress: $(emailAddress)
+      ExternalVendorEmailContact: $(ExternalVendorEmailContact)
+      condition: |
+        and
+        (
+          succeeded(),
+          eq(variables['ValidationResult'], 'Validation Passed')
+        )
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_on_mismatch_params
+      displayName: 'Email Notification for Mismatch Parameters'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:
+      - validate_parameters
+      - update_variables
+      emailSubject: 'DMT Extraction process for Task $(workItemId) has failed to start'
+      emailBody: '<p>DMT Extraction Process for Task $(workItemId) failed to start.</p><p></p><p>Validation Failed with:</p><p>$(ValidationResult)</p>'
+      environment: "$(environment)"
+      receiverEmailAddress: $(emailAddress)
+      variableGroup: var-password
+      condition: |
+        and
+        (
+          succeeded(),
+          ne(variables['ValidationResult'], 'Validation Passed')
+        )
+
+  - template: updateworkitem.yml
+    parameters:
+      name: update_workitem_on_success
+      displayName: 'Update Work Item on Success Triggering the Pipeline'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/UpdateWorkItem.ps1'
+      dependsOn:
+        - update_variables
+        - validate_parameters
+        - trigger_pipeline
+      workItemComment: "Successfully triggered OnDemand pipeline. Extraction process has started."
+      workItemId: $(workItemId)
+      condition: succeeded()
+      workItemState: "In Progress"
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_on_sucessful_trigger_internal
+      displayName: 'Email Notification for Successful Triggering of OnDemand Pipeline - Internal'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:
+        - update_variables
+        - validate_parameters
+        - trigger_pipeline
+      emailSubject: 'DMT Extraction Process for $(targetDataType) path for $(appName) has started'
+      emailBody: '<p>DMT Extraction Process for Task $(workItemId) for internal use started.</p><p></p><p>This task if for $(appName) and is for $(targetDataType) path (Data Lake)</p>'
+      environment: "$(environment)"
+      receiverEmailAddress: $(emailAddress)
+      condition: |
+        and
+          (
+            eq(variables['targetDataType'], 'internal'),
+            eq(dependencies.update_variables.result, 'Succeeded'),
+            eq(dependencies.validate_parameters.result, 'Succeeded'),
+            eq(dependencies.trigger_pipeline.result, 'Succeeded')
+          )
+      variableGroup: var-password
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_on_sucessful_trigger_internal_etlpreprocessproduction
+      displayName: 'Email Notification for Successful Triggering of OnDemand Pipeline - Internal - ETLPreProcessProduction'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:
+        - update_variables
+        - validate_parameters
+        - trigger_pipeline
+      emailSubject: 'DMT Extraction Process for $(targetDataType) for $(appName) has started'
+      emailBody: '<p>DMT Extraction Process for Task $(workItemId) for $(targetDataType) use started.</p><p></p><p>This task if for $(appName) and is for ETLPreprocessProduction run which will be an internal path (Data Lake)</p>'
+      environment: "$(environment)"
+      receiverEmailAddress: $(emailAddress)
+      condition: |
+        and
+          (
+            eq(variables['targetDataType'], 'external'),
+            eq(variables['runType'], 'ETLPreprocessProduction'),
+            eq(dependencies.update_variables.result, 'Succeeded'),
+            eq(dependencies.validate_parameters.result, 'Succeeded'),
+            eq(dependencies.trigger_pipeline.result, 'Succeeded')
+          )
+      variableGroup: var-password
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_on_sucessful_trigger_external
+      displayName: 'Email Notification for Successful Triggering of OnDemand Pipeline - External'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:
+        - update_variables
+        - validate_parameters
+        - trigger_pipeline
+      emailSubject: 'External path extraction for $(appName) has been started, Task $(workItemId)'
+      emailBody: '<p>DMT Extraction process for Task $(workItemId) has been started. This task if for $(appName) and is for External path (SFTP).</p><p></p>'
+      environment: "$(environment)"
+      receiverEmailAddress: $(emailAddress)
+      condition: |
+        and
+          (
+            eq(variables['targetDataType'], 'external'),
+            ne(variables['runType'], 'ETLPreprocessProduction'),
+            eq(dependencies.update_variables.result, 'Succeeded'),
+            eq(dependencies.validate_parameters.result, 'Succeeded'),
+            eq(dependencies.trigger_pipeline.result, 'Succeeded')
+          )
+      variableGroup: var-password
+
+  - template: updateworkitem.yml
+    parameters:
+      name: update_workitem_on_failure
+      displayName: 'Update Work Item on Failure Triggering the Pipeline'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      variableGroup: ${{ parameters.variableGroup}}
+      scriptFilePath: 'CFS.Core.BKOF/scripts/UpdateWorkItem.ps1'
+      dependsOn:
+        - update_variables
+        - validate_parameters
+        - trigger_pipeline
+      workItemComment: 'Failed to trigger OnDemand pipeline. Extraction process has not started.'
+      workItemId: $(workItemId)
+      condition: |
+        and
+        (
+          eq(dependencies.update_variables.result, 'Succeeded'),
+          eq(dependencies.validate_parameters.result, 'Succeeded'),
+          eq(dependencies.trigger_pipeline.result, 'Failed')
+        )
+      workItemState: "In Progress"
+
+  - template: sendemail.yml
+    parameters:
+      name: send_email_on_failure_trigger
+      displayName: 'Email Notification for Failure Triggering of OnDemand Pipeline'
+      pool: ${{ parameters.pool}}
+      continueOnError: false
+      dependsOn:
+        - update_variables
+        - trigger_pipeline
+      emailSubject: 'Trigger Pipeline for $(appName) has failed. DMT Extraction process has stopped for Task number $(workItemId)'
+      emailBody: '<p>Trigger Pipeline Failed. Extraction process is stopped.</p><p></p><p>Please refer OpsGuide for common failed scenario and fix.</p><p></p><p>Please Contact Tech Support ${{ parameters.techEmailSupport }} to look at <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)">$(Build.BuildId)</a></p><p>This task if for $(appName)</p>'
+      environment: "$(environment)"
+      receiverEmailAddress: $(emailAddress)
+      condition: |
+        and
+        (
+          eq(dependencies.update_variables.result, 'Succeeded'),
+          eq(dependencies.validate_parameters.result, 'Succeeded'),
+          eq(dependencies.trigger_pipeline.result, 'Failed')
+        )
+      variableGroup: var-password

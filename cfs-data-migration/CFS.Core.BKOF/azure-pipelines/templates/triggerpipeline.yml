@@ -1,0 +1,94 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+    dependsOn: ''
+    condition: ''
+    workItemId: ''
+    runType: ''
+    destStorageAccount: ''
+    appName: ''
+    owner: ''
+    costCenterCode: ''
+    warrantyPeriod: ''
+    environment: ''
+    fileSize: ''
+    sourceDataType: ''
+    sourceLocation: ''
+    sourceStorageAccountFromPipeline: ''
+    srcSftpCtn: ''
+    srcSftpAcctNm: ''
+    srcSftpPass: ''
+    srcSftpKey: ''
+    CBASFTPSourcePath: ''
+    secretName: ''
+    keyVaultNameforSecret: ''
+    targetDataType: ''
+    vendorName: ''
+    ipTobeWhiteListed: ''
+    ExternalHighPortForSFTP: ''
+    vendorSuppliedPubKey: ''
+    emailAddress: ''
+    ExternalVendorEmailContact: ''
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+
+  steps:
+      - checkout: self
+
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Trigger Pipeline'
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -PipelineId $(mainPipelineId) `
+           -PAT '$(PAT)' `
+           -WorkItemId ${{ parameters.workItemId}} `
+           -ResourceLocation '$(resourceLocation)' `
+           -MachineName '$(machineName)' `
+           -UltraSSDEnabled $(ultraSSDEnabled) `
+           -RunType '${{parameters.runType}}' `
+           -DestStorageAccount '${{ parameters.destStorageAccount }}' `
+           -AppName '${{ parameters.appName}}' `
+           -Owner '${{ parameters.owner}}' `
+           -CostCenterCode '${{ parameters.costCenterCode}}' `
+           -WarrantyPeriod '${{ parameters.warrantyPeriod}}' `
+           -Environment '${{ parameters.environment}}' `
+           -FileSize '${{ parameters.fileSize}}' `
+           -SourceDataType '${{ parameters.sourceDataType}}' `
+           -SourceLocation '${{ parameters.sourceLocation}}' `
+           -SourceStorageAccountFromPipeline '${{ parameters.sourceStorageAccountFromPipeline}}' `
+           -SrcSftpCtn '${{ parameters.srcSftpCtn}}' `
+           -SrcSftpAcctNm '${{ parameters.srcSftpAcctNm}}' `
+           -SrcSftpPass '${{ parameters.srcSftpPass}}' `
+           -SrcSftpKey '${{ parameters.srcSftpKey}}' `
+           -CBASFTPSourcePath '${{parameters.CBASFTPSourcePath}}' `
+           -SecretName '${{ parameters.secretName}}' `
+           -KeyVaultNameforSecret '${{ parameters.keyVaultNameforSecret}}' `
+           -TargetDataType '${{ parameters.targetDataType}}' `
+           -VendorName '${{ parameters.vendorName}}' `
+           -IpTobeWhiteListed '${{ parameters.ipTobeWhiteListed}}' `
+           -ExternalHighPortForSFTP '${{ parameters.ExternalHighPortForSFTP}}' `
+           -VendorSuppliedPubKey '${{parameters.vendorSuppliedPubKey}}' `
+           -EmailAddress '${{ parameters.emailAddress}}' `
+           -ExternalVendorEmailContact '${{ parameters.ExternalVendorEmailContact}}' `
+           -CR '$(CR)'
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+
+

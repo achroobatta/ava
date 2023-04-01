@@ -1,0 +1,66 @@
+#delete-PE
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: resourceLocation
+  type: string
+
+- name: rgName
+  type: string
+
+- name: subId
+  type: string
+
+- name: peNametobeDeleted
+  type: string
+
+- name: connSubId
+  type: string
+
+- name: connRg
+  type: string
+
+- name: dnsNametobeDeleted
+  type: string
+
+- name: destStorageAccountName
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Remove PE
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $bkofRgName = "${{ parameters.rgName }}"
+        $backOfcSubId = "${{ parameters.subId }}"
+        $peDeleted = '${{ parameters.peNametobeDeleted }}'
+        $connSubId = '${{ parameters.connSubId }}'
+        $connRg = '${{ parameters.connRg }}'
+        $dnsName = '${{ parameters.dnsNametobeDeleted }}'
+        $rsrcName = '${{ parameters.destStorageAccountName }}'
+
+        Write-Output '********************************************'
+        Write-Output 'BackOfcRG:' $bkofRgName
+        Write-Output 'backOfcSubId:' $backOfcSubId
+        Write-Output 'peDeleted:' $peDeleted
+        Write-Output 'connSubId :' $connSubId
+        Write-Output 'connRg :' $connRg
+        Write-Output 'dnsName :' $dnsName
+        Write-Output 'rsrcName :' $rsrcName
+
+        az account set --subscription $backOfcSubId
+        $result = az network private-endpoint delete --name $peDeleted --resource-group $bkofRgName
+        Write-Output "result:" $result
+
+        if ($rsrcName -ne 'na') {
+            Write-Output "Connection SubScription"
+            az account set --subscription $connSubId
+            $resultA = az network private-dns record-set a delete -g $connRg -z $dnsName -n $rsrcName --yes
+        }
+        Write-Output '********************************************'

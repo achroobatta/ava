@@ -1,0 +1,34 @@
+
+steps:
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+                   # for original below line should be uncommented
+                   $computervm = '$(dmVMName)'
+                   # $computervm = 'VMnpedcdm8199'                 
+                   echo '******************************************************************'
+                   echo 'Create and Upload ssh key to keyVault. Send sshPrivateKey in Email'
+                   echo '******************************************************************'
+                   echo 'Computer Name: ' $computervm
+                   ls $(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\*
+                   echo '******************************************************************'
+                   echo 'sshKeyName: ' $(sshKeyName)                   
+                   echo '******************************************************************'
+                   echo 'serviceAccountUser: ' $(serviceAccountU)
+                   echo 'depStorageAccount: ' $(depStorageAccount)
+                   $User = '$(serviceAccountUE)'
+                   $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force
+                   $Credential = [pscredential]::new($User,$Password)
+                   echo 'TenantId: ' $(subTenantId)
+                   echo 'np-tenant: ' $(np-azure-tenant-id)
+                   echo 'prd-tenant: ' $(prd-azure-tenant-id)
+                   #  $ScriptBlock = {
+                   #       Start-Process -FilePath Powershell.exe -ArgumentList "-File","C:\Users\$(serviceAccountU)\scripts\CreateAndUploadSshKey.ps1","-serviceAcctUserName","$(serviceAccountU)","-sshKeyName","$(sshKeyName)","-rgName","$(commRG)","-keyVaultName","$(keyVaultNameforSecret)","-sftpRg","$(commRG)","-sftpStorageAcctName","$(destStorageAccountName)","-sftpContainerName","$(rootContainerName)","-clientId","$(ClientID)","-clientSecret","$(ClientSecret)","-tenantId","$(TenantDomain)","-senderEmailAddress","$(fromEmailAddress)","-receiverEmailAddress","$(emailAddress)","-taskNumber","$(dmTaskNumber)" -Wait -Verb RunAs -PassThru 2>&1
+                   #  }
+                   # Invoke-Command -ComputerName $computervm -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                   # $j = Get-Job
+                   # $j | Format-List -Property *
+                   # $result = $j | Receive-Job
+                   $ToSession = New-PSSession -ComputerName "$computervm" -Credential $Credential
+                   Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\CreateAndUploadSshKey.ps1" -ArgumentList "$(sshKeyName)","$(rgName)","$(keyVaultName)","$(rgName)","$(depStorageAccount)","$(depContainerName)","$(ClientID)","$(ClientSecret)","$(TenantDomain)","$(fromEmailAddress)","$(emailAddress)","$(dmTaskNumber)"

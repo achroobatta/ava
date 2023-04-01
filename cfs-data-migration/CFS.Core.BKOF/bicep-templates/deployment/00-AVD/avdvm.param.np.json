@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "kvObj": {
+            "value": {
+                "kvName": "kv-np-edc-oper-001",
+                "kvRgName": "rg-np-edc-oper-kv-001",
+                "adminPasswordSecret": "avdadmin",
+                "domainPasswordSecret": "svcavddomainjoin"
+            }
+        },
+        "personalObj": {
+            "value": {
+                "blueRgInstance": "2",
+                "blueAvailInstance": "2",
+                "greenRgInstance": "4",
+                "greenAvailInstance": "4",
+                "edcOuPath": "OU=Personal,OU=EDC,OU=Devices,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au",
+                "sdcOUPath": "OU=Personal,OU=SDC,OU=Devices,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au",
+                "HpRgInstance": "2"
+            }
+        },
+        "sharedObj": {
+            "value": {
+                "blueRgInstance": "1",
+                "blueAvailInstance": "1",
+                "greenRgInstance": "3",
+                "greenAvailInstance": "3",
+                "edcOuPath": "OU=Shared,OU=EDC,OU=Devices,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au",
+                "sdcOUPath": "OU=Personal,OU=SDC,OU=Devices,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au",
+                "HpRgInstance": "1"
+            }
+        },
+        "vmObj": {
+            "value": {
+                "adminUsername": "AdministratorCFS",
+                "osDiskType": "Premium_LRS",
+                "osDiskSize": 128,
+                "imageReferencePublisher": "MicrosoftWindowsDesktop",
+                "imageReferenceOffer": "Windows-11",
+                "imageSKU": "win11-22h2-avd",
+                "imageReferenceVersion": "latest",
+                "vmSize": "Standard_D4s_v3",
+                "timeZone": "E. Australia Standard Time",
+                "privateIPAllocationMethod": "Dynamic",
+                "privateIPAddress": "",
+                "domainName": "dev.cfs.com.au",
+                "domainUserName": "svcavddomainjoin@dev.cfs.com.au",
+                "edcVnetNm": "vnet-np-edc-oper-001",
+                "edcVnetRg": "rg-np-edc-oper-netw-001",
+                "sdcVnetNm": "vnet-np-sdc-oper-001",
+                "sdcVnetRg": "rg-np-sdc-oper-netw-001",
+                "isEnableDomainJoin": true,
+                "isEnableAutoShutdown": true,
+                "autoShutdownTime": "",
+                "autoShutdownNotificationEmail": "",
+                "configUrl": "https://stonpedcoperconfig001.blob.core.windows.net/container001/Configuration_01-19-2023.zip",
+                "dataDiskResources": {
+                    "createOption": "attach",
+                    "deleteOption": "Delete",
+                    "caching": "None",
+                    "writeAcceleratorEnabled": false,
+                    "id": null,
+                    "storageAccountType": null,
+                    "diskSizeGB": null,
+                    "diskEncryptionSet": null,
+                    "sku": "Premium_LRS",
+                    "properties": {
+                        "diskSizeGB": 128,
+                        "creationData": {
+                            "createOption": "empty"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

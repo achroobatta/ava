@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  {
+        "locationEdcPfx": {
+            "value": "edc"
+        },
+        "locationSdcPfx": {
+            "value":"sdc"
+        },
+        "environmentPfx": {
+            "value": "np"
+        },
+        "avdLocation": {
+            "value": "australiaeast"
+        },
+        "avdRdpProperties": {
+            "value": "drivestoredirect:s:;audiomode:i:0;videoplaybackmode:i:1;redirectclipboard:i:0;redirectprinters:i:0;devicestoredirect:s:*;redirectcomports:i:0;redirectsmartcards:i:0;usbdevicestoredirect:s:;enablecredsspsupport:i:1;use multimon:i:1;audiocapturemode:i:1;screen mode id:i:2;smart sizing:i:1;dynamic resolution:i:1;camerastoredirect:s:*"
+        },
+        "personaObject":{
+            "value": {
+                "personaValues": [
+                    {
+                        "rgInstance": "1",
+                        "rgServicePfx": "oper",
+                        "rgServiceAbbrevPfx": "comp",
+                        "avdServicePfx": "avd",
+                        "avdServiceAbbrevPfx": "sd",
+                        "hpInstance": "1",
+                        "hpAppGroupType": "Desktop",
+                        "hpdDescription": "Created through the Azure Virtual Desktop extension",
+                        "hpHostPooledType": "Pooled",
+                        "hpLoadBalancerType": "BreadthFirst",
+                        "hpMaxSessionLimit": 8,
+                        "hpDesktopAssignmentType": "Direct",
+                        "agDescription": "Desktop Application Group created through the Hostpool Wizard",
+                        "agFriendlyName": "Default Desktop",
+                        "wsDescription": "",
+                        "wsFriendlyName": "",
+                        "wsName":""
+                    },
+                    {
+                        "rgInstance": "2",
+                        "rgServicePfx": "oper",
+                        "rgServiceAbbrevPfx": "comp",
+                        "avdServicePfx": "avd",
+                        "avdServiceAbbrevPfx": "pd",
+                        "hpInstance": "1",
+                        "hpAppGroupType": "Desktop",
+                        "hpdDescription": "Created through the Azure Virtual Desktop extension",
+                        "hpHostPooledType": "Personal",
+                        "hpLoadBalancerType": "Persistent",
+                        "hpMaxSessionLimit": 0,
+                        "hpDesktopAssignmentType": "Direct",
+                        "agDescription": "Desktop Application Group created through the Hostpool Wizard",
+                        "agFriendlyName": "Default Desktop",
+                        "wsDescription": "",
+                        "wsFriendlyName": "",
+                        "wsName":""
+                    }
+                ]
+            }
+        }
+    }
+}

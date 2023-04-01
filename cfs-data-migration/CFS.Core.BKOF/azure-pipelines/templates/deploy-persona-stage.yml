@@ -1,0 +1,45 @@
+parameters:
+    stage: ''
+    displayName: ''
+    dependsOn: ''
+    condition: ''
+    pool: ''
+    AzureDevOpsEnvironments: ''
+    serviceId: ''
+    operationsServiceConnection: ''
+    owner: ''
+    costCenterCode: ''
+    appName: ''
+    AustraliaEastOffsetSymbol: ''
+    AzureEnvironmentPrefix: ''
+    location: ''
+    projectPfx: ''
+
+
+stages:
+- stage: ${{ parameters.stage}}
+  displayName: ${{ parameters.displayName}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+  pool: ${{ parameters.pool}}
+  jobs:
+- deployment: Deploy_AVD_Persona
+  displayName: Deploy AVD Persona
+  environment: ${{ parameters.AzureDevOpsEnvironments}}
+  strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: deploy-AvdPersona.yml
+            parameters:
+              serviceId: ${{ parameters.serviceId}}
+              serviceConnection: ${{ parameters.operationsServiceConnection}}
+              deploymentType: ${{ parameters.deploymentType}}
+              owner: ${{ parameters.owner}}
+              costCenterCode: ${{ parameters.costCenterCode}}
+              appName: ${{ parameters.appName}}
+              AustraliaEastOffsetSymbol: ${{ parameters.AustraliaEastOffsetSymbol}}
+              AzureEnvironmentPrefix: ${{ parameters.AzureEnvironmentPrefix}}
+              location: ${{ parameters.location}}
+              projectPfx: ${{ parameters.projectPfx}}
+

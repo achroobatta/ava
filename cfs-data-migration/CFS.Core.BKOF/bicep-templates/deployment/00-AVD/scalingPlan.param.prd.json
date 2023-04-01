@@ -1,0 +1,110 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "locationEdcPfx": {
+      "value": "edc"
+    },
+    "environmentPfx": {
+      "value": "prd"
+    },
+    "scalingPlanObject": {
+      "value": {
+        "scalingPlanValues": [
+          {
+            "spInstance": "1",
+            "spRgName": "rg-prd-edc-oper-sec-001",
+            "description": "Production scaling plan for Sydney shared desktops.",
+            "exclusionTag": "AVD-Maintenance",
+            "friendlyName": "Sydney Shared Desktop Scaling Plan - Production",
+            "hpPooledType": "Pooled",
+            "timeZone": "E. Australia Standard Time",
+            "hpNamesforAssignment": [
+              {
+                "hpName": "hp-prd-edc-bcp-avd-sd-001",
+                "hpRgName": "rg-prd-edc-oper-comp-001"
+              },
+              {
+                "hpName": "hp-prd-sdc-bcp-avd-sd-001",
+                "hpRgName": "rg-prd-sdc-oper-comp-001"
+              }
+            ],
+            "schedulingObject": [
+              {
+                "daysOfWeek": [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday"
+                ],
+                "name": "weekdays_schedule",
+                "offPeakLoadBalancingAlgorithm": "DepthFirst",
+                "offPeakStartTime": {
+                  "hour": 20,
+                  "minute": 0
+                },
+                "peakLoadBalancingAlgorithm": "BreadthFirst",
+                "peakStartTime": {
+                  "hour": 9,
+                  "minute": 0
+                },
+                "rampDownCapacityThresholdPct": 90,
+                "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownMinimumHostsPct": 10,
+                "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                "rampDownStartTime": {
+                  "hour": 18,
+                  "minute": 0
+                },
+                "rampDownStopHostsWhen": "ZeroActiveSessions",
+                "rampDownWaitTimeMinutes": 30,
+                "rampUpCapacityThresholdPct": 60,
+                "rampUpLoadBalancingAlgorithm": "BreadthFirst",
+                "rampUpMinimumHostsPct": 10,
+                "rampUpStartTime": {
+                  "hour": 8,
+                  "minute": 0
+                }
+              },
+              {
+                "daysOfWeek": [
+                  "Saturday",
+                  "Sunday"
+                ],
+                "name": "weekends_schedule",
+                "offPeakLoadBalancingAlgorithm": "DepthFirst",
+                "offPeakStartTime": {
+                  "hour": 20,
+                  "minute": 0
+                },
+                "peakLoadBalancingAlgorithm": "DepthFirst",
+                "peakStartTime": {
+                  "hour": 9,
+                  "minute": 0
+                },
+                "rampDownCapacityThresholdPct": 90,
+                "rampDownLoadBalancingAlgorithm": "DepthFirst",
+                "rampDownMinimumHostsPct": 10,
+                "rampDownNotificationMessage": "You will be logged off in 30 min. Make sure to save your work.",
+                "rampDownStartTime": {
+                  "hour": 18,
+                  "minute": 0
+                },
+                "rampDownStopHostsWhen": "ZeroActiveSessions",
+                "rampDownWaitTimeMinutes": 30,
+                "rampUpCapacityThresholdPct": 60,
+                "rampUpLoadBalancingAlgorithm": "DepthFirst",
+                "rampUpMinimumHostsPct": 10,
+                "rampUpStartTime": {
+                  "hour": 8,
+                  "minute": 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

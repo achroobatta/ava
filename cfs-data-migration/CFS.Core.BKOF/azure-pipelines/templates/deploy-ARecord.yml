@@ -1,0 +1,115 @@
+# #deploy-DataLake.yml
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: resourceLocation
+  type: string
+
+- name: destStorageAccountName
+  type: string
+
+- name: rgName
+  type: string
+
+- name: connRg
+  type: string
+
+- name: subId
+  type: string
+
+- name: connSubId
+  type: string
+
+- name: dnsZoneName
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Add A Record in DNS Zone
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $location = "${{ parameters.resourceLocation }}"
+        $storageAcct = "${{ parameters.destStorageAccountName }}"
+        $endpoint = "pve-$location-$storageAcct"
+        $dnsZoneGrp = "default"
+        $bkofRgName = "${{ parameters.rgName }}"
+        $backOfcSubId = "${{ parameters.subId }}"
+        $connSubId = "${{ parameters.connSubId }}"
+        $connRgName = "${{ parameters.connRg }}"
+        $dnsZoneName = "${{ parameters.dnsZoneName }}"
+
+        Write-Output '***************************************************************************'
+        Write-Output 'Location:' $location
+        Write-Output 'Resource:' $storageAcct
+        Write-Output 'Endpoint:' $endpoint
+        Write-Output 'DnsZoneGroup:' $dnsZoneGrp
+        Write-Output 'bkofResourceGroup:' $bkofRgName
+        Write-Output 'bkofSubscriptionId:' $backOfcSubId
+        Write-Output 'connSubscriptionId:' $connSubId
+        Write-Output 'connResourceGroup:' $connRgName
+        Write-Output 'DnsZoneName:' $dnsZoneName
+
+        az account set --subscription $backOfcSubId
+        $privateIp = az network private-endpoint dns-zone-group show --endpoint-name $endpoint -n $dnsZoneGrp -g $bkofRgName --query privateDnsZoneConfigs[].recordSets[].ipAddresses[] --output tsv
+        $privateIp
+
+        Write-Output 'PrivateIP:' $privateIp
+
+        if ($null -eq $privateIp) {
+          Write-Error "Unable to fetch privateIP"
+        }
+        else {
+        az account set --subscription $connSubId
+        az network private-dns record-set a list -g $connRgName -z $dnsZoneName
+        az network private-dns record-set a add-record -g $connRgName -a $privateIp -n $storageAcct -z $dnsZoneName
+        }
+        Write-Output '***************************************************************************'
+#deploy-KeyVault.yml
+
+# parameters:
+
+# - name: serviceId
+#   type: string
+
+# - name: serviceConnection
+#   type: string
+
+# - name: connSubId
+#   type: string
+
+# - name: connRg
+#   type: string
+
+# - name: rgName
+#   type: string
+
+# - name: privateDnsZoneName
+#   type: string
+
+# - name: resourceLocation
+#   type: string
+
+# - name: destStorageAccountName
+#   type: string
+
+# steps:
+#   - task: AzureCLI@2
+#     displayName : 'Deploy A record in privateDnsZone for Existing Resource'
+#     inputs:
+#       azureSubscription: '${{ parameters.serviceConnection }}'
+#       scriptType: 'pscore'
+#       scriptLocation: 'inlineScript'
+#       inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+#                     --name $(deploymentName) `
+#                     --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-AdhocArecordforExistingPE.bicep `
+#                     --parameters connSubId='${{ parameters.connSubId }}' `
+#                     --parameters connRg='${{ parameters.connRg }}' `
+#                     --parameters rgName='${{ parameters.rgName }}' `
+#                     --parameters privateDnsZoneName='${{ parameters.privateDnsZoneName }}' `
+#                     --parameters privateEndpointName='pve-${{ parameters.resourceLocation }}-${{ parameters.destStorageAccountName }}'

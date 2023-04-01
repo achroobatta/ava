@@ -1,0 +1,318 @@
+## Format
+name: $(Date:yyyyMMdd)$(Rev:.rr)
+
+# Stage Trigger
+trigger: none
+
+pr: none
+
+parameters:
+  - name: deployEnvironment
+    displayName: Target Deployment Environment
+    type: string
+    default: "Non-Production"
+    values:
+     - "Non-Production"
+     - "Production"
+
+  - name: useWhatIfDeploymentType
+    displayName: What-If Deployment
+    type: boolean
+    default: true
+    values:
+     - false
+     - true
+
+  - name: owner
+    displayName: owner (Tags - e.g. "Robert Reakes")
+    type: string
+    default: "Robert Reakes"
+
+  - name: costCenterCode
+    displayName: costCenterCode (Tags - e.g. 4010)
+    type: string
+    default: "4010"
+
+  - name: appName
+    displayName: appName (Tags - e.g. infra/onyx)
+    type: string
+    default: "infra"
+
+  - name: isDayLightSavings
+    displayName: Enable DayLight Savings Time
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
+
+  - name: projectPfx
+    displayName: Project Prefix (e.g. cfs, it can not be blank)
+    type: string
+    default: "bcp"
+
+  - name: artifactVersion
+    displayName: Artifact/Package Version (e.g. "latest" or "0.0.0.256" or "1.0.0.1")
+    type: string
+    default: "latest"
+
+  - name: vmLocation
+    displayName: VM Location
+    type: string
+    default: australiaeast
+    values:
+     - "australiaeast"
+     - "australiasoutheast"
+
+  - name: numberOfInstance
+    displayName: Number of VM Instance
+    type: number
+    default: 1
+
+  - name: startingPoint
+    displayName: Starting Number for VM Instance
+    type: number
+    default: 0
+
+  - name: fileSize
+    displayName: File Size
+    type: number
+    default: 128
+
+  - name: hostPoolType
+    displayName: Host Pool Type
+    type: string
+    default: Personal
+    values:
+    - 'Personal'
+    - 'Shared'
+
+  - name: hostPoolName
+    displayName: Host Pool Name
+    type: string
+    default: " "
+
+  - name: vmLane
+    displayName: VM Lane
+    type: string
+    values:
+    - 'B'
+    - 'G'
+
+
+variables:
+
+ - group: lz-var-service-principle-secrets
+ - group: var-service-principle-secrets
+
+ # Azure DevOps Deploy Environments
+ - name: AzureDevOpsEnvironments
+   value: ${{ parameters.deployEnvironment }}
+
+ # Operations Subscription Service ID
+ - name: operationServiceId
+   value: 'OPER'
+
+ # Azure DevOps Operations Service Connection Name
+ - name: operationsServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "sc-subsc-prd-operations-001"
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "sc-subsc-np-operations-001"
+
+  # Deployment Type
+ - name: deploymentType
+   ${{ if eq(parameters.useWhatIfDeploymentType, true) }}:
+    value: "what-if"
+   ${{ else }}:
+    value: "create"
+
+ # Azure DevOps AustraliaEastOffsetSymbol
+ - name: AustraliaEastOffsetSymbol
+   ${{ if eq(parameters.isDayLightSavings, true) }}:
+     value: "PT11H"
+   ${{ else }}:
+     value: "PT10H"
+
+ #securitySubscriptionId
+ - name: securitySubscriptionId
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: $(subsc-np-security-sid)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: $(subsc-prd-security-sid)
+
+ # Azure DevOps Environment Prefix
+ - name: AzureEnvironmentPrefix
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: "np"
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: "prd"
+
+ # Artifact Package Feed Value
+ - name: artifactFeed
+   value: "core-it/cfs-infra-avd"
+
+ # Artifact Package Definition Value
+ - name: artifactDefinition
+   value: CFS.Core.BKOF
+
+ # EDC Location
+ - name: locationEdc
+   value: 'australiaeast'
+
+ # SDC Location
+ - name: locationSdc
+   value: 'australiasoutheast'
+
+
+ # Location Prefix
+ - name: locationPfx
+   ${{ if eq(parameters.vmLocation, 'australiaeast') }}:
+      value: "edc"
+   ${{ if eq(parameters.vmLocation, 'australiasoutheast') }}:
+      value: "sdc"
+
+ # Host Pool RG
+ - name: hostPoolRg
+   ${{ if eq(parameters.hostPoolType, 'Personal') }}:
+      value: "rg-$(AzureEnvironmentPrefix)-$(locationPfx)-oper-comp-002"
+   ${{ if eq(parameters.hostPoolType, 'Shared') }}:
+      value: "rg-$(AzureEnvironmentPrefix)-$(locationPfx)-oper-comp-001"
+
+ # Azure CLI Deployment Names Dynamically Applied Per Stage
+ - name: deploymentName
+   value: '$(System.StageName)_$(Build.BuildNumber)'
+
+stages:
+  - stage: deploy_persona_stage
+    displayName: Deploy Persona Stage
+    dependsOn: ''
+    condition: ''
+    pool:
+      vmImage: 'windows-latest'
+    jobs:
+    - deployment: Deploy_AVD_Persona
+      displayName: Deploy_AVD_Persona
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
+
+              - task: DownloadPackage@1
+                displayName: Download Artifacts
+                inputs:
+                  packageType: 'nuget'
+                  feed: '$(artifactFeed)'
+                  definition: '$(artifactDefinition)'
+                  version: '${{ parameters.artifactVersion}}'
+                  extract: true
+                  downloadPath: '$(System.ArtifactsDirectory)'
+
+              - template: templates/deploy-AvdPersona.yml
+                parameters:
+                  deploymentName: $(deploymentName)
+                  serviceId: $(operationServiceId)
+                  serviceConnection: $(operationsServiceConnection)
+                  deploymentType: $(deploymentType)
+                  owner: ${{ parameters.owner}}
+                  costCenterCode: ${{ parameters.costCenterCode }}
+                  appName: ${{ parameters.appName}}
+                  AustraliaEastOffsetSymbol: $(AustraliaEastOffsetSymbol)
+                  AzureEnvironmentPrefix: $(AzureEnvironmentPrefix)
+                  locationEdc: $(locationEdc)
+                  locationSdc: $(locationSdc)
+                  projectPfx: ${{ parameters.projectPfx }}
+                  logAnalyticsWorkspaceSubId: $(securitySubscriptionId)
+                  environment: $(AzureDevOpsEnvironments)
+
+  - stage: deploy_scaling_plan_stage
+    displayName: Deploy Scaling Plan Stage
+    dependsOn: ''
+    condition: ''
+    pool:
+      vmImage: 'windows-latest'
+    jobs:
+    - deployment: Deploy_AVD_Scaling_Plan
+      displayName: Deploy_AVD_Scaling_Plan
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
+
+              - task: DownloadPackage@1
+                displayName: Download Artifacts
+                inputs:
+                  packageType: 'nuget'
+                  feed: '$(artifactFeed)'
+                  definition: '$(artifactDefinition)'
+                  version: '${{ parameters.artifactVersion}}'
+                  extract: true
+                  downloadPath: '$(System.ArtifactsDirectory)'
+
+              - template: templates/deploy-AvdScalingPlan.yml
+                parameters:
+                  deploymentName: $(deploymentName)
+                  serviceId: $(operationServiceId)
+                  serviceConnection: $(operationsServiceConnection)
+                  deploymentType: $(deploymentType)
+                  owner: ${{ parameters.owner }}
+                  costCenterCode: ${{ parameters.costCenterCode }}
+                  appName: ${{ parameters.appName }}
+                  AustraliaEastOffsetSymbol: $(AustraliaEastOffsetSymbol)
+                  AzureEnvironmentPrefix: $(AzureEnvironmentPrefix)
+                  location: $(locationEdc)
+                  environment: $(AzureDevOpsEnvironments)
+
+
+  - stage: deploy_vm_stage
+    displayName: Deploy VM Stage
+    dependsOn: ''
+    condition: ''
+    pool:
+      vmImage: 'windows-latest'
+    jobs:
+    - deployment: Deploy_AVD_VM
+      displayName: Deploy_AVD_VM
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
+
+              - task: DownloadPackage@1
+                displayName: Download Artifacts
+                inputs:
+                  packageType: 'nuget'
+                  feed: '$(artifactFeed)'
+                  definition: '$(artifactDefinition)'
+                  version: '${{ parameters.artifactVersion}}'
+                  extract: true
+                  downloadPath: '$(System.ArtifactsDirectory)'
+
+              - template: templates/deploy-AvdVM.yml
+                parameters:
+                  serviceId: $(operationServiceId)
+                  serviceConnection: $(operationsServiceConnection)
+                  deploymentType: $(deploymentType)
+                  deploymentName: $(deploymentName)
+                  vmLocation: ${{ parameters.vmLocation}}
+                  projectPfx: ${{ parameters.projectPfx}}
+                  securitySubscriptionId: $(securitySubscriptionId)
+                  numberOfInstance: ${{ parameters.numberOfInstance}}
+                  startingPoint: ${{ parameters.startingPoint}}
+                  AustraliaEastOffsetSymbol: $(AustraliaEastOffsetSymbol)
+                  owner: ${{ parameters.owner }}
+                  costCenterCode: ${{ parameters.costCenterCode }}
+                  appName: ${{ parameters.appName }}
+                  AzureEnvironmentPrefix: $(AzureEnvironmentPrefix)
+                  locationPfx: $(locationPfx)
+                  fileSize: ${{ parameters.fileSize}}
+                  hostPoolType: ${{ parameters.hostPoolType}}
+                  hostPoolName: ${{ parameters.hostPoolName}}
+                  hostPoolRg: $(hostPoolRg)
+                  vmLane: ${{ parameters.vmLane}}

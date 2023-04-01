@@ -1,0 +1,32 @@
+#deploy-PrivateDnsZoneAll.yml
+
+parameters:
+
+- name: serviceName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: serviceId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Private Dns Zone for DataFactory in ${{ parameters.serviceName }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-PrivateDNSZone.bicep `                    
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters owner='$(owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\01-PrivateDnsZone\privatednszone-${{ parameters.serviceId }}.param.$(AzureEnvironmentPrefix).json `
+                    --parameters appName='$(appName)'

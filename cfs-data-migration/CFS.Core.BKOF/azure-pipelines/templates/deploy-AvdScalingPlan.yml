@@ -1,0 +1,66 @@
+#AvdScalingPlan-deployment.yml
+
+parameters:
+- name: serviceId
+  type: string
+
+- name: deploymentName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: owner
+  type: string
+
+- name: costCenterCode
+  type: string
+
+- name: appName
+  type: string
+
+- name: AustraliaEastOffsetSymbol
+  type: string
+
+- name: location
+  type: string
+
+- name: environment
+  type: string
+
+- name: AzureEnvironmentPrefix
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Avd Scaling Plan in ${{ parameters.serviceId }} Subscription at ${{ parameters.location }} location
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Values of Variables"
+                    echo '*******************************************************************************'
+                    echo 'deploymentType: ${{ parameters.deploymentType }}'
+                    echo 'deploymentName: ${{ parameters.deploymentName }}'
+                    echo 'location: ${{ parameters.location }}'
+                    echo 'owner: ${{ parameters.owner }}'
+                    echo 'environment: ${{parameters.environment }}'
+                    echo 'environmentPfx: ${{parameters.AzureEnvironmentPrefix }}'
+                    echo 'costCenterCode: ${{ parameters.costCenterCode }}'
+                    echo 'appName: ${{ parameters.appName }}'
+                    echo 'AustraliaEastOffsetSymbol: ${{ parameters.AustraliaEastOffsetSymbol }}'
+                    echo '*******************************************************************************'
+                    az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.location }} `
+                    --name ${{ parameters.deploymentName }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-AvdScalingPlan.bicep `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\00-AVD\scalingPlan.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters location='${{ parameters.location }}' `
+                    --parameters environment='${{ parameters.environment }}'

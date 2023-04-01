@@ -1,0 +1,109 @@
+#AvdPersona-deployment.yml
+
+parameters:
+- name: serviceId
+  type: string
+
+- name: deploymentName
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: owner
+  type: string
+
+- name: costCenterCode
+  type: string
+
+- name: appName
+  type: string
+
+- name: AustraliaEastOffsetSymbol
+  type: string
+
+- name: AzureEnvironmentPrefix
+  type: string
+
+- name: projectPfx
+  type: string
+
+- name: locationEdc
+  type: string
+
+- name: locationSdc
+  type: string
+
+- name: environment
+  type: string
+
+- name: logAnalyticsWorkspaceSubId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy Avd Persona in ${{ parameters.serviceId }} Subscription at ${{ parameters.locationEdc }} location
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Values of Variables"
+                    echo '*******************************************************************************'
+                    echo 'deploymentType: ${{ parameters.deploymentType }}'
+                    echo 'deploymentName: ${{ parameters.deploymentName }}_${{ parameters.locationEdc }}'
+                    echo 'location: ${{ parameters.locationEdc }}'
+                    echo 'owner: ${{ parameters.owner }}'
+                    echo 'costCenterCode: ${{ parameters.costCenterCode }}'
+                    echo 'appName: ${{ parameters.appName }}'
+                    echo 'AustraliaEastOffsetSymbol: ${{ parameters.AustraliaEastOffsetSymbol }}'
+                    echo 'AzureEnvironmentPrefix: ${{ parameters.AzureEnvironmentPrefix }}'
+                    echo 'AzureEnvironmentPrefix: ${{ parameters.projectPfx }}'
+                    echo '*******************************************************************************'
+                    az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.locationEdc }} `
+                    --name ${{ parameters.deploymentName }}_${{ parameters.locationEdc }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-AvdPersona.bicep `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\00-AVD\persona.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters projectPfx='${{ parameters.projectPfx }}' `
+                    --parameters location='${{ parameters.locationEdc }}' `
+                    --parameters environment='${{ parameters.environment }}' `
+                    --parameters logAnalyticsWorkspaceSubId='${{ parameters.logAnalyticsWorkspaceSubId }}'
+
+  - task: AzureCLI@2
+    displayName : Deploy Avd Persona in ${{ parameters.serviceId }} Subscription at ${{ parameters.locationSdc }} location
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    "Values of Variables"
+                    echo '*******************************************************************************'
+                    echo 'deploymentType: ${{ parameters.deploymentType }}'
+                    echo 'deploymentName: ${{ parameters.deploymentName }}_${{ parameters.locationSdc }}'
+                    echo 'location: ${{ parameters.locationSdc }}'
+                    echo 'owner: ${{ parameters.owner }}'
+                    echo 'costCenterCode: ${{ parameters.costCenterCode }}'
+                    echo 'appName: ${{ parameters.appName }}'
+                    echo 'AustraliaEastOffsetSymbol: ${{ parameters.AustraliaEastOffsetSymbol }}'
+                    echo 'AzureEnvironmentPrefix: ${{ parameters.AzureEnvironmentPrefix }}'
+                    echo 'AzureEnvironmentPrefix: ${{ parameters.projectPfx }}'
+                    echo '*******************************************************************************'
+                    az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.locationSdc }} `
+                    --name ${{ parameters.deploymentName }}_${{ parameters.locationSdc }} `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-AvdPersona.bicep `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\00-AVD\persona.param.${{ parameters.AzureEnvironmentPrefix }}.json `
+                    --parameters owner='${{ parameters.owner }}' `
+                    --parameters costCenter='${{ parameters.costCenterCode }}' `
+                    --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
+                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters projectPfx='${{ parameters.projectPfx }}' `
+                    --parameters location='${{ parameters.locationSdc }}' `
+                    --parameters environment='${{ parameters.environment }}' `
+                    --parameters logAnalyticsWorkspaceSubId='${{ parameters.logAnalyticsWorkspaceSubId }}'

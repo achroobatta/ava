@@ -1,0 +1,37 @@
+#deployRTandNSG.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+- name: securitySubscriptionId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Deploy RT and NSG in ${{ parameters.serviceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                echo '*************************************************************************************'
+                ls $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\*
+                echo '*************************************************************************************'
+                az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                    --name $(deploymentName) `
+                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-RTandNSG.bicep `
+                    --parameters storageAccountSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters workspaceSubscriptionId='$(securitySubscriptionId)' `
+                    --parameters environmentPrefix='$(AzureEnvironmentPrefix)' `
+                    --parameters owner='$(owner)' `
+                    --parameters costCenter='$(costCenterCode)' `
+                    --parameters australiaEastOffsetSymbol='$(AustraliaEastOffsetSymbol)' `
+                    --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\07-Network\Network.param.$(AzureEnvironmentPrefix).json

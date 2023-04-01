@@ -1,0 +1,87 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+    dependsOn: ''
+    condition: ''
+    runType: ''
+    destStorageAccount: ''
+    appName: ''
+    owner: ''
+    costCenterCode: ''
+    warrantyPeriod: ''
+    environment: ''
+    fileSize: ''
+    sourceDataType: ''
+    sourceLocation: ''
+    srcSftpCtn: ''
+    srcSftpAcctNm: ''
+    srcSftpPass: ''
+    srcSftpKey: ''
+    CBASFTPSourcePath: ''
+    secretName: ''
+    keyVaultNameforSecret: ''
+    targetDataType: ''
+    vendorName: ''
+    ipTobeWhiteListed: ''
+    ExternalHighPortForSFTP: ''
+    vendorSuppliedPubKey: ''
+    emailAddress: ''
+    ExternalVendorEmailContact: ''
+    sourceStorageAccountFromPipeline: ''
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+
+  steps:
+      - checkout: self
+
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Validate Parameters'
+        name: validate_parameters
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -runType '${{parameters.runType}}' `
+           -destStorageAccount '${{ parameters.destStorageAccount }}' `
+           -appName '${{ parameters.appName}}' `
+           -owner '${{ parameters.owner}}' `
+           -costCenterCode '${{ parameters.costCenterCode}}' `
+           -warrantyPeriod '${{ parameters.warrantyPeriod}}' `
+           -environment '${{ parameters.environment}}' `
+           -fileSize '${{ parameters.fileSize}}' `
+           -sourceDataType '${{ parameters.sourceDataType}}' `
+           -sourceLocation '${{ parameters.sourceLocation}}' `
+           -srcSftpCtn '${{ parameters.srcSftpCtn}}' `
+           -srcSftpAcctNm '${{ parameters.srcSftpAcctNm}}' `
+           -srcSftpPass '${{ parameters.srcSftpPass}}' `
+           -srcSftpKey '${{ parameters.srcSftpKey}}' `
+           -CBASFTPSourcePath '${{parameters.CBASFTPSourcePath}}' `
+           -secretName '${{ parameters.secretName}}' `
+           -keyVaultNameforSecret '${{ parameters.keyVaultNameforSecret}}' `
+           -targetDataType '${{ parameters.targetDataType}}' `
+           -vendorName '${{ parameters.vendorName}}' `
+           -ipTobeWhiteListed '${{ parameters.ipTobeWhiteListed}}' `
+           -ExternalHighPortForSFTP '${{ parameters.ExternalHighPortForSFTP}}' `
+           -vendorSuppliedPubKey '${{parameters.vendorSuppliedPubKey}}' `
+           -emailAddress '${{ parameters.emailAddress}}' `
+           -ExternalVendorEmailContact '${{ parameters.ExternalVendorEmailContact}}' `
+           -sourceStorageAccountFromPipeline '${{ parameters.sourceStorageAccountFromPipeline}}'
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+
+

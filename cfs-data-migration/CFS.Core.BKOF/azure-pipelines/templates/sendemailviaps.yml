@@ -1,0 +1,70 @@
+parameters:
+    name: ''
+    displayName: ''
+    agentPool: ''
+    continueOnError: ''
+    variableGroup: ''
+    scriptFilePath: ''
+    dependsOn: ''
+    environment: ''
+    emailSubject: ''
+    emailBody: ''
+    receiverEmailAddress: ''
+    condition: ''
+
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool:
+    name: ${{ parameters.agentPool}}
+  continueOnError: ${{ parameters.continueOnError}}
+  variables:
+  - group : ${{ parameters.variableGroup}}
+  dependsOn: ${{ parameters.dependsOn}}
+  condition: ${{ parameters.condition}}
+
+  steps:
+      - checkout: self
+
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Send Email'
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -clientId '$(npClientId)' `
+           -clientSecret '$(npClientSecret)' `
+           -tenantId '$(npTenantDomain)' `
+           -senderEmailAddress '$(npFromEmail)' `
+           -receiverEmailAddress '${{ parameters.receiverEmailAddress}}' `
+           -emailSubject '${{ parameters.emailSubject}}' `
+           -emailContent '${{ parameters.emailBody}}'
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+        condition: eq('${{parameters.environment }}', 'Non-Production')
+
+      # Run a PowerShell script
+      - task: PowerShell@2
+        displayName: 'Send Email'
+        inputs:
+          targetType: 'filePath'
+          filePath: ${{ parameters.scriptFilePath}}
+          arguments: -clientId '$(prdClientId)' `
+           -clientSecret '$(prdClientSecret)' `
+           -tenantId '$(prdTenantDomain)' `
+           -senderEmailAddress '$(prdFromEmail)' `
+           -receiverEmailAddress '${{ parameters.receiverEmailAddress}}' `
+           -emailSubject '${{ parameters.emailSubject}}' `
+           -emailContent '${{ parameters.emailBody}}'
+          errorActionPreference: 'stop'
+          warningPreference: 'default'
+          informationPreference: 'default'
+          verbosePreference: 'default'
+          debugPreference: 'default'
+        condition: eq('${{parameters.environment }}', 'Production')
+

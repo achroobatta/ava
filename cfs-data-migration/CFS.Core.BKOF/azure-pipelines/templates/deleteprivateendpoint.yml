@@ -1,0 +1,35 @@
+parameters:
+    name: ''
+    displayName: ''
+    pool: ''
+    continueOnError: ''
+    dependsOn: ''
+    landingZoneServiceConnection: ''
+    vmRgName: ''
+    resourceLocation: ''
+    vmName: ''
+
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName}}
+  pool: ${{ parameters.pool }}
+  continueOnError: ${{ parameters.continueOnError}}
+  dependsOn: ${{ parameters.dependsOn}}
+
+  steps:
+  - task: AzureCLI@2
+    displayName: Delete Azure Private Endpoint
+    inputs:
+      azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        $vmInfo = az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName }} | ConvertFrom-Json
+        $vmResources = $vmInfo.resources | Where-Object {$_.publisher -eq "Microsoft.Azure.Diagnostics"}
+        $strAccName = $vmResources.settings.StorageAccount
+        $strAccName
+        $privateEndpointName = 'pve-${{ parameters.resourceLocation}}-' + $strAccName
+        $privateEndpointName
+        az network private-endpoint show --name $privateEndpointName --resource-group ${{ parameters.vmRgName}}
+        az network private-endpoint delete -n $privateEndpointName -g ${{ parameters.vmRgName}}
+      failOnStandardError: true
