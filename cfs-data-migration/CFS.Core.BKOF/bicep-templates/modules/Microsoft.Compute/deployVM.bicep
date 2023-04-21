@@ -156,13 +156,6 @@ resource networkInterfaceName 'Microsoft.Network/networkInterfaces@2021-05-01' =
 resource dataDiskResources_name 'Microsoft.Compute/disks@2020-12-01' = [for i in range(0, dataDisksCount): {
   name: '${vmName}-data-0${i+1}'
   location: vmResouceGroupLocation
-  tags: {
-    appName: appName
-    environment: environmentPrefix
-    owner: owner
-    costCenter: costCenter
-    createOnDate: createOnDate
-  }
   properties: dataDisks.properties
   sku: {
     name: dataDisks.sku

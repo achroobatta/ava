@@ -48,8 +48,8 @@ stages:
       continueOnError: false
       variableGroup: var-password
       dependsOn: download_and_publish_excel_file
-      emailSubject: "Parameter File is missing for Task $(workItemId)"
-      emailBody: '<p>Task $(workItemId) is missing a parameter file.</p><p>This file is mandatory to initiate the extraction process.</p><p>Please attach it to start the DMT Extraction process for Task $(workItemId).</p><p></p><p>Please use this URL to go to task <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_workitems/edit/$(workItemId)">$(workItemId)</a>.</p>'
+      emailSubject: " Parameter File is missing for Tasks $(workItemId)"
+      emailBody: '<p>Task $(workItemId) is missing a parameter file.</p><p>This file is mandatory to initiate the extraction process.</p><p>Please attach it to start the DMT Extraction process for Task $(workItemId) </p><p></p><p>Please use this URL to go to task <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_workitems/edit/$(workItemId)">$(workItemId)</a></p>'
       environment: "$(workItemTag)"
       condition: eq(dependencies.download_and_publish_excel_file.result, 'Failed')
 

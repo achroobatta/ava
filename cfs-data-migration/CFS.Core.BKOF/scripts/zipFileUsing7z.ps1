@@ -102,8 +102,7 @@ Function get-secret()
         $sreformat = $sreplace.Replace(" ","_")
         $srcPath = (Get-ChildItem -Path $sreformat).FullName
 
-        #zip size fixed at 10gb
-        $zipSize = 10737418240
+        $zipSize = (Get-ChildItem -Path $orgChildFolder -Exclude "*Report*" -File -Recurse | Select-Object -First 1 | Measure-Object -Property Length -sum).Sum
         try
         {
             #Path get data and report folder

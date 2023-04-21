@@ -27,7 +27,7 @@ parameters:
   type: string
   default: " "
 - name: diagStorageAccount
-  displayName: 'Diagnostic Storage Account'
+  displayName: 'Storage Account Name (To be deleted)'
   type: string
   default: " "
 - name: resourceLocation
@@ -80,8 +80,6 @@ parameters:
   values:
   - "Dryrun"
   - "Production"
-  - "ETLPreprocessDryrun"
-  - "ETLPreprocessProduction"
   - " "
 - name: manualVerificationEmail
   displayName: 'Send Manual Verification Email'
@@ -98,31 +96,6 @@ parameters:
   displayName: 'App Name'
   type: string
   default: " "
-- name: realTimeMonitoringEmail
-  displayName: 'Send Email if Real Time Monitoring is not enabled'
-  type: string
-  default: "false"
-  values:
-  - "true"
-  - "false"
-- name: threatLogs
-  displayName: 'List of Threats Found'
-  type: string
-  default: "No Threats Found"
-- name: stgMismatch
-  displayName: 'If Storage Account and Container is not correct'
-  type: string
-- name: sourceDatatype
-  displayName: 'Source Data Type'
-  type: string
-  values:
-  - "etl"
-  - "sftp"
-  - "databox"
-  - " "
-- name: etlDestStorageAccountName
-  displayName: 'ETL Destination Storage Account  Name'
-  type: string
 
 variables:
  - group: lz-var-service-principle-secrets
@@ -177,8 +150,6 @@ variables:
    value: $[replace('${{ parameters.appName}}', '*', ' ')]
 
 stages:
-
-#------------------------------------- PROCESS FOR EXTERNAL - PRODUCTION ------------------------------------------------------------------
 #Download Key Vault Secret
 - template: templates/download-key-vault-secret-stage.yml
   parameters:
@@ -186,16 +157,7 @@ stages:
     displayName: Download Key Vault
     dependsOn: ''
     agentPool: $(agentPool)
-    condition: |
-      and
-      (
-        succeeded(),
-        eq('${{parameters.targetDataType }}', 'external'),
-        eq(variables['Build.Reason'], 'Manual'),
-        eq('${{ parameters.manualVerificationEmail}}', 'false'),
-        eq('${{ parameters.stgMismatch}}', 'na'),
-        ne('${{ parameters.runType }}', 'ETLPreprocessProduction')
-      )
+    condition: and(succeeded(), eq('${{parameters.targetDataType }}', 'external'), eq(variables['Build.Reason'], 'Manual'), eq('${{ parameters.manualVerificationEmail}}', 'false'))
     keyVaultNameforSecret: ${{ parameters.keyVaultNameforSecret}}
     zipFileSecretName: ${{ parameters.zipFileSecretName}}
     landingZoneServiceConnection: $(landingZoneServiceConnection)
@@ -205,9 +167,7 @@ stages:
     vmName: ${{ parameters.vmName}}
     tenantId: $(tenantId)
     subId: $(subId)
-#------------------------------------- END ------------------------------------------------------------------
 
-#------------------------------------- DELETION OF VM ------------------------------------------------------------------
 #Delete Azure resources Stage
 - template: templates/deleteazureresources-stage.yml
   parameters:
@@ -223,8 +183,7 @@ stages:
             eq(dependencies.download_key_vault_secret.result, 'Skipped'),
             eq(dependencies.download_key_vault_secret.result, 'Succeeded')
           ),
-        eq('${{ parameters.manualVerificationEmail}}', 'false'),
-        eq('${{ parameters.stgMismatch}}', 'na')
+        eq('${{ parameters.manualVerificationEmail}}', 'false')
       )
     pool:
       vmImage: 'windows-latest'
@@ -233,32 +192,29 @@ stages:
     vmRgName: ${{ parameters.vmRgName}}
     subId: $(subId)
     resourceLocation: ${{parameters.resourceLocation}}
-#------------------------------------- END ------------------------------------------------------------------
 
-#------------------------------------- SUCCESSFUL EMAILS- -----------------------------------------------------------------
-#Notification Stage - Internal - Successful - Not Dryrun
+#Notification Stage - Internal - Successful
 - template: templates/notification-stage-internal.yml
   parameters:
     stage: 'notification_on_success_internal'
-    displayName: Notification Stage on Success - Internal - Production
+    displayName: Notification Stage on Success - Internal
     dependsOn: 'delete_azureresources'
     condition: |
       and
-      (
-        eq('${{parameters.targetDataType }}', 'internal'),
-        eq(dependencies.delete_azureresources.result, 'Succeeded'),
-        ne('${{parameters.runType }}', 'Dryrun')
-      )
+        (
+          eq('${{ parameters.targetDataType }}', 'internal'),
+          eq(dependencies.delete_azureresources.result, 'Succeeded')
+        )
     pool:
       vmImage: 'windows-latest'
     variableGroup: var-parameter-dm-grp
     taskNumber: ${{ parameters.taskNumber}}
     workItemState: 'Done'
-    workItemComment: "DMT Extraction Process for Task for ${{parameters.targetDataType}} Use Completed."
+    workItemComment: "DMT Extraction Process for Task for Internal Use Completed."
     updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
     sendEmailDescription: 'Send Email on successful deletion of Azure Resources'
-    emailSubject: 'DMT Extraction process for ${{ parameters.targetDataType}} path for $(appName) for task ${{ parameters.taskNumber}} has been completed'
-    emailBody: "<p>DMT Extraction process for Task ${{ parameters.taskNumber}} has been completed</p><p></p><p>This task is for $(appName) and is for Internal path that will be saved on ${{parameters.destStorageAccount}}</p><p></p><p>Your data is ready in the Migration Landing Zone (MLZ) and will be retained for the requested period then automatically purged. There may be additional Azure resources that you need to request be terminated once your data migration completes. The virtual machine(s) created for transferring data from the source have now been deleted. However, any Azure Virtual Desktop (AVD) instances that were requested (e.g. used for transformation, HTTPS upload, SFTP upload) will need to be cleaned up separately once you finish your migration to avoid ongoing automatic charges. If you are relying on SFTP download, you should also consider disabling SFTP on the Storage Account Container once your migration completes, also to avoid ongoing automatic charges.</p><p></p><p>If you don't understand this email, please check with your solution architect to avoid unplanned automatic charges being billed to your cost centre.</p>"
+    emailSubject: 'DMT Extraction process for internal path for $(appName) for task ${{ parameters.taskNumber}} has been completed'
+    emailBody: '<p>DMT Extraction process for Task ${{ parameters.taskNumber}} has been completed</p><p></p><p>This task is for $(appName) and is for Internal path that will be saved on ${{parameters.destStorageAccount}}</p>'
     environment: ${{ parameters.environment}}
     receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
     adReceiverEmailAddress: $(adEmailAddress)
@@ -266,118 +222,17 @@ stages:
     adEmailSubject: 'Computer Object deletion in AD'
     adEmailBody: '<p>To support the execution of DMF MLZ, VM: ${{ parameters.vmName}} with OU path:</p><p></p><p>$(OUPath)</p><p></p><p>was created to perform the tasks and has now been deleted from Azure, to save Azure consumption costs.</p><p></p><p>A service request needs to be raised to remove the computer object within the CFS AD domain supporting IaaS VM.</p><p></p><p>Please log the appropriate request to remove this computer object.</p><p></p>'
 
-#Notification Stage - Internal - Successful - Dryrun
-- template: templates/notification-stage-internal.yml
-  parameters:
-    stage: 'notification_on_success_internal_dryrun'
-    displayName: Notification Stage on Success - Internal - Dryrun
-    dependsOn: 'delete_azureresources'
-    condition: |
-      and
-      (
-        eq('${{parameters.targetDataType }}', 'internal'),
-        eq(dependencies.delete_azureresources.result, 'Succeeded'),
-        eq('${{parameters.runType }}', 'Dryrun')
-      )
-    pool:
-      vmImage: 'windows-latest'
-    variableGroup: var-parameter-dm-grp
-    taskNumber: ${{ parameters.taskNumber}}
-    workItemState: 'Done'
-    workItemComment: "DMT Extraction Process for Task for ${{parameters.targetDataType}} Use Completed."
-    updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
-    sendEmailDescription: 'Send Email on successful deletion of Azure Resources'
-    emailSubject: 'DMT Extraction process for ${{ parameters.targetDataType}} path for $(appName) for task ${{ parameters.taskNumber}} has been completed'
-    emailBody: "<p>DMT Extraction process for Task ${{ parameters.taskNumber}} has been completed</p><p></p><p>This task is for $(appName) and is for Internal path that will be saved on ${{parameters.destStorageAccount}}</p><p></p><p>We have processed a sample file. Please use this storage account ${{ parameters.destStorageAccount}} in Production stage run as destStorageAccount field. </p><p></p><p>Your data is ready in the Migration Landing Zone (MLZ) and will be retained for the requested period then automatically purged. There may be additional Azure resources that you need to request be terminated once your data migration completes. The virtual machine(s) created for transferring data from the source have now been deleted. However, any Azure Virtual Desktop (AVD) instances that were requested (e.g. used for transformation, HTTPS upload, SFTP upload) will need to be cleaned up separately once you finish your migration to avoid ongoing automatic charges. If you are relying on SFTP download, you should also consider disabling SFTP on the Storage Account Container once your migration completes, also to avoid ongoing automatic charges.</p><p></p><p>If you don't understand this email, please check with your solution architect to avoid unplanned automatic charges being billed to your cost centre.</p>"
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    adReceiverEmailAddress: $(adEmailAddress)
-    adSendEmailDescription: 'Send Email for Computer Object deletion in AD Email'
-    adEmailSubject: 'Computer Object deletion in AD'
-    adEmailBody: '<p>To support the execution of DMF MLZ, VM: ${{ parameters.vmName}} with OU path:</p><p></p><p>$(OUPath)</p><p></p><p>was created to perform the tasks and has now been deleted from Azure, to save Azure consumption costs.</p><p></p><p>A service request needs to be raised to remove the computer object within the CFS AD domain supporting IaaS VM.</p><p></p><p>Please log the appropriate request to remove this computer object.</p><p></p>'
-
-#Notification Stage - External - ETLPreprocessProduction - Successful
-- template: templates/notification-stage-internal.yml
-  parameters:
-    stage: 'notification_on_success_etl'
-    displayName: Notification Stage on Success - External - ETLPreprocessProduction
-    dependsOn: 'delete_azureresources'
-    condition: |
-      and
-      (
-        eq('${{parameters.targetDataType }}', 'external'),
-        eq(dependencies.delete_azureresources.result, 'Succeeded'),
-        eq('${{ parameters.runType }}', 'ETLPreprocessProduction')
-      )
-    pool:
-      vmImage: 'windows-latest'
-    variableGroup: var-parameter-dm-grp
-    taskNumber: ${{ parameters.taskNumber}}
-    workItemState: 'Done'
-    workItemComment: "DMT Extraction Process for Task for ${{parameters.targetDataType}} Use Completed."
-    updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
-    sendEmailDescription: 'Send Email on successful deletion of Azure Resources'
-    emailSubject: 'DMT Extraction process for ${{ parameters.targetDataType}} path for $(appName) for task ${{ parameters.taskNumber}} has been completed and is ready for for ETL processing'
-    emailBody: "<p>DMT Extraction process for Task ${{ parameters.taskNumber}} has been completed and is ready for ETL processing</p><p></p><p>This task is for $(appName) and is for ${{ parameters.targetDataType}} path that will be saved on ${{parameters.destStorageAccount}}/${{ parameters.destContainerName}} </p><p></p><p>Your data is ready in the Migration Landing Zone (MLZ) and will be retained for the requested period then automatically purged. There may be additional Azure resources that you need to request be terminated once your data migration completes. The virtual machine(s) created for transferring data from the source have now been deleted. However, any Azure Virtual Desktop (AVD) instances that were requested (e.g. used for transformation, HTTPS upload, SFTP upload) will need to be cleaned up separately once you finish your migration to avoid ongoing automatic charges. If you are relying on SFTP download, you should also consider disabling SFTP on the Storage Account Container once your migration completes, also to avoid ongoing automatic charges.</p><p></p><p>If you don't understand this email, please check with your solution architect to avoid unplanned automatic charges being billed to your cost centre.</p>"
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    adReceiverEmailAddress: $(adEmailAddress)
-    adSendEmailDescription: 'Send Email for Computer Object deletion in AD Email'
-    adEmailSubject: 'Computer Object deletion in AD'
-    adEmailBody: '<p>To support the execution of DMF MLZ, VM: ${{ parameters.vmName}} with OU path:</p><p></p><p>$(OUPath)</p><p></p><p>was created to perform the tasks and has now been deleted from Azure, to save Azure consumption costs.</p><p></p><p>A service request needs to be raised to remove the computer object within the CFS AD domain supporting IaaS VM.</p><p></p><p>Please log the appropriate request to remove this computer object.</p><p></p>'
-
-#Notification Stage - External - Successful - Production
+#Notification Stage - External - Successful
 - template: templates/notification-stage-external.yml
   parameters:
     stage: 'notification_on_success_external'
-    displayName: Notification Stage on Success - External - Production
-    dependsOn:
-      - download_key_vault_secret
-      - delete_azureresources
-    pool:
-      vmImage: 'windows-latest'
-    condition: |
-      and
-      (
-        succeeded(),
-        eq('${{parameters.targetDataType }}', 'external'),
-        eq('${{ parameters.runType }}', 'Production')
-      )
-    variableGroup: var-parameter-dm-grp
-    taskNumber: ${{ parameters.taskNumber}}
-    workItemState: 'Done'
-    workItemComment: "DMT Extraction Process for External Use Completed."
-    updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
-    emailSubjectForPass: '$(appName) Password for zip file accessible via SFTP for Task ${{ parameters.taskNumber}}'
-    emailSubjectForFile: 'DMT Extraction process for $(appName) for Task ${{ parameters.taskNumber}} for external publishing via SFTP has completed'
-    emailBodyForFile: "<p>DMT Extraction Process for Task ${{ parameters.taskNumber}} for external publishing on SFTP has been completed.</p><p></p><p>Extracted Zipped file(s): <p> ${{ parameters.destFileName}} <p></p><p>Please Validate if you can access the file by using the password shared in a separate email with the below subject line.</p><p></p><p>'$(appName) SFTP password for Tasknumber ${{ parameters.taskNumber}}'</p><p></p><p>For details on how to connect to the SFTP server, please see email subject called</p><p></p><p>'$(appName) SFTP credentials and connectivity information to retrieve data for taskNumber ${{ parameters.taskNumber}}'</p><p></p><p>Your data is ready in the Migration Landing Zone (MLZ) and will be retained for the requested period then automatically purged. There may be additional Azure resources that you need to request be terminated once your data migration completes. The virtual machine(s) created for transferring data from the source have now been deleted. However, any Azure Virtual Desktop (AVD) instances that were requested (e.g. used for transformation, HTTPS upload, SFTP upload) will need to be cleaned up separately once you finish your migration to avoid ongoing automatic charges. If you are relying on SFTP download, you should also consider disabling SFTP on the Storage Account Container once your migration completes, also to avoid ongoing automatic charges.</p><p></p><p>If you don't understand this email, please check with your solution architect to avoid unplanned automatic charges being billed to your cost centre.</p>"
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    clientEmailAddress: ${{ parameters.clientEmailAddress}}
-    runType: ${{ parameters.runType}}
-    adReceiverEmailAddress: $(adEmailAddress)
-    adSendEmailDescription: 'Send Email for Computer Object deletion in AD Email'
-    adEmailSubject: 'Computer Object deletion in AD'
-    adEmailBody: '<p>To support the execution of DMF MLZ, VM: ${{ parameters.vmName}} with OU path:</p><p></p><p>$(OUPath)</p><p></p><p>was created to perform the tasks and has now been deleted from Azure, to save Azure consumption costs.</p><p></p><p>A service request needs to be raised to remove the computer object within the CFS AD domain supporting IaaS VM.</p><p></p><p>Please log the appropriate request to remove this computer object.</p><p></p>'
-    appName: $(appName)
-
-#Notification Stage - External - Successful - Dryrun
-- template: templates/notification-stage-external.yml
-  parameters:
-    stage: 'notification_on_success_external_dryrun'
     displayName: Notification Stage on Success - External
     dependsOn:
       - download_key_vault_secret
       - delete_azureresources
     pool:
       vmImage: 'windows-latest'
-    condition: |
-      and
-      (
-        succeeded(),
-        eq('${{parameters.targetDataType }}', 'external'),
-        eq('${{parameters.runType }}', 'Dryrun')
-      )
+    condition: and(succeeded(), eq('${{ parameters.targetDataType }}', 'external'))
     variableGroup: var-parameter-dm-grp
     taskNumber: ${{ parameters.taskNumber}}
     workItemState: 'Done'
@@ -385,7 +240,7 @@ stages:
     updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
     emailSubjectForPass: '$(appName) Password for zip file accessible via SFTP for Task ${{ parameters.taskNumber}}'
     emailSubjectForFile: 'DMT Extraction process for $(appName) for Task ${{ parameters.taskNumber}} for external publishing via SFTP has completed'
-    emailBodyForFile: "<p>DMT Extraction Process for Task ${{ parameters.taskNumber}} for external publishing on SFTP has been completed.</p><p><p>We have processed a sample file. Please use this storage account ${{ parameters.destStorageAccount}} in Production stage run as destStorageAccount field. </p><p></p></p><p>Extracted Sample Zipped file(s): <p> ${{ parameters.destFileName}} <p></p><p>Please Validate if you can access the file by using the password shared in a separate email with the below subject line.</p><p></p><p>'$(appName) SFTP password for Tasknumber ${{ parameters.taskNumber}}'</p><p></p><p>For details on how to connect to the SFTP server, please see email subject called</p><p></p><p>'$(appName) SFTP credentials and connectivity information to retrieve data for taskNumber ${{ parameters.taskNumber}}'</p><p></p><p>Your data is ready in the Migration Landing Zone (MLZ) and will be retained for the requested period then automatically purged. There may be additional Azure resources that you need to request be terminated once your data migration completes. The virtual machine(s) created for transferring data from the source have now been deleted. However, any Azure Virtual Desktop (AVD) instances that were requested (e.g. used for transformation, HTTPS upload, SFTP upload) will need to be cleaned up separately once you finish your migration to avoid ongoing automatic charges. If you are relying on SFTP download, you should also consider disabling SFTP on the Storage Account Container once your migration completes, also to avoid ongoing automatic charges.</p><p></p><p>If you don't understand this email, please check with your solution architect to avoid unplanned automatic charges being billed to your cost centre.</p>"
+    emailBodyForFile: '<p>DMT Extraction Process for Task ${{ parameters.taskNumber}} for external publishing on SFTP has been completed.</p><p></p><p>Extracted Zipped file(s): <p> ${{ parameters.destFileName}} <p></p><p>Please Validate if you can access the file by using the password shared in a separate email with the below subject line.</p><p></p><p>"$(appName) SFTP password for Tasknumber ${{ parameters.taskNumber}}"</p><p></p><p>For details on how to connect to the SFTP server, please see email subject called</p><p></p><p>"$(appName) SFTP credentials and connectivity information to retrieve data for taskNumber ${{ parameters.taskNumber}}"</p><p></p>'
     environment: ${{ parameters.environment}}
     receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
     clientEmailAddress: ${{ parameters.clientEmailAddress}}
@@ -396,47 +251,6 @@ stages:
     adEmailBody: '<p>To support the execution of DMF MLZ, VM: ${{ parameters.vmName}} with OU path:</p><p></p><p>$(OUPath)</p><p></p><p>was created to perform the tasks and has now been deleted from Azure, to save Azure consumption costs.</p><p></p><p>A service request needs to be raised to remove the computer object within the CFS AD domain supporting IaaS VM.</p><p></p><p>Please log the appropriate request to remove this computer object.</p><p></p>'
     appName: $(appName)
 
-#Notification Stage - External - Successful - ETLPreProcessDryrun
-- template: templates/notification-stage-external.yml
-  parameters:
-    stage: 'notification_on_success_external_etlpreprocessdryrun'
-    displayName: Notification Stage on Success - External - ETLPreProcessDryrun
-    dependsOn:
-      - download_key_vault_secret
-      - delete_azureresources
-    pool:
-      vmImage: 'windows-latest'
-    condition: |
-      and
-      (
-        succeeded(),
-        eq('${{parameters.targetDataType }}', 'external'),
-        eq('${{parameters.runType }}', 'ETLPreprocessDryrun')
-      )
-    variableGroup: var-parameter-dm-grp
-    taskNumber: ${{ parameters.taskNumber}}
-    workItemState: 'Done'
-    workItemComment: "DMT Extraction Process for External Use Completed."
-    updateWorkItemDescription: 'Update Work Item on successful deletion of Azure Resources'
-    emailSubjectForPass: '$(appName) Password for zip file accessible via SFTP for Task ${{ parameters.taskNumber}}'
-    emailSubjectForFile: 'DMT Extraction process for $(appName) for Task ${{ parameters.taskNumber}} for external publishing via SFTP has completed'
-    emailBodyForFile: "<p>DMT Extraction Process for Task ${{ parameters.taskNumber}} for external publishing on SFTP has been completed.</p><p><p>We have processed a sample file. Please use this storage account ${{ parameters.etlDestStorageAccountName}} in ETLPreprocessProduction stage run as destStorageAccount field. </p><p></p></p><p>Extracted Sample Zipped file(s): <p> ${{ parameters.destFileName}} <p></p><p>Please Validate if you can access the file by using the password shared in a separate email with the below subject line.</p><p></p><p>'$(appName) SFTP password for Tasknumber ${{ parameters.taskNumber}}'</p><p></p><p>For details on how to connect to the SFTP server, please see email subject called</p><p></p><p>'$(appName) SFTP credentials and connectivity information to retrieve data for taskNumber ${{ parameters.taskNumber}}'</p><p></p><p>Your data is ready in the Migration Landing Zone (MLZ) and will be retained for the requested period then automatically purged. There may be additional Azure resources that you need to request be terminated once your data migration completes. The virtual machine(s) created for transferring data from the source have now been deleted. However, any Azure Virtual Desktop (AVD) instances that were requested (e.g. used for transformation, HTTPS upload, SFTP upload) will need to be cleaned up separately once you finish your migration to avoid ongoing automatic charges. If you are relying on SFTP download, you should also consider disabling SFTP on the Storage Account Container once your migration completes, also to avoid ongoing automatic charges.</p><p></p><p>If you don't understand this email, please check with your solution architect to avoid unplanned automatic charges being billed to your cost centre.</p>"
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    clientEmailAddress: ${{ parameters.clientEmailAddress}}
-    runType: ${{ parameters.runType}}
-    adReceiverEmailAddress: $(adEmailAddress)
-    adSendEmailDescription: 'Send Email for Computer Object deletion in AD Email'
-    adEmailSubject: 'Computer Object deletion in AD'
-    adEmailBody: '<p>To support the execution of DMF MLZ, VM: ${{ parameters.vmName}} with OU path:</p><p></p><p>$(OUPath)</p><p></p><p>was created to perform the tasks and has now been deleted from Azure, to save Azure consumption costs.</p><p></p><p>A service request needs to be raised to remove the computer object within the CFS AD domain supporting IaaS VM.</p><p></p><p>Please log the appropriate request to remove this computer object.</p><p></p>'
-    appName: $(appName)
-
-
-#------------------------------------- END ------------------------------------------------------------------
-
-
-
-#-------------------------------------FAILURE EMAILS------------------------------------------------------------------
 #Notification Stage - Failure - Get KV Secret
 - template: templates/notification-stage.yml
   parameters:
@@ -478,7 +292,7 @@ stages:
     receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
 
 #Send Manual Verification Email Stage
-- template: templates/send-email-stage.yml
+- template: templates/manual-verification-stage.yml
   parameters:
     stage: 'manual_verification_emailnotif'
     displayName: Manual Verification Email Notification
@@ -491,49 +305,3 @@ stages:
     sendEmailDescription: 'Manual Verification Email Notification'
     emailSubject: 'Reconciliation has found mismatched for $(appName) execution for Task ${{ parameters.taskNumber}}'
     emailBody: '<p>Reconciliation has failed.  The ${{ parameters.vmName}} was used to extract and reconcile. This ${{ parameters.vmName}} has got all the extract data that needs to be investigated to resolve reconciliation issues found.  Depending on reasoning for failure, could mean different teams need to look at the data.  In order to logon to this VM access needs to be granted by adding the user to the Remote Desktop User group on the local ${{ parameters.vmName}}, which DMT MLZ tech support can implement.</p> <p></p><p>Failure has occurred due to:</p><p>${{ parameters.tvtresult}}</p><p></p><p>This task is for $(appName)</p><p></p>'
-
-#Send Real Time Monitoring Email Stage
-- template: templates/send-email-stage.yml
-  parameters:
-    stage: 'realtimemonitoring_verification_emailnotif'
-    displayName: Real Time Monitoring is Disabled Email Notification
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), eq('${{ parameters.realTimeMonitoringEmail}}', 'true'))
-    pool:
-      vmImage: 'windows-latest'
-    variableGroup: var-parameter-dm-grp
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    sendEmailDescription: 'Real Time Monitoring is Disabled Email Notification'
-    emailSubject: 'Real Time Monitoring is disabled for VM: ${{ parameters.vmName}} '
-    emailBody: 'Extraction process is stopped as Microsoft Defender Real Time Monitoring is disabled for VM: ${{ parameters.vmName}}.</p><p>'
-
-#Send Threats Report
-- template: templates/send-email-stage.yml
-  parameters:
-    stage: 'threats_report_emailnotif'
-    displayName: Threats Report Email Notification
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), ne('${{ parameters.threatLogs}}', 'na'))
-    pool:
-      vmImage: 'windows-latest'
-    variableGroup: var-parameter-dm-grp
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    sendEmailDescription: 'DMT Extraction Process Threats Report for Task number ${{ parameters.taskNumber}}'
-    emailSubject: 'DMT Extraction Process Threats Report for Task number ${{ parameters.taskNumber}}'
-    emailBody: 'DMT Extraction Process for Task number ${{ parameters.taskNumber}} Threats Report:<p></p> ${{ parameters.threatLogs}}'
-
-#Send Email for Storage Account and Container Mismatch
-- template: templates/send-email-stage.yml
-  parameters:
-    stage: 'storage_account_mismatch_emailnotif'
-    displayName: Storage Account Mismatch Email Notification
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'Manual'), ne('${{ parameters.stgMismatch}}', 'na'))
-    pool:
-      vmImage: 'windows-latest'
-    variableGroup: var-parameter-dm-grp
-    environment: ${{ parameters.environment}}
-    receiverEmailAddress: ${{ parameters.receiverEmailAddress}}
-    sendEmailDescription: 'Storage Account Mismatch Email Notification'
-    emailSubject: 'DMT Extraction process for ${{parameters.targetDataType}} path for $(appName) for Task ${{ parameters.taskNumber}} stopped'
-    emailBody: '<p>DMT Extraction Process for Task ${{ parameters.taskNumber}} for ${{ parameters.targetDataType}} use stopped.</p><p><p></p>Validation Failed with: <p> </p> <p>${{ parameters.stgMismatch}}</p>'
-#-------------------------------------END------------------------------------------------------------------

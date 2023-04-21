@@ -1,0 +1,47 @@
+name: Test Self Hosted Runner
+
+on: [workflow_dispatch]
+  #push:
+  #  branches: [ develop, main ]
+  #pull_request:
+  #  branches: [ develop ]
+
+jobs:
+  testSelfHostedRunner:
+    runs-on: [self-hosted, windows, x64, Test-Runner-Group]
+    steps:
+      
+      - name: check_env_path
+        shell: powershell
+        if: ${{ failure() || success() }}
+        run: |
+            "env:path"
+            $env:path
+      
+      - name: check_pwsh
+        shell: powershell
+        if: ${{ failure() || success() }}
+        run: |
+            "Powershell Version:"
+            pwsh -Version
+      
+      - name: check_git
+        shell: powershell
+        if: ${{ failure() || success() }}
+        run: |
+            "Git SCM version"
+            git --version
+      
+      - name: check_az_cli
+        shell: powershell
+        if: ${{ failure() || success() }}
+        run: |
+            "Azure CLI version"
+            az version
+      
+      - name: check_dotnet
+        shell: powershell
+        if: ${{ failure() || success() }}
+        run: |
+            "DotNet Version"
+            dotnet --version

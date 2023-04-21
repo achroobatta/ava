@@ -1,0 +1,22 @@
+# #deploy-DataLake.yml
+
+parameters:
+
+- name: serviceConnection
+  type: string
+
+- name: operSubId
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Delete Cname Record in DNS Zone
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+
+        az account set --subscription $operSubId
+        az group show --name rg-np-edc-oper-netw-001
+        az network dns record-set cname delete -g rg-np-edc-oper-netw-001 -z blob.core.windows.net -n dsftpnpedcbkof7565.blob.core.windows.net --yes

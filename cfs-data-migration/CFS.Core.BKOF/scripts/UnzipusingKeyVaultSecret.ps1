@@ -66,6 +66,12 @@ function azconnect()
 
 Function get-secret()
 {
+    $azctx = Get-AzContext
+    if($null -eq $azctx)
+    {
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"VM is not connected in Azure") >> $logFilePath
+        break
+    }
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unzipping File using stored keys in key vault") >> $logFilePath
 
     $sourcePath = Get-ChildItem -Path $localzippath
@@ -73,8 +79,6 @@ Function get-secret()
     if ($null -eq $secret)
     {
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get secret from key vault") >> $logFilePath
-        #add return to stop the process if secret is not existing
-        break
     }
 
     try
@@ -96,7 +100,6 @@ Function get-secret()
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
         return "Successfully Unzip and extract to Disk2"
     }
-    #add if else for $_ if the result is wrong password
     else
     {
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unzip and extract to Disk2 Failed") >> $logFilePath

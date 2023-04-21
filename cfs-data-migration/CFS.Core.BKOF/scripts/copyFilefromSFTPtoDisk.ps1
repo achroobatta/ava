@@ -85,19 +85,19 @@ function connectSFTP()
         $sshKey = Get-AzKeyVaultSecret -vaultName $keyVaultNameforSecret -name $srcSftpKey -AsPlainText
         if ($null -eq $sshKey)
         {
-            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get SSH Key from Keyvault") >> $logFilePath
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get key from Keyvault") >> $logFilePath
             break
         }
 
         #Password from Keyvault
         $pass = Get-AzKeyVaultSecret -vaultName $keyVaultNameforSecret -name $srcSftpPass
-        if ($null -eq $pass)
-        {
-            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get SFTP Password from Keyvault") >> $logFilePath
-            break
-        }
         $Get_My_Scret = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pass.SecretValue)
         $Enpassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($Get_My_Scret)
+        if ($null -eq $Enpassword)
+        {
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get password key from Keyvault") >> $logFilePath
+            break
+        }
     }
     catch
     {

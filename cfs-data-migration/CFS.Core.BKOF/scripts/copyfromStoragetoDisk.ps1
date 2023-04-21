@@ -71,7 +71,7 @@ Function copy_storage()
     $containers = $sourceLocation.Split(",")
     foreach($container in $containers)
     {
-        $names = @(Get-AzStorageContainer -Name $container* -Context $ctx | Get-AzStorageBlob) | Where-Object {$_.ContentType -eq 'application/octet-stream'}
+        $names = @(Get-AzStorageContainer -Name $container* -Context $ctx | Get-AzStorageBlob)
         if ($null -eq $names)
         {
             Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get storage blob in the container") >> $logFilePath

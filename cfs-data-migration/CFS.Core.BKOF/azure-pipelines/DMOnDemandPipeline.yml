@@ -4,14 +4,12 @@ pr: none # will disable PR builds entirely; will not disable CI triggers
 
 parameters:
   - name: runType
-    displayName: Type of Run (Dryrun, Production, ETLPreprocessDryrun, ETLPreprocessProduction). Dryrun is default and will process dummy file.
+    displayName: Type of Run (Dryrun or Production). Dryrun is default and will process dummy file.
     type: string
     default: "Dryrun"
     values:
     - "Dryrun"
     - "Production"
-    - "ETLPreprocessDryrun"
-    - "ETLPreprocessProduction"
 
   - name: destStorageAccount
     displayName: Name of Destination Storage Account. Default is 'new' for Dryrun. It should be mentioned for Production.
@@ -63,15 +61,9 @@ parameters:
     values:
      - "sftp"
      - "databox"
-     - "etl"
-
-  - name: sourceStorageAccountFromPipeline
-    displayName: Location of Source file (e.g. source storage account, only applicable if sourceDataType is etl)
-    type: string
-    default: "na"
 
   - name: sourceLocation
-    displayName: Location of Source file (e.g. source storage container, only applicable if sourceDataType is etl or databox)
+    displayName: Location of Source file (e.g. source storage container, only applicable if sourceDataType is databox)
     type: string
     default: "na"
 
@@ -227,28 +219,25 @@ variables:
  - name: sourceDataType
    value: ${{ parameters.sourceDataType }}
 
- - name: sourceStorageAccountFromPipeline
-   value: ${{ parameters.sourceStorageAccountFromPipeline }}
-
  - name: sourceLocation
    value:  ${{ parameters.sourceLocation }}
 
  - name: ipTobeWhiteListed
-   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
+   ${{ if eq(parameters.targetDataType, 'external') }}:
     value: ${{ parameters.ipTobeWhiteListed }}
 
  - name: ExternalHighPortForSFTP
-   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
+   ${{ if eq(parameters.targetDataType, 'external') }}:
     value: ${{ parameters.ExternalHighPortForSFTP }}
 
  - name: rootContainerName
-   ${{ if and(eq(parameters.destStorageAccount, 'new'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
+   ${{ if and(eq(parameters.destStorageAccount, 'new'), eq(parameters.runType, 'Dryrun')) }}:
      value: 'container$(Build.BuildId)'
    ${{ else }}:
        value: 'existing'
 
  - name: sshKeyName
-   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
+   ${{ if eq(parameters.targetDataType, 'external') }}:
     value: '${{ parameters.vendorName }}sshKey$(Build.BuildId)'
    ${{ else }}:
     value: 'na'
@@ -263,19 +252,13 @@ variables:
       value: "prd"
 
  - name: destStorageAccountName
-   ${{ if and(eq(parameters.destStorageAccount, 'new'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun')))  }}:
+   ${{ if and(eq(parameters.destStorageAccount, 'new'), eq(parameters.runType, 'Dryrun')) }}:
       ${{ if eq(parameters.targetDataType, 'external') }}:
          value: 'dsftp$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
       ${{ if eq(parameters.targetDataType, 'internal')  }}:
          value: 'dlgen2$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
    ${{ else }}:
         value: ${{ parameters.destStorageAccount }}
-
- - name: etlDestStorageAccountName
-   ${{ if and(eq(parameters.destStorageAccount, 'new'), eq(parameters.runType, 'ETLPreprocessDryrun'), eq(parameters.targetDataType, 'external')) }}:
-      value: 'dlgen2$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
-   ${{ else }}:
-      value: 'na'
 
  - name: sftpUserName
    ${{ if eq(parameters.targetDataType, 'external') }}:
@@ -284,6 +267,7 @@ variables:
     value: 'na'
 
  - name: diagStorageAcctName
+  #  value: 'dsto$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
       value: 'sto$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof001'
    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
@@ -566,7 +550,7 @@ variables:
     value: 'depstoprdedcbkofdm001'
 
  - name: destSftpSshKeySecret
-   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
+   ${{ if eq(parameters.targetDataType, 'external') }}:
     value: ${{ parameters.vendorSuppliedPubKey }}
    ${{ else }}:
     value: 'na'
@@ -891,7 +875,7 @@ stages:
       workspace:
         clean: all
 
-      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), or(eq('${{ parameters.runType }}', 'Dryrun'), eq('${{ parameters.runType }}', 'ETLPreprocessDryrun')), eq('${{parameters.targetDataType }}', 'external'))
+      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'Dryrun'), eq('${{parameters.targetDataType }}', 'external'))
       pool:
         vmImage: 'windows-latest'
 
@@ -933,7 +917,7 @@ stages:
     - job: AddLocalUser
       workspace:
         clean: all
-      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), or(eq('${{ parameters.runType }}', 'Dryrun'), eq('${{ parameters.runType }}', 'ETLPreprocessDryrun')), eq('${{parameters.targetDataType }}', 'external'))
+      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'Dryrun'), eq('${{parameters.targetDataType }}', 'external'))
       dependsOn: [DeploySftp]
       pool:
         name: $(agentPool)
@@ -969,51 +953,6 @@ stages:
               runType: '$(runType)'
               appName: '$(emailAppName)'
               serviceConnection: '$(landingZoneServiceConnection)'
-
-    - job: DeployInternalDataLake
-      dependsOn: [AddLocalUser]
-      workspace:
-        clean: all
-      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'ETLPreprocessDryrun'), eq('${{parameters.targetDataType }}', 'external'))
-
-      pool:
-        vmImage: 'windows-latest'
-
-      steps:
-            - checkout: self
-
-            - task: DownloadPackage@1
-              displayName: DownloadArtifacts
-              inputs:
-                packageType: 'nuget'
-                feed: '$(artifactFeed)'
-                definition: '$(artifactDefinition)'
-                version: '$(artifactVersion)'
-                extract: true
-                downloadPath: '$(System.ArtifactsDirectory)'
-
-            #DataLake
-            - template: 'templates/deploy-DataLake.yml'
-              parameters:
-                serviceName: '$(subscriptionServiceName)'
-                serviceConnection: '$(landingZoneServiceConnection)'
-                deploymentType: '$(deploymentType)'
-                serviceId: '$(landingZoneServiceId)'
-                resourceLocation: '$(resourceLocation)'
-                deploymentName: '$(deploymentName)'
-                owner: '$(owner)'
-                costCenterCode: '$(costCenterCode)'
-                appName: '$(emailAppName)'
-                AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
-                AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
-                destStorageAccountName: '$(etlDestStorageAccountName)'
-                rootContainerName: '$(rootContainerName)'
-                warrantyPeriod: '$(warrantyPeriod)'
-                rgName: '$(rgName)'
-                connRg: '$(connRg)'
-                subId: '$(subId)'
-                connSubId: '$(connSubId)'
-
 
 
   - stage: triggerMaster
@@ -1057,8 +996,8 @@ stages:
                         $sftpUsername = $sftpUsername.ToLower()
                         echo 'After sftpUserName: ' $sftpUsername
                         # original script, both below lines should be uncommented (test line above should be commented)
-                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceStorageAccountFromPipeline","$(sourceStorageAccountFromPipeline)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)","-etlDestStorageAccountName","$(etlDestStorageAccountName)" -Wait -Verb RunAs -PassThru 2>&1
-                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceStorageAccountFromPipeline","$(sourceStorageAccountFromPipeline)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)","-etlDestStorageAccountName","$(etlDestStorageAccountName)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)" -Wait -Verb RunAs -PassThru 2>&1
                    }
                    Invoke-Command -ComputerName "$computervm" -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
                    $j = Get-Job

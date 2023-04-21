@@ -39,6 +39,7 @@ stages:
     artifactName: excel
     variableGroup: var-parameter-dm-grp
 
+
 #Trigger Stage
 - template: templates/trigger-stage.yml
   parameters:

@@ -33,7 +33,6 @@ param(
   $FileSize,
   $SourceDataType,
   $SourceLocation,
-  $SourceStorageAccountFromPipeline,
   $SrcSftpCtn,
   $SrcSftpAcctNm,
   $SrcSftpPass,
@@ -47,8 +46,7 @@ param(
   $ExternalHighPortForSFTP,
   $VendorSuppliedPubKey,
   $EmailAddress,
-  $ExternalVendorEmailContact,
-  $CR
+  $ExternalVendorEmailContact
 )
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
@@ -59,6 +57,96 @@ Function Start_Pipeline{
 
         .DESCRIPTION
         Triggers an existing pipeline.
+
+        .PARAMETER PipelineId
+        ID of the Pipeline to be triggered.
+
+        .PARAMETER PAT
+        Personal Access Token used for Authentication.
+
+        .PARAMETER AppName
+        AppName needs to be passed to other pipeline when triggering
+
+        .PARAMETER CostCenterCode
+        CostCenterCode needs to be passed to other pipeline when triggering
+
+        .PARAMETER EmailAddress
+        EmailAddress needs to be passed to other pipeline when triggering
+
+        .PARAMETER Environment
+        Environment needs to be passed to other pipeline when triggering
+
+        .PARAMETER FileSize
+        FileSize needs to be passed to other pipeline when triggering
+
+        .PARAMETER SourceDataType
+        SourceDataType needs to be passed to other pipeline when triggering
+
+        .PARAMETER IpTobeWhiteListed
+        IpTobeWhiteListed needs to be passed to other pipeline when triggering
+
+        .PARAMETER KeyVaultNameforSecret
+        KeyVaultNameforSecret needs to be passed to other pipeline when triggering
+
+        .PARAMETER NumberOfFiles
+        NumberOfFiles needs to be passed to other pipeline when triggering
+
+        .PARAMETER Owner
+        Owner needs to be passed to other pipeline when triggering
+
+        .PARAMETER SecretName
+        SecretName needs to be passed to other pipeline when triggering
+
+        .PARAMETER SourceLocation
+        SourceLocation needs to be passed to other pipeline when triggering
+
+        .PARAMETER SrcSftpCtn
+        SrcSftpCtn needs to be passed to other pipeline when triggering
+
+        .PARAMETER SrcSftpAcctNm
+        SrcSftpAcctNm needs to be passed to other pipeline when triggering
+
+        .PARAMETER SrcSftpPass
+        SrcSftpPass needs to be passed to other pipeline when triggering
+
+        .PARAMETER SrcSftpKey
+        SrcSftpKey needs to be passed to other pipeline when triggering
+
+        .PARAMETER TargetDataType
+        TargetDataType used to determine what pipeline will be triggered
+
+        .PARAMETER VendorName
+        VendorName needs to be passed to other pipeline when triggering
+
+        .PARAMETER WarrantyPeriod
+        WarrantyPeriod needs to be passed to other pipeline when triggering
+
+        .PARAMETER WorkItemId
+        Work Item Id needs to be passed to other pipeline when triggering
+
+        .PARAMETER ResourceLocation
+        ResourceLocation needs to be passed to other pipeline when triggering
+
+        .PARAMETER UltraSSDEnabled
+        UltraSSDEnabled needs to be passed to other pipeline when triggering
+
+        .PARAMETER BranchName
+        BranchName used to determine what branch will be used to trigger the pipeline
+
+        .PARAMETER VendorSuppliedPubKey
+        VendorSuppliedPubKey needs to be passed to other pipeline when triggering
+
+        .PARAMETER CBASFTPSourcePath
+        CBASFTPSourcePath needs to be passed to other pipeline when triggering
+
+        .PARAMETER RunType
+        RunType needs to be passed to other pipeline when triggering
+
+        .PARAMETER DestStorageAccount
+        DestStorageAccount needs to be passed to other pipeline when triggering
+
+        .PARAMETER ExternalVendorEmailContact
+        ExternalVendorEmailContact needs to be passed to other pipeline when triggering
 
         #>
   Param(
@@ -79,7 +167,6 @@ Function Start_Pipeline{
     $FileSize,
     $SourceDataType,
     $SourceLocation,
-    $SourceStorageAccountFromPipeline,
     $SrcSftpCtn,
     $SrcSftpAcctNm,
     $SrcSftpPass,
@@ -93,8 +180,7 @@ Function Start_Pipeline{
     $ExternalHighPortForSFTP,
     $VendorSuppliedPubKey,
     $EmailAddress,
-    $ExternalVendorEmailContact,
-    $CR
+    $ExternalVendorEmailContact
   )
   Begin{
     Write-Information -MessageData "Triggering Pipeline $PipelineId..." -InformationAction Continue
@@ -124,7 +210,6 @@ Function Start_Pipeline{
             "fileSize": "--FILESIZE--",
             "sourceDataType": "--SOURCEDATATYPE--",
             "sourceLocation": "--SOURCELOCATION--",
-            "sourceStorageAccountFromPipeline": "--SOURCESTORAGEACCOUNTFROMPIPELINE--",
             "srcSftpCtn": "--SRCSFTPCTN--",
             "srcSftpAcctNm": "--SRCSFTPACCTNM--",
             "srcSftpPass": "--SRCSFTPPASS--",
@@ -176,18 +261,12 @@ Function Start_Pipeline{
       {
         $BranchName = 'main'
       }
-      if($CR -eq 'true')
-      {
-        $BranchName = 'feature/CR'
-      }
       if([string]::IsNullOrEmpty($MachineName))
       {
         $MachineName = "new"
       }
       $CBASFTPSourcePath = $CBASFTPSourcePath -replace ' ','*'
       $AppName = $AppName -replace ' ','*'
-      $FileSize = $FileSize.Trim()
-      $FileSize = $FileSize -replace '\s+', ' '
 
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--BRANCHNAME--", $BranchName)
 
@@ -205,7 +284,6 @@ Function Start_Pipeline{
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--FILESIZE--", $FileSize)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--SOURCEDATATYPE--", $SourceDataType)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--SOURCELOCATION--", $SourceLocation)
-      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--SOURCESTORAGEACCOUNTFROMPIPELINE--", $SourceStorageAccountFromPipeline)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--SRCSFTPCTN--", $SrcSftpCtn)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--SRCSFTPACCTNM--", $SrcSftpAcctNm)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--SRCSFTPPASS--", $SrcSftpPass)
@@ -255,7 +333,6 @@ $TriggerPipeline = Start_Pipeline -PipelineId $PipelineId `
  -FileSize $FileSize `
  -SourceDataType $SourceDataType `
  -SourceLocation $SourceLocation `
- -SourceStorageAccountFromPipeline $SourceStorageAccountFromPipeline `
  -SrcSftpCtn $SrcSftpCtn `
  -SrcSftpAcctNm $SrcSftpAcctNm `
  -SrcSftpPass $SrcSftpPass `
@@ -269,8 +346,7 @@ $TriggerPipeline = Start_Pipeline -PipelineId $PipelineId `
  -ExternalHighPortForSFTP $ExternalHighPortForSFTP `
  -VendorSuppliedPubKey $VendorSuppliedPubKey `
  -EmailAddress $EmailAddress `
- -ExternalVendorEmailContact $ExternalVendorEmailContact `
- -CR $CR
+ -ExternalVendorEmailContact $ExternalVendorEmailContact
 if($TriggerPipeline -contains $false)
 {
   Write-Error "There is an error in triggering the pipeline."

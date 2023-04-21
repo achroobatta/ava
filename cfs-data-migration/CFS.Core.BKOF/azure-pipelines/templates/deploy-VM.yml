@@ -121,6 +121,7 @@ steps:
                     --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-VM.bicep `
                     --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\06-VM\vm-${{ parameters.serviceId }}.param.${{ parameters.AzureEnvironmentPrefix }}.json `
                     --parameters owner='${{ parameters.owner }}' `
+                    --parameters KeyEncryptionUrl=$KeyEncryptionUrlOutput `
                     --parameters workspaceId=$WorkspaceIdOutput `
                     --parameters workspaceKey=$WorkspaceKeyOutput `
                     --parameters costCenter='${{ parameters.costCenterCode }}' `
@@ -128,7 +129,7 @@ steps:
                     --parameters environmentPrefix='${{ parameters.AzureEnvironmentPrefix }}' `
                     --parameters adminPassword='${{ parameters.adminP }}' `
                     --parameters fileSize='${{ parameters.fileSize }}' `
-                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters appName=$(appName) `
                     --parameters diagStorageAcctName='${{ parameters.diagStorageAcctName }}' `
                     --parameters privateEndpointNameForStorage='${{ parameters.privateEndpointNameForStorage }}' `
                     --parameters resourceLocation='${{ parameters.vmLocation }}' `

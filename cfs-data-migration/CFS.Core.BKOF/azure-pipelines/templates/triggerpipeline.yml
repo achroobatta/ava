@@ -18,7 +18,6 @@ parameters:
     fileSize: ''
     sourceDataType: ''
     sourceLocation: ''
-    sourceStorageAccountFromPipeline: ''
     srcSftpCtn: ''
     srcSftpAcctNm: ''
     srcSftpPass: ''
@@ -69,7 +68,6 @@ jobs:
            -FileSize '${{ parameters.fileSize}}' `
            -SourceDataType '${{ parameters.sourceDataType}}' `
            -SourceLocation '${{ parameters.sourceLocation}}' `
-           -SourceStorageAccountFromPipeline '${{ parameters.sourceStorageAccountFromPipeline}}' `
            -SrcSftpCtn '${{ parameters.srcSftpCtn}}' `
            -SrcSftpAcctNm '${{ parameters.srcSftpAcctNm}}' `
            -SrcSftpPass '${{ parameters.srcSftpPass}}' `
@@ -83,8 +81,7 @@ jobs:
            -ExternalHighPortForSFTP '${{ parameters.ExternalHighPortForSFTP}}' `
            -VendorSuppliedPubKey '${{parameters.vendorSuppliedPubKey}}' `
            -EmailAddress '${{ parameters.emailAddress}}' `
-           -ExternalVendorEmailContact '${{ parameters.ExternalVendorEmailContact}}' `
-           -CR '$(CR)'
+           -ExternalVendorEmailContact '${{ parameters.ExternalVendorEmailContact}}' 
           errorActionPreference: 'stop'
           warningPreference: 'default'
           informationPreference: 'default'
