@@ -26,6 +26,9 @@ parameters:
 - name: resourceLocation
   type: string
 
+- name: securitySubscriptionId
+  type: string
+
 steps:
   - task: AzureCLI@2
     displayName : 'Deploy Key Vault in ${{ parameters.serviceName }} Subscription'
@@ -46,4 +49,6 @@ steps:
                     --parameters connSubId='${{ parameters.connSubId }}' `
                     --parameters connRg='${{ parameters.connRg }}' `
                     --parameters rgName='${{ parameters.rgName }}' `
-                    --parameters resourceLocation='${{ parameters.resourceLocation }}'
+                    --parameters resourceLocation='${{ parameters.resourceLocation }}' `
+                    --parameters storageAccountSubscriptionId='${{ parameters.securitySubscriptionId }}' `
+                    --parameters workspaceSubscriptionId='${{ parameters.securitySubscriptionId }}'

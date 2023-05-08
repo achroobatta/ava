@@ -10,50 +10,11 @@ function Main()
     param($unzipPath, $folder)
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Executing Main TVT function") >> $logFilePath
 
-    $reportPath = (Get-ChildItem -Path $unzipPath\$folder | Where-Object {$_.Name -like "*Report*"}).FullName
+    $reportPath = (Get-ChildItem -Path $unzipPath\$folder | Where-Object {$_.Name -like "*DMF*Report*"}).FullName
     if($null -eq $reportPath)
     {
         return "No Report folder found in $unzipPath\$folder"
     }
-
-    #Treesize
-    $treeSizeXlsx = (Get-ChildItem $reportPath -Filter *.xlsx | Where-Object {$_.BaseName -like "*Treesize*"} | Measure-Object).Count
-    $treeSizeCsv = (Get-ChildItem $reportPath -Filter *.csv | Where-Object {$_.BaseName -like "*Treesize*"} | Measure-Object).Count
-    if($treeSizeXlsx -ne 0 -or $treeSizeCsv -ne 0)
-    {
-        $treeSize = Get_TreeSize -reportPath $reportPath -unzipPath $unzipPath -folder $folder
-        foreach($value in $treeSize) #need to be check if return is only genPath
-        {
-            if($value -match ".xlsx")
-            {
-                $treeSizePath = $value
-            }
-        }
-    }
-    #MD5
-    $md5Xlsx = (Get-ChildItem $reportPath -Filter *.xlsx | Where-Object {$_.BaseName -like "*Hash*"} | Measure-Object).Count
-    $md5Csv = (Get-ChildItem $reportPath -Filter *.csv | Where-Object {$_.BaseName -like "*Hash*"} | Measure-Object).Count
-    if($md5Xlsx -ne 0 -or $md5Csv -ne 0)
-    {
-        $md5 = Get_MD5 -unzipPath $unzipPath -folder $folder #need to be check if return is only genPath
-        foreach($value in $md5)
-        {
-            if($value -match ".xlsx")
-            {
-                $md5Path = $value
-            }
-        }
-    }
-
-    $comresult = Get_Comparison -reportPath $reportPath -treeSize $treeSizePath -md5 $md5Path -unzipPath $unzipPath -folder $folder
-    return $comresult
-}
-
-function Get_TreeSize()
-{
-    param($reportPath, $unzipPath, $folder)
-
-    Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Generating TreeSize Report") >> $logFilePath
 
     #Convert csv file to xlsx if not existing
     $csv = Get-ChildItem $reportPath -Filter *.csv | Where-Object {$_.BaseName -like "*Hash*" -or $_.BaseName -like "*Treesize*"}
@@ -75,6 +36,58 @@ function Get_TreeSize()
         }
     }
 
+    #Treesize
+    $treeSizeXlsx = (Get-ChildItem $reportPath -Filter *.xlsx | Where-Object {$_.BaseName -like "*Treesize*"} | Measure-Object).Count
+    $treeSizeCsv = (Get-ChildItem $reportPath -Filter *.csv | Where-Object {$_.BaseName -like "*Treesize*"} | Measure-Object).Count
+    if($treeSizeXlsx -ne 0 -or $treeSizeCsv -ne 0)
+    {
+        $treeSize = Get_TreeSize -unzipPath $unzipPath -folder $folder
+        foreach($value in $treeSize) #need to be check if return is only genPath
+        {
+            if($value -match ".xlsx")
+            {
+                $treeSizePath = $value
+            }
+        }
+    }
+    #MD5
+    $md5Xlsx = (Get-ChildItem $reportPath -Filter *.xlsx | Where-Object {$_.BaseName -like "*Hash*"} | Measure-Object).Count
+    $md5Csv = (Get-ChildItem $reportPath -Filter *.csv | Where-Object {$_.BaseName -like "*Hash*"} | Measure-Object).Count
+    if($md5Xlsx -ne 0 -or $md5Csv -ne 0)
+    {
+        try
+        {
+            $contents = (Get-ChildItem $reportPath -Filter *.xlsx | Where-Object {$_.BaseName -like "*Hash*"}).FullName
+            $contentCount = (Import-Excel -Path $contents).Count
+
+            if($contentCount -ne 0)
+            {
+                $md5 = Get_MD5 -unzipPath $unzipPath -folder $folder #need to be check if return is only genPath
+                foreach($value in $md5)
+                {
+                    if($value -match ".xlsx")
+                    {
+                        $md5Path = $value
+                    }
+                }
+            }
+        }
+        catch
+        {
+            $md5Path = "Empty"
+        }
+    }
+
+    $comresult = Get_Comparison -reportPath $reportPath -treeSize $treeSizePath -md5 $md5Path -unzipPath $unzipPath -folder $folder
+    return $comresult
+}
+
+function Get_TreeSize()
+{
+    param($unzipPath, $folder)
+
+    Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Generating TreeSize Report") >> $logFilePath
+
     #Path to be Scanned by Treesize application
     $Scanpath = (Get-ChildItem -Path $unzipPath\$folder -Exclude "*report*").FullName
     if($null -eq $Scanpath)
@@ -89,7 +102,7 @@ function Get_TreeSize()
 
     try
     {
-        Start-Process -FilePath "$ProgFilePath\TreeSize.exe" -ArgumentList "/NOGUI /UILevel Simple /SCAN $Scanpath /EXPORTFILES /EXCEL $genPath" -wait
+        Start-Process -FilePath "$ProgFilePath\TreeSize.exe" -ArgumentList "/NOGUI /SIZEUNIT 3 /UILevel Simple /SCAN $Scanpath /EXPORTFILES /EXCEL $genPath" -wait
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Generated TreeSize Report") >> $logFilePath
     }
     catch
@@ -133,7 +146,7 @@ function Get_Comparison()
         {
             If ($sourcesizes[$i].Size -ne $reportsizes[$i].Size)
             {
-                $sizeresult += "Mismatch Findings: Source Size: " + $sourcesizes[$i].'Full Path' + "Generated Size: " + $reportsizes[$i].'Full Path'
+                $sizeresult += "Mismatch Findings: Source Size: " + $sourcesizes[$i].'Full Path' + " Generated Size: " + $reportsizes[$i].'Full Path'
             }
             Else
             {
@@ -147,7 +160,7 @@ function Get_Comparison()
                                             {
             If ($sourcefiles[$i].Files -ne $reportfiles[$i].Files)
             {
-                $fileresult += "Mismatch Findings: Source File: " + $sourcesizes[$i].'Full Path' + "Generated File: " + $reportsizes[$i].'Full Path'
+                $fileresult += "Mismatch Findings: Source File: " + $sourcefiles[$i].'Full Path' + " Generated File: " + $reportfiles[$i].'Full Path'
             }
             Else
             {
@@ -161,7 +174,7 @@ function Get_Comparison()
                                             {
             If ($sourcefolders[$i].Files -ne $reportfolders[$i].Files)
             {
-                $folderresult += "Mismatch Findings: Source Folder: " + $sourcesizes[$i].'Full Path' + "Generated Folder: " + $reportsizes[$i].'Full Path'
+                $folderresult += "Mismatch Findings: Source Folder: " + $sourcefolders[$i].'Full Path' + " Generated Folder: " + $reportfolders[$i].'Full Path'
             }
             Else
             {
@@ -181,7 +194,7 @@ function Get_Comparison()
         {
             $arrayResult += $misfolder
         }
-        if($null -eq $arrayResult)
+        if(!($arrayResult))
         {
             $arrayResult += "No mismatch found for Treesize Report of $unzipPath\$folder"
         }
@@ -190,9 +203,13 @@ function Get_Comparison()
     {
         $arrayResult += "No Generated TreeSize Report for $unzipPath\$folder"
     }
-    if($null -ne $md5)
-    {
 
+    if($md5 -eq "Empty")
+    {
+        $arrayResult += "Source Hash Report is Empty, No Generated MD5 Hash Report for $unzipPath\$folder"
+    }
+    elseif($null -ne $md5)
+    {
         #MD5 Comparison -------------------------------------------------------------------------------------------------------
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Comparing MD5 Hash Report") >> $logFilePath
 
@@ -230,7 +247,7 @@ function Get_Comparison()
     }
     else
     {
-        $arrayResult += $arrayResult + "No Generated MD5 Hash Report for $unzipPath\$folder"
+        $arrayResult += "No Generated MD5 Hash Report for $unzipPath\$folder"
     }
 
     #Copy report to Unzipfile-------------------------------------------------------------------------------
@@ -260,6 +277,7 @@ function Get_MD5()
     $arrayHash = @()
     foreach($getFile in $getFiles)
     {
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Generating Hash MD5 for $getFile") >> "$PSScriptRoot\HashReportProgress.txt"
         $h = certutil -hashfile $getfile MD5
         $hash = $h[1] -replace ' ',''
         $arrayHash += $hash
@@ -305,7 +323,6 @@ function Get_MD5()
 }
 
 #----------------------------START-------------------------------
-
 $logFilePath = "$PSScriptRoot\logging_reconcilliationReport.txt"
 Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Start") >> $logFilePath
 

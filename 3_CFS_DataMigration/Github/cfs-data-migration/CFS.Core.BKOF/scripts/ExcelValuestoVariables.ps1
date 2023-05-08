@@ -66,7 +66,7 @@ param(
 # }
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 #Read Excel File
-$VariableNameColumn = 4
+$VariableNameColumn = 3
 $ValueColumn = 5
 $StartRow = 1
 Install-Module -Name ImportExcel -Force

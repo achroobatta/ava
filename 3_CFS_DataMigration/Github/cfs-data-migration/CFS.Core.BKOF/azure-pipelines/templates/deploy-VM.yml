@@ -103,9 +103,16 @@ steps:
 
                     "Setting input Variables"
                     $keyEncryptionUrl = "az keyvault key list-versions --vault-name ${{ parameters.keyVaultName }} --name keyEncrypt --query [].kid --output tsv"
-                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query customerId -o tsv"
-                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query primarySharedKey --output tsv"
-
+                    # if ( '${{ parameters.AzureEnvironmentPrefix }}' -eq 'np') {
+                    #   $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-edc-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-edc-001 --subscription ${{ parameters.securitySubscriptionId }} --query customerId -o tsv"
+                    #   $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-edc-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-edc-001 --subscription ${{ parameters.securitySubscriptionId }} --query primarySharedKey --output tsv"
+                    # }
+                    # else{
+                    #$WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query customerId -o tsv"
+                    #$WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-${{ parameters.workspaceLocationPrefix }}-001 --subscription ${{ parameters.securitySubscriptionId }} --query primarySharedKey --output tsv"
+                    # }
+                    $WorkspaceId = "az monitor log-analytics workspace show --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-edc-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-edc-001 --subscription ${{ parameters.securitySubscriptionId }} --query customerId -o tsv"
+                    $WorkspaceKey = "az monitor log-analytics workspace get-shared-keys --resource-group rg-${{ parameters.AzureEnvironmentPrefix }}-edc-sec-sec-001 --workspace-name ws-${{ parameters.AzureEnvironmentPrefix }}-edc-001 --subscription ${{ parameters.securitySubscriptionId }} --query primarySharedKey --output tsv"
                     "Cleaning input variables"
                     Invoke-Expression $WorkspaceKey | Tee-Object -Variable WorkspaceKeyOutput | Out-Null
                     Invoke-Expression $KeyEncryptionUrl | Tee-Object -Variable KeyEncryptionUrlOutput | Out-Null

@@ -10,7 +10,10 @@ parameters:
     condition: ''
     workItemId: ''
     workItemState: ''
-    processed: 'false'
+    processed: ' '
+    tag: ' '
+    updateState: ' '
+    updateComment: ' '
 
 jobs:
 - job: ${{ parameters.name }}
@@ -32,7 +35,7 @@ jobs:
         inputs:
           targetType: 'filePath'
           filePath: ${{ parameters.scriptFilePath}}
-          arguments: -WorkItemId ${{ parameters.workItemId}} -PAT $(PAT) -WorkItemState "${{ parameters.workItemState}}" -WorkItemComment "${{ parameters.workItemComment}}" -Processed "${{ parameters.processed}}"
+          arguments: -WorkItemId ${{ parameters.workItemId}} -PAT $(PAT) -WorkItemState "${{ parameters.workItemState}}" -WorkItemComment "${{ parameters.workItemComment}}" -Processed "${{ parameters.processed}}" -Tag "${{ parameters.tag}}" -UpdateState "${{ parameters.updateState}}" -UpdateComment "${{ parameters.updateComment}}"
           errorActionPreference: 'stop'
           warningPreference: 'default'
           informationPreference: 'default'

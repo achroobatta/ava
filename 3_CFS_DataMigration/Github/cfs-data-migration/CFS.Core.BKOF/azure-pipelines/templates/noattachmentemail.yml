@@ -19,6 +19,8 @@ jobs:
   condition: ${{ parameters.condition}}
   variables:
   - group: ${{ parameters.variableGroup}}
+  - name: env
+    value: ${{ parameters.environment}}
   steps:
   - task: GraphEmail@0
     displayName: 'Sending email using Graph Api'
@@ -32,7 +34,7 @@ jobs:
       ClientID: $(npClientId)
       ClientSecret: $(npClientSecret)
       TenantDomain: $(npTenantDomain)
-      condition: eq(variables.environment, 'Non-Production')
+    condition: eq(variables.env, 'Non-Production')
   - task: GraphEmail@0
     displayName: 'Sending email using Graph Api'
     inputs:
@@ -45,4 +47,4 @@ jobs:
       ClientID: $(prdClientId)
       ClientSecret: $(prdClientSecret)
       TenantDomain: $(prdTenantDomain)
-    condition: eq(variables.environment, 'Production')
+    condition: eq(variables.env, 'Production')

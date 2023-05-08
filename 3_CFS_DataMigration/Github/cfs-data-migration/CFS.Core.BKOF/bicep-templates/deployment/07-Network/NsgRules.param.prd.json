@@ -49,6 +49,42 @@
                       }
                     },
                     {
+                      "name": "AllowDmt001",
+                      "properties": {
+                        "description": "Allow DMT001",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.8",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 300,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt002",
+                      "properties": {
+                        "description": "Allow DMT002",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.9",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 400,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
                       "name": "DenyAllInboundCommunication",
                       "properties": {
                         "description": "Deny All Inbound Communication",
@@ -86,6 +122,42 @@
                         "destinationAddressPrefix": "*",
                         "access": "Allow",
                         "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt001",
+                      "properties": {
+                        "description": "Allow DMT001",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.8",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 500,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt002",
+                      "properties": {
+                        "description": "Allow DMT002",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.9",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 600,
                         "direction": "Inbound",
                         "sourcePortRanges": [],
                         "destinationPortRanges": [],
@@ -261,6 +333,42 @@
                       }
                     },
                     {
+                      "name": "AllowDmt001",
+                      "properties": {
+                        "description": "Allow DMT001",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.8",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 300,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt002",
+                      "properties": {
+                        "description": "Allow DMT002",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.9",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 400,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
                       "name": "DenyAllInboundCommunication",
                       "properties": {
                         "description": "Deny All Inbound Communication",
@@ -324,6 +432,42 @@
                       }
                     },
                     {
+                      "name": "AllowDmt001",
+                      "properties": {
+                        "description": "Allow DMT001",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.8",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 300,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt002",
+                      "properties": {
+                        "description": "Allow DMT002",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.9",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 400,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
                       "name": "DenyAllInboundCommunication",
                       "properties": {
                         "description": "Deny All Inbound Communication",
@@ -361,6 +505,42 @@
                         "destinationAddressPrefix": "*",
                         "access": "Allow",
                         "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt001",
+                      "properties": {
+                        "description": "Allow DMT001",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.8",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 300,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt002",
+                      "properties": {
+                        "description": "Allow DMT002",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.9",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 400,
                         "direction": "Inbound",
                         "sourcePortRanges": [],
                         "destinationPortRanges": [],
@@ -528,6 +708,42 @@
                         "destinationAddressPrefix": "*",
                         "access": "Allow",
                         "priority": 100,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt001",
+                      "properties": {
+                        "description": "Allow DMT001",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.8",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 300,
+                        "direction": "Inbound",
+                        "sourcePortRanges": [],
+                        "destinationPortRanges": [],
+                        "sourceAddressPrefixes": [],
+                        "destinationAddressPrefixes": []
+                      }
+                    },
+                    {
+                      "name": "AllowDmt002",
+                      "properties": {
+                        "description": "Allow DMT002",
+                        "protocol": "*",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "*",
+                        "sourceAddressPrefix": "10.23.0.9",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 400,
                         "direction": "Inbound",
                         "sourcePortRanges": [],
                         "destinationPortRanges": [],

@@ -37,8 +37,8 @@ param environmentPrefix string
 @secure()
 param adminPassword string
 
-@description('The string value for the key vault resource group location')
-param kv_location string
+// @description('The string value for the key vault resource group location')
+// param kv_location string
 
 @description('The string value for the key vault service component abbreviation')
 param kv_component string
@@ -88,8 +88,8 @@ param privateEndpointNameForStorage string
 param ultraSSDEnabled bool
 
 resource kv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
-  name: 'kv-${environmentPrefix}-${(kv_location == 'australiaeast') ? 'edc' : 'sdc' }-${(kv_service == 'connectivity') ? 'hub' : kv_service}-00${kv_instance}'
-  scope: resourceGroup('rg-${environmentPrefix}-${(kv_location == 'australiaeast') ? 'edc' : 'sdc' }-${kv_serviceAbbrv}-${kv_component}-00${kv_rginstance}')
+  name: 'kv-${environmentPrefix}-${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }-${(kv_service == 'connectivity') ? 'hub' : kv_service}-00${kv_instance}'
+  scope: resourceGroup('rg-${environmentPrefix}-${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }-${kv_serviceAbbrv}-${kv_component}-00${kv_rginstance}')
 }
 
 resource rgresource 'Microsoft.Resources/resourceGroups@2021-04-01' = [for (rg, i) in rgArray: {
@@ -104,54 +104,54 @@ resource rgresource 'Microsoft.Resources/resourceGroups@2021-04-01' = [for (rg, 
   }
 }]
 
-@batchSize(1)
-module storageAccount '../../modules/Microsoft.Storage/deployDiagStorageAccount.bicep' = [for (rg, i) in storageArray: {
-  name: 'deploy-${diagStorageAcctName}-${rg.instance}'
-  scope: resourceGroup(rgresource[0].name)
-  params: {
-    location: resourceLocation
-    appName: appName
-    environmentPrefix: environmentPrefix
-    owner: owner
-    costCenter: costCenter
-    createOnDate: createOnDate
-    storageAccountName: diagStorageAcctName
-    publicNetworkAccess: rg.publicNetworkAccess
-    minimumTlsVersion: rg.minimumTlsVersion
-    allowBlobPublicAccess: rg.allowBlobPublicAccess
-    defaultAction: rg.defaultAction
-    performance: rg.performance
-    kind: rg.kind
-  }
-  dependsOn: rgresource
-}]
+// @batchSize(1)
+// module storageAccount '../../modules/Microsoft.Storage/deployDiagStorageAccount.bicep' = [for (rg, i) in storageArray: {
+//   name: 'deploy-${diagStorageAcctName}-${rg.instance}'
+//   scope: resourceGroup(rgresource[0].name)
+//   params: {
+//     location: resourceLocation
+//     appName: appName
+//     environmentPrefix: environmentPrefix
+//     owner: owner
+//     costCenter: costCenter
+//     createOnDate: createOnDate
+//     storageAccountName: diagStorageAcctName
+//     publicNetworkAccess: rg.publicNetworkAccess
+//     minimumTlsVersion: rg.minimumTlsVersion
+//     allowBlobPublicAccess: rg.allowBlobPublicAccess
+//     defaultAction: rg.defaultAction
+//     performance: rg.performance
+//     kind: rg.kind
+//   }
+//   dependsOn: rgresource
+// }]
 
-@batchSize(1)
-module privateendpointforstorageDeploy '../../modules/Microsoft.Network/privateEndpoints/privateEndpoints_diagstorage.bicep' = [for rg in storageArray: {
-  scope: resourceGroup(rgresource[0].name)
-  name: 'pvedeploy-${privateEndpointNameForStorage}-${rg.instance}'
-  params: {
-    location: resourceLocation
-    storageName: diagStorageAcctName
-    subnetName: (resourceLocation == 'australiaeast') ? rg.subnetName : rg.subnet2Name
-    virtualNetworkName: (resourceLocation == 'australiaeast') ? rg.virtualNetworkName : rg.virtualNetwork2Name
-    virtualNetworkResourceGroup: (resourceLocation == 'australiaeast') ? rg.virtualNetworkResourceGroup : rg.virtualNetwork2ResourceGroup
-    privateDnsZoneName: rg.privateDnsZoneName
-    appName: appName
-    costCenter: costCenter
-    createOnDate: createOnDate
-    owner: owner
-    environmentPrefix: environmentPrefix
-    storageRG: rg.rgname
-    privateEndpointNameForStorage: privateEndpointNameForStorage
-    connSubId: connSubId
-    connRg: connRg
-  }
-  dependsOn: [
-    rgresource
-    storageAccount
-  ]
-}]
+// @batchSize(1)
+// module privateendpointforstorageDeploy '../../modules/Microsoft.Network/privateEndpoints/privateEndpoints_diagstorage.bicep' = [for rg in storageArray: {
+//   scope: resourceGroup(rgresource[0].name)
+//   name: 'pvedeploy-${privateEndpointNameForStorage}-${rg.instance}'
+//   params: {
+//     location: resourceLocation
+//     storageName: diagStorageAcctName
+//     subnetName: (resourceLocation == 'australiaeast') ? rg.subnetName : rg.subnet2Name
+//     virtualNetworkName: (resourceLocation == 'australiaeast') ? rg.virtualNetworkName : rg.virtualNetwork2Name
+//     virtualNetworkResourceGroup: (resourceLocation == 'australiaeast') ? rg.virtualNetworkResourceGroup : rg.virtualNetwork2ResourceGroup
+//     privateDnsZoneName: rg.privateDnsZoneName
+//     appName: appName
+//     costCenter: costCenter
+//     createOnDate: createOnDate
+//     owner: owner
+//     environmentPrefix: environmentPrefix
+//     storageRG: rgresource[0].name
+//     privateEndpointNameForStorage: privateEndpointNameForStorage
+//     connSubId: connSubId
+//     connRg: connRg
+//   }
+//   dependsOn: [
+//     rgresource
+//     storageAccount
+//   ]
+// }]
 
 @batchSize(1)
 module deployVM '../../modules/Microsoft.Compute/deployVM.bicep' = [for (vm, i) in vmObject.vmValues: if (ultraSSDEnabled == false){
@@ -168,9 +168,9 @@ module deployVM '../../modules/Microsoft.Compute/deployVM.bicep' = [for (vm, i) 
       osDiskType: vm.osDiskType
       OSDiskSize: vm.osDiskSize
       vmSize: (fileSizeType == 'TB') ? (fileSizeValue <= vm.fileSize ? vm.vmSmallSize : vm.vmLargeSize) : (fileSizeType == 'KB' ? (fileSizeValue <= vm.fileSize ? vm.vmSmallSize: vm.vmLargeSize) : vm.vmSmallSize)
-      vnetResourceGroup: vm.vnetResourceGroup
-      virtualNetworkName: vm.virtualNetworkName
-      subnetName: vm.subnetName
+      vnetResourceGroup: (resourceLocation == 'australiaeast') ? vm.vnetResourceGroup : vm.vnet2ResourceGroup
+      virtualNetworkName: (resourceLocation == 'australiaeast') ? vm.virtualNetworkName : vm.virtualNetwork2Name
+      subnetName: (resourceLocation == 'australiaeast') ? vm.subnetName : vm.subnet2Name
       diagstorageName: diagStorageAcctName
       timeZone: vm.timeZone
       privateIPAllocationMethod: vm.privateIPAllocationMethod
@@ -193,7 +193,7 @@ module deployVM '../../modules/Microsoft.Compute/deployVM.bicep' = [for (vm, i) 
       autoShutdownNotificationEmail:vm.autoShutdownNotificationEmail
       isEnableAutoShutdown:vm.isEnableAutoShutdown
       dataDisks:vm.dataDiskResources
-      dataDisksCount: (fileSizeType == 'TB') ? ((fileSizeValue % 16 != 0) ? ((int(fileSizeValue/16) + 1) + 5*(int(fileSizeValue/16) + 1)) : (int(fileSizeValue/16) + 5*int(fileSizeValue/16))) : 6
+      dataDisksCount: (fileSizeType == 'TB') ? ((fileSizeValue % 16 != 0) ? ((int(fileSizeValue/16) + 1) + 5*(int(fileSizeValue/16) + 1)) : (int(fileSizeValue/16) + 5*int(fileSizeValue/16))) : 2
       autoShutdownTime:vm.autoShutdownTime
       availabilitySetName: vm.availabilitySetName
       domainName: vm.domainName
@@ -206,8 +206,8 @@ module deployVM '../../modules/Microsoft.Compute/deployVM.bicep' = [for (vm, i) 
     }
     dependsOn: [
       rgresource
-      storageAccount
-      privateendpointforstorageDeploy
+    //   storageAccount
+    //   privateendpointforstorageDeploy
     ]
   }]
 
@@ -226,9 +226,9 @@ module deployVMude '../../modules/Microsoft.Compute/deployVMude.bicep' = [for (v
       osDiskType: vm.osDiskType
       OSDiskSize: vm.osDiskSize
       vmSize: (fileSizeType == 'TB') ? (fileSizeValue <= vm.fileSize ? vm.vmSmallSize : vm.vmLargeSize) : (fileSizeType == 'KB' ? (fileSizeValue <= vm.fileSize ? vm.vmSmallSize: vm.vmLargeSize) : vm.vmSmallSize)
-      vnetResourceGroup: vm.vnetResourceGroup
-      virtualNetworkName: vm.virtualNetworkName
-      subnetName: vm.subnetName
+      vnetResourceGroup: (resourceLocation == 'australiaeast') ? vm.vnetResourceGroup : vm.vnet2ResourceGroup
+      virtualNetworkName: (resourceLocation == 'australiaeast') ? vm.virtualNetworkName : vm.virtualNetwork2Name
+      subnetName: (resourceLocation == 'australiaeast') ? vm.subnetName : vm.subnet2Name
       diagstorageName: diagStorageAcctName
       timeZone: vm.timeZone
       privateIPAllocationMethod: vm.privateIPAllocationMethod
@@ -251,7 +251,7 @@ module deployVMude '../../modules/Microsoft.Compute/deployVMude.bicep' = [for (v
       autoShutdownNotificationEmail:vm.autoShutdownNotificationEmail
       isEnableAutoShutdown:vm.isEnableAutoShutdown
       dataDisks:vm.dataDiskResources
-      dataDisksCount: (fileSizeType == 'TB') ? ((fileSizeValue % 16 != 0) ? ((int(fileSizeValue/16) + 1) + 5*(int(fileSizeValue/16) + 1)) : (int(fileSizeValue/16) + 5*int(fileSizeValue/16))) : 6
+      dataDisksCount: (fileSizeType == 'TB') ? ((fileSizeValue % 16 != 0) ? ((int(fileSizeValue/16) + 1) + 5*(int(fileSizeValue/16) + 1)) : (int(fileSizeValue/16) + 5*int(fileSizeValue/16))) : 2
       autoShutdownTime:vm.autoShutdownTime
       availabilitySetName: vm.availabilitySetName
       domainName: vm.domainName
@@ -264,7 +264,7 @@ module deployVMude '../../modules/Microsoft.Compute/deployVMude.bicep' = [for (v
     }
     dependsOn: [
       rgresource
-      storageAccount
-      privateendpointforstorageDeploy
-    ]
+    //   storageAccount
+    //   privateendpointforstorageDeploy
+     ]
   }]

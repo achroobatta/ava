@@ -18,6 +18,7 @@ jobs:
   steps:
   - task: AzureCLI@2
     displayName: Delete Azure VM
+    name: Delete_VM
     inputs:
       azureSubscription: ${{ parameters.landingZoneServiceConnection}}
       scriptType: 'pscore'

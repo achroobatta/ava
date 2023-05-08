@@ -11,9 +11,9 @@ param owner string
 param costCenter string
 param createOnDate string
 
-param virtualNetworkResourceGroup string
-param virtualNetworkName_RG string
-param virtualNetworksubnetName string 
+// param virtualNetworkResourceGroup string
+// param virtualNetworkName_RG string
+// param virtualNetworksubnetName string
 
 param containerPrefix string
 
@@ -35,8 +35,12 @@ resource storageAccountNameArray 'Microsoft.Storage/storageAccounts@2021-06-01' 
       resourceAccessRules: []
       bypass: 'AzureServices,Logging,Metrics'
       //virtualNetworkRules: contains(storage, 'virtualNetworkRules') ? storage.virtualNetworkRules : null
-      virtualNetworkRules: [{
-        id: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName_RG, virtualNetworksubnetName)            
+      // virtualNetworkRules: [{
+      //   id: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName_RG, virtualNetworksubnetName)
+      //   action: storage.action
+      // }]
+      virtualNetworkRules: [for (vr,i) in storage.virtualNetworkRules: {
+        id: resourceId(vr.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vr.virtualNetworkName_RG, vr.virtualNetworksubnetName)
         action: storage.action
       }]
       defaultAction: storage.defaultAction
@@ -49,7 +53,7 @@ resource storageAccountNameArray 'Microsoft.Storage/storageAccounts@2021-06-01' 
   kind: storage.kind
 }]
 
-resource blobStorageAccountArray 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = [for (storage, i) in storageAccount : { 
+resource blobStorageAccountArray 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = [for (storage, i) in storageAccount : {
   name: 'default'
   parent: storageAccountNameArray[i]
   properties: {

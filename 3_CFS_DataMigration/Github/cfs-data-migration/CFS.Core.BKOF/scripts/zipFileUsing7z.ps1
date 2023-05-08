@@ -69,26 +69,9 @@ function azconnect()
 
 Function get-secret()
 {
-    $azctx = Get-AzContext
-    if($null -eq $azctx)
-    {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"VM is not connected in Azure") >> $logFilePath
-        break
-    }
-    Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Generating Password") >> $logFilePath
-
     try
     {
-        powershell.exe -file "$PSScriptRoot\generatePassword.ps1" $keyVaultNameforSecret $sftpUsername
-    }
-    catch
-    {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered generating password") >> $logFilePath
-    }
-
-    try
-    {
-        $namepass = $sftpUsername + "secret"
+        $namepass = $sftpUsername + "7ZipPassword"
         $secret = Get-AzKeyVaultSecret -vaultName $keyVaultNameforSecret -name $namepass
         $Get_My_Scret = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secret.SecretValue)
         $Enpassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($Get_My_Scret)
@@ -119,15 +102,30 @@ Function get-secret()
         $sreformat = $sreplace.Replace(" ","_")
         $srcPath = (Get-ChildItem -Path $sreformat).FullName
 
-        $zipSize = (Get-ChildItem -Path $orgChildFolder -Exclude "*Report*" -File -Recurse | Select-Object -First 1 | Measure-Object -Property Length -sum).Sum
+        #zip size fixed at 10gb
+        $zipSize = 10737418240
         try
         {
             #Path get data and report folder
             For($i=0;$i -lt $orgChildFolder.count;$i++)
             {
                 $sPath = $srcPath[$i]
-                $aPath = $arcPath[$i]
-                Compress-7Zip -Path $sPath -ArchiveFileName "$aPath\EncryptedFile.7z" -CompressionLevel None -VolumeSize $zipSize -Format SevenZip -Password $Enpassword -EncryptFilenames -ErrorAction Stop
+                $sPathName = Split-Path $sPath -Leaf
+                $archiveFullPath = Join-Path $folder -ChildPath $sPathName
+                $archiveFullPath = $archiveFullPath.Replace("$localTargetDirectory","$zipPath")
+                $aPathIndex = $arcPath.IndexOf($archiveFullPath)
+
+                if($aPathIndex -ge 0)
+                {
+                    $aPath = $arcPath[$aPathIndex]
+                    Compress-7Zip -Path $sPath -ArchiveFileName "$aPath\EncryptedFile.7z" -CompressionLevel None -VolumeSize $zipSize -Format SevenZip -Password $Enpassword -EncryptFilenames -ErrorAction Stop
+                }
+                else
+                {
+
+                    Compress-7Zip -Path $sPath -ArchiveFileName "$archiveFullPath\EncryptedFile.7z" -CompressionLevel None -VolumeSize $zipSize -Format SevenZip -Password $Enpassword -EncryptFilenames -ErrorAction Stop
+
+                }
             }
 
             if((Get-ChildItem -Path $zipPath))
@@ -145,7 +143,7 @@ Function get-secret()
         }
         catch
         {
-            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while Zipping files") >> $logFilePath
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while Zipping files: $_") >> $logFilePath
             break
         }
     }
@@ -155,6 +153,8 @@ Function get-secret()
         return "Unable to Compress the files"
     }
 }
+Set-Item -path WSMan:\localhost\Shell\IdleTimeout -Value '2147483647'
+Start-Transcript -OutputDirectory $env:HOMEDRIVE\temp\logfiles
 
 $logFilePath = "$PSScriptRoot\logging_zipFileUsing7z.txt"
 
@@ -171,6 +171,16 @@ try
         azconnect -subId $subId -subTenantId $subTenantId | Out-Null
     }
 
+    Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Generating Password") >> $logFilePath
+    try
+    {
+        powershell.exe -file "$PSScriptRoot\generatePassword.ps1" -keyVaultNameforSecret $keyVaultNameforSecret -sftpUsername $sftpUsername -subId $subId -subTenantId $subTenantId
+    }
+    catch
+    {
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered generating password") >> $logFilePath
+    }
+
     $folders = (Get-ChildItem $localTargetDirectory).FullName
     foreach($folder in $folders)
     {
@@ -183,3 +193,4 @@ catch
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
     write-output "Failed to Zip/Encrypt file and Copy from Disk2 to Storage location"
 }
+Stop-Transcript

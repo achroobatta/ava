@@ -78,11 +78,24 @@ function copy_tosftploc ()
     try
     {
         $storcontext=$uploadstorage.Context
-        Get-ChildItem -Path $zipPath -File -Recurse | Set-AzStorageBlobContent -Container $destContainerName -Context $storcontext -ErrorAction Stop -ErrorVariable $err | Out-Null
+        #Upload to Destination Storage Account
+        $root = $zipPath
+        $Files = Get-ChildItem $root -Recurse -File
+        $StorageAccount = Get-AzStorageAccount -ResourceGroupName $commRG -Name $destStorageAccount
+        $Context = $StorageAccount.Context
+
+        Foreach($File in $Files)
+        {
+            $FilePath = $File.FullName.SubString($root.length + 1)
+            $BlobPath = $FilePath.Replace("\","/")
+
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Upload $FilePath to $BlobPath") >> "$PSScriptRoot\UploadtoDesStorageProgress.txt"
+            Set-AzStorageblobcontent -File $File.FullName -Blob $BlobPath -Container $destContainerName -Context $Context -Force | Out-Null
+        }
     }
     catch
     {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while copying file to storage") >> $logFilePath
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while copying file to storage: $_") >> $logFilePath
     }
 
     $result = Get-AzStorageContainer -Name $destContainerName* -Context $storcontext | Get-AzStorageBlob
@@ -101,6 +114,7 @@ function copy_tosftploc ()
         return "Copy from Disk2 to Destination Storage account Failed"
     }
 }
+Start-Transcript -OutputDirectory $env:HOMEDRIVE\temp\logfiles
 
 $logFilePath = "$PSScriptRoot\logging_copyFilefromDisktoSFTP.txt"
 
@@ -126,3 +140,5 @@ catch
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
     return "Failed to Copy File From Disk to SFTP Please check input parameters"
 }
+
+Stop-Transcript

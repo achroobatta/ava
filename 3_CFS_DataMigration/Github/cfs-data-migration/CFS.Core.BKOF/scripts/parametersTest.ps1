@@ -3,6 +3,7 @@ param (
     [string]$resourceLocation,
     [string]$deployEnvironment,
     [string]$sourceDataType,
+    [string]$sourceStorageAccountFromPipeline,
     [string]$sourceLocation,
     [string]$targetDataType,
     [string]$secretName,
@@ -24,7 +25,9 @@ param (
     [string]$runType,
     [string]$subId,
     [string]$subTenantId,
-    [string]$sftpUserName
+    [string]$sftpUserName,
+    [string]$appName,
+    [string]$etlDestStorageAccountName
 )
 $outFile = "$env:USERPROFILE\MasterParameters.txt"
 
@@ -36,6 +39,7 @@ Write-Output "taskNumber: $taskNumber" > $outFile
 Write-Output "resourceLocation: $resourceLocation" >> $outFile
 Write-Output "deployEnvironment: $deployEnvironment" >> $outFile
 Write-Output "sourceDataType: $sourceDataType" >> $outFile
+Write-Output "sourceStorageAccountFromPipeline: $sourceStorageAccountFromPipeline" >> $outFile
 Write-Output "sourceLocation: $sourceLocation" >> $outFile
 Write-Output "targetDataType: $targetDataType" >> $outFile
 Write-Output "secretName: $secretName" >> $outFile
@@ -58,3 +62,5 @@ Write-Output "runType: $runType" >> $outFile
 Write-Output "subId: $subId" >> $outFile
 Write-Output "subTenantId: $subTenantId" >> $outFile
 Write-Output "sftpUserName: $sftpUserName" >> $outFile
+Write-Output "appName: $appName" >> $outFile
+Write-Output "etlDestStorageAccountName: $etlDestStorageAccountName" >> $outFile

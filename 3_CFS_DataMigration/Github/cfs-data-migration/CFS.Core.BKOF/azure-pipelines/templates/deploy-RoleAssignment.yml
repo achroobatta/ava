@@ -21,11 +21,10 @@ steps:
       azureSubscription: ${{ parameters.serviceConnection }}
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
-      inlineScript: az deployment sub $(deploymentType) --location '$(resourceLocation)' `
-                    --name $(deploymentName) `
-                    --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deployment-RoleAssignment.bicep `
-                    --parameters principalId='$(principalId)'  ` 
-                    --parameters vmName='$(vmName)'  `                     
-                    --parameters subscriptionId='$(bkofSubscriptionID)'  `
-                    --parameters vmRG='$(vmRG)'  `                      
-                    --parameters kvRG='$(kvRG)' 
+      inlineScript: |
+                    $principalId = '$(principalIdUser)'
+                    Write-Output "PrincipalId: $principalId"
+                     az deployment sub $(deploymentType) --location '$(resourceLocation)' `
+                     --name $(deploymentName) `
+                     --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deployment-RoleAssignment.bicep `
+                     --parameters principalId=$principalId

@@ -64,13 +64,16 @@ steps:
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
       inlineScript: |
+            $appName = '${{ parameters.appName }}'
+            $appName = $appName.Replace("*"," ")
+
             az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.resourceLocation }} `
             --name ${{ parameters.deploymentName }} `
             --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-SFTP.bicep `
             --parameters environmentPrefix='${{ parameters.AzureEnvironmentPrefix }}' `
             --parameters owner='${{ parameters.owner }}' `
             --parameters costCenter='${{ parameters.costCenterCode }}' `
-            --parameters appName='${{ parameters.appName }}' `
+            --parameters appName=$appName `
             --parameters resourceLocation='${{ parameters.resourceLocation }}' `
             --parameters sftpstorageAccountName='${{ parameters.destStorageAccountName }}' `
             --parameters sftpRootContainerName='${{ parameters.rootContainerName }}' `

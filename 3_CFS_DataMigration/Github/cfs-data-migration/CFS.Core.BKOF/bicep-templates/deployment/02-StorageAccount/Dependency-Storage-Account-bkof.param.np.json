@@ -39,7 +39,14 @@
                                 "defaultAction" : "Deny",
                                 "action" : "Allow",
                                 "allowBlobPublicAccess": false,
-                                "minimumTlsVersion": "TLS1_2"
+                                "minimumTlsVersion": "TLS1_2",
+                                "virtualNetworkRules": [
+                                    {
+                                        "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                                        "virtualNetworkName_RG": "vnet-np-edc-bkof-dm-001",
+                                        "virtualNetworksubnetName": "sub-np-edc-bkof-dm-vmsub-003"
+                                    }
+                                ]
                             }
                         ],
                         "storage2Account": [
@@ -51,7 +58,19 @@
                                 "defaultAction" : "Deny",
                                 "action" : "Allow",
                                 "allowBlobPublicAccess": false,
-                                "minimumTlsVersion": "TLS1_2"
+                                "minimumTlsVersion": "TLS1_2",
+                                "virtualNetworkRules": [
+                                    {
+                                        "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                        "virtualNetworkName_RG": "vnet-np-sdc-bkof-dm-001",
+                                        "virtualNetworksubnetName": "sub-np-sdc-bkof-dm-vmsub-003"
+                                    },
+                                    {
+                                        "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                        "virtualNetworkName_RG": "vnet-np-sdc-bkof-dm-001",
+                                        "virtualNetworksubnetName": "sub-np-sdc-bkof-001"
+                                    }
+                                ]
                             }
                         ]
                     }

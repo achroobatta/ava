@@ -19,6 +19,8 @@ stages:
       value: $[ stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemId'] ]
     - name: workItemTag
       value: $[ stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemTag'] ]
+    - name: skippedDownload
+      value: $[ stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.SkippedDownload'] ]
   jobs:
 
   - template: downloadandpublish.yml
@@ -31,7 +33,12 @@ stages:
       scriptFilePath: 'CFS.Core.BKOF/scripts/DownloadWorkItemFile.ps1'
       artifactName: ${{ parameters.artifactName}}
       workItemId: $(workItemId)
-      condition: eq(stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemState'], 'To Do')
+      condition: |
+        and
+        (
+          eq(stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.WorkItemState'], 'To Do'),
+          ne(stageDependencies.pre_stage.get_work_item_details.outputs['get_work_item.SkippedDownload'], 'true')
+        )
 
   - template: noattachmentemail.yml
     parameters:
@@ -42,8 +49,8 @@ stages:
       variableGroup: var-password
       dependsOn: download_and_publish_excel_file
       emailSubject: "Parameter File is missing for Task $(workItemId)"
-      emailBody: '<p>Hi, </p> <p>Task $(workItemId) is missing a parameter file. </p> <p> This file is mandatory to initiate the extraction process. </p> <p> Please attach it to start the DMT Extraction process for Task $(workItemId).</p>'
-      environment: $(workItemTag)
+      emailBody: '<p>Task $(workItemId) is missing a parameter file.</p><p>This file is mandatory to initiate the extraction process.</p><p>Please attach it to start the DMT Extraction process for Task $(workItemId).</p><p></p><p>Please use this URL to go to task <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_workitems/edit/$(workItemId)">$(workItemId)</a>.</p>'
+      environment: "$(workItemTag)"
       condition: eq(dependencies.download_and_publish_excel_file.result, 'Failed')
 
   - template: updateworkitem.yml
@@ -55,11 +62,12 @@ stages:
       variableGroup: ${{ parameters.variableGroup}}
       scriptFilePath: 'CFS.Core.BKOF/scripts/UpdateWorkItem.ps1'
       dependsOn: download_and_publish_excel_file
-      workItemComment: "Successfully downloaded the input parameter file from work item: $(workItemId)"
+      workItemComment: "Successfully downloaded the input parameter file"
       workItemId: $(workItemId)
       condition: eq(dependencies.download_and_publish_excel_file.result, 'Succeeded')
       workItemState: "In Progress"
       processed: 'true'
+      tag: $(workItemTag)
 
   - template: updateworkitem.yml
     parameters:
@@ -70,7 +78,10 @@ stages:
       variableGroup: ${{ parameters.variableGroup}}
       scriptFilePath: 'CFS.Core.BKOF/scripts/UpdateWorkItem.ps1'
       dependsOn: download_and_publish_excel_file
-      workItemComment: "Failed to downloaded the input parameter file from work item: $(workItemId)"
+      workItemComment: "Failed to downloaded the input parameter file"
       workItemId: $(workItemId)
       condition: eq(dependencies.download_and_publish_excel_file.result, 'Failed')
       workItemState: "To Do"
+      processed: 'false'
+      updateState: 'false'
+      updateComment: 'false'

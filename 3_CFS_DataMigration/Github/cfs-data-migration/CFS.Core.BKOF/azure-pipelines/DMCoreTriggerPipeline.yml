@@ -1,10 +1,18 @@
 ## Format
 name: $(Date:yyyyMMdd)$(Rev:.rr)
 
+resources:
+  webhooks:
+    - webhook: TriggerPipelineWebHook
+      connection: TriggerPipeline
+
 # Stage Trigger
 trigger: none
 
 pr: none
+
+variables:
+ - group: var-password
 
 stages:
 
@@ -14,7 +22,7 @@ stages:
     stage: 'pre_stage'
     displayName: 'Pre Stage'
     dependsOn: ''
-    condition: eq(variables['Build.Reason'], 'Manual')
+    condition: eq(variables['Build.Reason'], 'resourceTrigger')
     pool:
       vmImage: 'windows-latest'
     variableGroup: var-parameter-dm-grp
@@ -31,7 +39,6 @@ stages:
     artifactName: excel
     variableGroup: var-parameter-dm-grp
 
-
 #Trigger Stage
 - template: templates/trigger-stage.yml
   parameters:
@@ -45,3 +52,4 @@ stages:
       vmImage: 'windows-latest'
     artifactName: excel
     variableGroup: var-parameter-dm-grp
+    techEmailSupport: $(techSupportEmailAddress)

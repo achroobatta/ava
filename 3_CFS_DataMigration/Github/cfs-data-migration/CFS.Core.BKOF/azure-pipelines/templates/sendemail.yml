@@ -18,32 +18,35 @@ jobs:
   continueOnError: ${{ parameters.continueOnError}}
   dependsOn: ${{ parameters.dependsOn}}
   condition: ${{ parameters.condition}}
-  variables: 
-  - group: ${{ parameters.variableGroup}}    
+  variables:
+  - group: ${{ parameters.variableGroup}}
+  - name: env
+    value: ${{ parameters.environment}}
   steps:
   - task: GraphEmail@0
-    displayName: 'Sending email using Graph Api'
+    displayName: 'Sending email using Graph Api - Non-Production'
     inputs:
-      To: ${{ parameters.receiverEmailAddress}} 
+      To: ${{ parameters.receiverEmailAddress}}
       From: $(npFromEmail)
-      Subject: ${{ parameters.emailSubject}} 
-      Body: ${{ parameters.emailBody}} 
+      Subject: ${{ parameters.emailSubject}}
+      Body: ${{ parameters.emailBody}}
       BodyAsHtml: true
       ShowClientSecret: false
       ClientID: $(npClientId)
       ClientSecret: $(npClientSecret)
       TenantDomain: $(npTenantDomain)
-      condition: eq(variables.environment, 'Non-Production')
+    condition: eq(variables.env, 'Non-Production')
+
   - task: GraphEmail@0
-    displayName: 'Sending email using Graph Api'
+    displayName: 'Sending email using Graph Api - Production'
     inputs:
       To: ${{ parameters.receiverEmailAddress}}
       From: $(prdFromEmail)
       Subject: ${{ parameters.emailSubject}}
-      Body: ${{ parameters.emailBody}} 
+      Body: ${{ parameters.emailBody}}
       BodyAsHtml: true
       ShowClientSecret: false
       ClientID: $(prdClientId)
       ClientSecret: $(prdClientSecret)
       TenantDomain: $(prdTenantDomain)
-    condition: eq(variables.environment, 'Production')
+    condition: eq(variables.env, 'Production')

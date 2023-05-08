@@ -102,6 +102,7 @@ function create_localUser() {
     }
 }
 
+Write-Output 'sftUserName: ' $sftpUserName
 $attempt = 1
 $result = Get-AzContext
 if($null -eq $result) {
@@ -135,6 +136,8 @@ while($attempt -le 3 -and -not $azctx)
 }
 
 if ($azctx -eq  $true) {
+    Write-Output 'Subscription Value:' $subId
+    Set-AzContext -Subscription $subId -Force
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Connection Established, Trying to create Local User")
     create_localUser ($sftpRg, $sftpStorageAcctName, $sftpContainerName, $sftpUserName, $keyVaultName, $vendorPubKeySecNm)
     Disconnect-AzAccount

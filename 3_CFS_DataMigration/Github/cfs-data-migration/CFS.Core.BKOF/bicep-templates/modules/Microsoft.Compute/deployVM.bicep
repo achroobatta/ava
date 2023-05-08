@@ -156,6 +156,13 @@ resource networkInterfaceName 'Microsoft.Network/networkInterfaces@2021-05-01' =
 resource dataDiskResources_name 'Microsoft.Compute/disks@2020-12-01' = [for i in range(0, dataDisksCount): {
   name: '${vmName}-data-0${i+1}'
   location: vmResouceGroupLocation
+  tags: {
+    appName: appName
+    environment: environmentPrefix
+    owner: owner
+    costCenter: costCenter
+    createOnDate: createOnDate
+  }
   properties: dataDisks.properties
   sku: {
     name: dataDisks.sku
@@ -257,26 +264,16 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-07-01' = {
 }
 
 module deployRole '../../modules/Microsoft.Compute/deployRoleAssignmentSub.bicep'  = {
-  name:  'roleAssignmentforSub'
+  name:  'roleAssignmentforSub${vmResouceGroupLocation}'
   params:{
     principalId: vmName_resource.identity.principalId
   }
   scope: subscription()
 }
 
-//  module deployRole '../../modules/Microsoft.Compute/deployRoleAssignmentsSI.bicep'  = {
-//     name:  'roleAssignmentforSI'
-//     params:{
-//       principalId: vmName_resource.identity.principalId
-//       vmName: vmName
-//       subId: subId
-//     }
-//     scope: resourceGroup(vnetRG)
-//   }
-
 resource vmName_Microsoft_Insights_VmDiagnosticsSettings 'Microsoft.Compute/virtualMachines/extensions@2021-07-01'  = {
   parent: vmName_resource
-  name: 'Microsoft.Insights.VmDiagnosticsSettings-${diagstorageName}'
+  name: 'Microsoft.Insights.VmDiagnosticsSettings-${vmName}'
   //name: 'Microsoft.Insights.VmDiagnosticsSettings'
   location: vmResouceGroupLocation
   properties: {
@@ -410,9 +407,9 @@ resource vmName_microsoftMonitoringAgent 'Microsoft.Compute/virtualMachines/exte
       workspaceKey: workspaceKey
     }
   }
-  dependsOn: [
-    vmName_Microsoft_Insights_VmDiagnosticsSettings
-  ]
+  // dependsOn: [
+  //   vmName_Microsoft_Insights_VmDiagnosticsSettings
+  // ]
 }
 
 resource vmName_DAExtension 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
@@ -426,9 +423,9 @@ resource vmName_DAExtension 'Microsoft.Compute/virtualMachines/extensions@2021-0
     autoUpgradeMinorVersion: true
     enableAutomaticUpgrade: true
   }
-  dependsOn: [
-     vmName_microsoftMonitoringAgent
-  ]
+  // dependsOn: [
+  //    vmName_microsoftMonitoringAgent
+  // ]
 }
 
 resource vmName_diskEncryption 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
@@ -450,9 +447,9 @@ resource vmName_diskEncryption 'Microsoft.Compute/virtualMachines/extensions@202
       VolumeType: 'All'
     }
   }
-  dependsOn: [
-    vmName_DAExtension
-  ]
+  // dependsOn: [
+  //   vmName_DAExtension
+  // ]
 }
 
 resource windowsVMGuestConfigExtension 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
@@ -468,9 +465,9 @@ resource windowsVMGuestConfigExtension 'Microsoft.Compute/virtualMachines/extens
     settings: {}
     protectedSettings: {}
   }
-  dependsOn: [
-    vmName_diskEncryption
-  ]
+  // dependsOn: [
+  //   vmName_diskEncryption
+  // ]
 }
 
 resource shutdown_computevm_virtualMachineName 'Microsoft.DevTestLab/schedules@2018-09-15' = if (isEnableAutoShutdown == true){
@@ -490,9 +487,9 @@ resource shutdown_computevm_virtualMachineName 'Microsoft.DevTestLab/schedules@2
       emailRecipient: autoShutdownNotificationEmail
     }
   }
-  dependsOn: [
-    windowsVMGuestConfigExtension
-  ]
+  // dependsOn: [
+  //   vmName_Microsoft_Insights_VmDiagnosticsSettings
+  // ]
 }
 
 resource joindomain 'Microsoft.Compute/virtualMachines/extensions@2015-06-15' = if (isEnableDomainJoin == true) {
@@ -515,8 +512,12 @@ resource joindomain 'Microsoft.Compute/virtualMachines/extensions@2015-06-15' = 
     }
   }
   dependsOn: [
-    shutdown_computevm_virtualMachineName
+    vmName_resource
+    vmName_Microsoft_Insights_VmDiagnosticsSettings
   ]
+  // dependsOn: [
+  //   shutdown_computevm_virtualMachineName
+  // ]
 }
 
-output principalId string = vmName_resource.identity.principalId
+// output principalId string = vmName_resource.identity.principalId

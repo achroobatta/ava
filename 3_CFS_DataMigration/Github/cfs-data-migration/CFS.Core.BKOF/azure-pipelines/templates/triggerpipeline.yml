@@ -8,30 +8,31 @@ parameters:
     dependsOn: ''
     condition: ''
     workItemId: ''
-    appName: ''
-    costCenterCode: ''
-    reqEmailAddress: ''
-    environment: ''
-    fileSize: ''
-    ipTobeWhiteListed: ''
-    keyVaultNameforSecret: ''
-    numberOfFiles: ''
-    owner: ''
-    secretName: ''
-    targetDataType: ''
-    vendorName: ''
-    warrantyPeriod: ''
-    vendorSuppliedPubKey: ''
-    CBASFTPSourcePath: ''
     runType: ''
     destStorageAccount: ''
-    clientEmailAddress: ''
-    srcSftpKey: ''
-    srcSftpPass: ''
-    srcSftpAcctNm: ''
-    srcSftpCtn: ''
+    appName: ''
+    owner: ''
+    costCenterCode: ''
+    warrantyPeriod: ''
+    environment: ''
+    fileSize: ''
     sourceDataType: ''
     sourceLocation: ''
+    sourceStorageAccountFromPipeline: ''
+    srcSftpCtn: ''
+    srcSftpAcctNm: ''
+    srcSftpPass: ''
+    srcSftpKey: ''
+    CBASFTPSourcePath: ''
+    secretName: ''
+    keyVaultNameforSecret: ''
+    targetDataType: ''
+    vendorName: ''
+    ipTobeWhiteListed: ''
+    ExternalHighPortForSFTP: ''
+    vendorSuppliedPubKey: ''
+    emailAddress: ''
+    ExternalVendorEmailContact: ''
 jobs:
 - job: ${{ parameters.name }}
   displayName: ${{ parameters.displayName}}
@@ -56,31 +57,34 @@ jobs:
            -PAT '$(PAT)' `
            -WorkItemId ${{ parameters.workItemId}} `
            -ResourceLocation '$(resourceLocation)' `
+           -MachineName '$(machineName)' `
+           -UltraSSDEnabled $(ultraSSDEnabled) `
+           -RunType '${{parameters.runType}}' `
+           -DestStorageAccount '${{ parameters.destStorageAccount }}' `
            -AppName '${{ parameters.appName}}' `
+           -Owner '${{ parameters.owner}}' `
            -CostCenterCode '${{ parameters.costCenterCode}}' `
-           -ReqEmailAddress '${{ parameters.reqEmailAddress}}' `
+           -WarrantyPeriod '${{ parameters.warrantyPeriod}}' `
            -Environment '${{ parameters.environment}}' `
            -FileSize '${{ parameters.fileSize}}' `
-           -IpTobeWhiteListed '${{ parameters.ipTobeWhiteListed}}' `
-           -KeyVaultNameforSecret '${{ parameters.keyVaultNameforSecret}}' `
-           -Owner '${{ parameters.owner}}' `
-           -SecretName '${{ parameters.secretName}}' `
-           -SourceLocation '${{ parameters.sourceLocation}}' `
            -SourceDataType '${{ parameters.sourceDataType}}' `
-           -TargetDataType '${{ parameters.targetDataType}}' `
-           -VendorName '${{ parameters.vendorName}}' `
-           -WarrantyPeriod '${{ parameters.warrantyPeriod}}' `
-           -UltraSSDEnabled $(ultraSSDEnabled) `
+           -SourceLocation '${{ parameters.sourceLocation}}' `
+           -SourceStorageAccountFromPipeline '${{ parameters.sourceStorageAccountFromPipeline}}' `
            -SrcSftpCtn '${{ parameters.srcSftpCtn}}' `
            -SrcSftpAcctNm '${{ parameters.srcSftpAcctNm}}' `
            -SrcSftpPass '${{ parameters.srcSftpPass}}' `
            -SrcSftpKey '${{ parameters.srcSftpKey}}' `
-           -VendorSuppliedPubKey '${{parameters.vendorSuppliedPubKey}}' `
            -CBASFTPSourcePath '${{parameters.CBASFTPSourcePath}}' `
-           -RunType '${{parameters.runType}}' `
-           -DestStorageAccount '${{ parameters.destStorageAccount }}' `
-           -ClientEmailAddress '${{ parameters.clientEmailAddress}}'
-           -MachineName '$(machineName)'
+           -SecretName '${{ parameters.secretName}}' `
+           -KeyVaultNameforSecret '${{ parameters.keyVaultNameforSecret}}' `
+           -TargetDataType '${{ parameters.targetDataType}}' `
+           -VendorName '${{ parameters.vendorName}}' `
+           -IpTobeWhiteListed '${{ parameters.ipTobeWhiteListed}}' `
+           -ExternalHighPortForSFTP '${{ parameters.ExternalHighPortForSFTP}}' `
+           -VendorSuppliedPubKey '${{parameters.vendorSuppliedPubKey}}' `
+           -EmailAddress '${{ parameters.emailAddress}}' `
+           -ExternalVendorEmailContact '${{ parameters.ExternalVendorEmailContact}}' `
+           -CR '$(CR)'
           errorActionPreference: 'stop'
           warningPreference: 'default'
           informationPreference: 'default'

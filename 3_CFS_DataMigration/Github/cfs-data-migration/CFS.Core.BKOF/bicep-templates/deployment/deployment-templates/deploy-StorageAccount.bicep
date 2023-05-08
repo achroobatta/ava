@@ -38,9 +38,9 @@ module storageAccount '../../modules/Microsoft.Storage/deployStorageAccount.bice
     owner: owner
     costCenter: costCenter
     createOnDate: createOnDate
-    virtualNetworkResourceGroup: (resourceLocation == 'australiaeast') ? rg.virtualNetworkResourceGroup :rg.virtualNetwork2ResourceGroup
-    virtualNetworkName_RG: (resourceLocation == 'australiaeast') ? rg.virtualNetworkName_RG : rg.virtualNetwork2Name_RG
-    virtualNetworksubnetName: (resourceLocation == 'australiaeast') ? rg.virtualNetworksubnetName : rg.virtualNetwork2subnetName
+    // virtualNetworkResourceGroup: (resourceLocation == 'australiaeast') ? rg.virtualNetworkResourceGroup :rg.virtualNetwork2ResourceGroup
+    // virtualNetworkName_RG: (resourceLocation == 'australiaeast') ? rg.virtualNetworkName_RG : rg.virtualNetwork2Name_RG
+    // virtualNetworksubnetName: (resourceLocation == 'australiaeast') ? rg.virtualNetworksubnetName : rg.virtualNetwork2subnetName
     containerPrefix: rg.containerPrefix
   }
 }]

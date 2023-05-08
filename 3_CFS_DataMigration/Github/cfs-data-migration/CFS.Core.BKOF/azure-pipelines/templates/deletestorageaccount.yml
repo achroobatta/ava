@@ -5,8 +5,8 @@ parameters:
     continueOnError: ''
     dependsOn: ''
     landingZoneServiceConnection: ''
-    strAccName: ''
     vmRgName: ''
+    vmName: ''
 
 jobs:
 - job: ${{ parameters.name }}
@@ -23,6 +23,10 @@ jobs:
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
       inlineScript: |
-        az storage account show -g ${{ parameters.vmRgName}} -n ${{ parameters.strAccName }}
-        az storage account delete -n ${{ parameters.strAccName }} -g ${{ parameters.vmRgName}} --yes
+        $vmInfo = az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName }} | ConvertFrom-Json
+        $vmResources = $vmInfo.resources | Where-Object {$_.publisher -eq "Microsoft.Azure.Diagnostics"}
+        $strAccName = $vmResources.settings.StorageAccount
+        $strAccName
+        az storage account show -g ${{ parameters.vmRgName}} -n $strAccName
+        az storage account delete -n $strAccName -g ${{ parameters.vmRgName}} --yes
       failOnStandardError: true

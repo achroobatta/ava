@@ -58,11 +58,11 @@ module storageAccount '../../modules/Microsoft.Storage/deploysftp.bicep' = [for 
     sftpstorageAccountName: sftpstorageAccountName
     sftpRootContainerName: sftpRootContainerName
     // sshKeyName: sshPublicKeyValue
-    // sftpWhiteListedIps: sftpWhiteListedIps
-    virtualNetworkResourceGroup: rg.virtualNetworkResourceGroup
-    virtualNetworkName_RG: rg.virtualNetworkRGName
-    virtualNetworksubnetName: rg.virtualNetworksubnetName
-    // ipRulesaction: rg.ipRulesaction
+    sftpWhiteListedIps: rg.sftpWhiteListedIps
+    // virtualNetworkResourceGroup: (resourceLocation == 'australiaeast') ? rg.virtualNetworkResourceGroup : rg.virtualNetwork2ResourceGroup
+    // virtualNetworkName_RG: (resourceLocation == 'australiaeast') ? rg.virtualNetworkRGName : rg.virtualNetwork2RGName
+    // virtualNetworksubnetName: (resourceLocation == 'australiaeast') ? rg.virtualNetworksubnetName: rg.virtualNetwork2subnetName
+    ipRulesaction: rg.ipRulesaction
     virtualNetworkRulesaction: rg.virtualNetworkRulesaction
     defaultAction: rg.defaultAction
     publicNetworkAccess: rg.publicNetworkAccess
@@ -76,6 +76,7 @@ module storageAccount '../../modules/Microsoft.Storage/deploysftp.bicep' = [for 
     isNfsV3Enabled: rg.isNfsV3Enabled
     performance: rg.performance
     kind: rg.kind
+    virtualNetworkRules: (resourceLocation == 'australiaeast') ? rg.virtualNetworkRules : rg.virtualNetwork2Rules
   }
 }]
 

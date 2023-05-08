@@ -4,12 +4,14 @@ pr: none # will disable PR builds entirely; will not disable CI triggers
 
 parameters:
   - name: runType
-    displayName: Type of Run (Dryrun or Production). Dryrun is default and will process dummy file.
+    displayName: Type of Run (Dryrun, Production, ETLPreprocessDryrun, ETLPreprocessProduction). Dryrun is default and will process dummy file.
     type: string
     default: "Dryrun"
     values:
     - "Dryrun"
     - "Production"
+    - "ETLPreprocessDryrun"
+    - "ETLPreprocessProduction"
 
   - name: destStorageAccount
     displayName: Name of Destination Storage Account. Default is 'new' for Dryrun. It should be mentioned for Production.
@@ -36,6 +38,11 @@ parameters:
     type: string
     default: "4010"
 
+  - name: warrantyPeriod
+    displayName: Date by which Data needs to be deleted  (in months, 1 to 6)
+    type: string
+    default: "1"
+
   - name: deployEnvironment
     displayName: Target Deployment Environment
     type: string
@@ -56,80 +63,17 @@ parameters:
     values:
      - "sftp"
      - "databox"
+     - "etl"
 
-  - name: sourceLocation
-    displayName: Location of Source file (e.g. source storage container, only applicable if sourceDataType is databox)
+  - name: sourceStorageAccountFromPipeline
+    displayName: Location of Source file (e.g. source storage account, only applicable if sourceDataType is etl)
     type: string
     default: "na"
 
-  - name: targetDataType
-    displayName: Target Deployment Environment
+  - name: sourceLocation
+    displayName: Location of Source file (e.g. source storage container, only applicable if sourceDataType is etl or databox)
     type: string
-    default: "internal"
-    values:
-     - "internal"
-     - "external"
-
-  - name: ipTobeWhiteListed
-    displayName: IP to be whitelisted for external users should be comma seperated for multiple (e.g. 1.157.208.55,20.28.179.29)
-    type: string
-    default: "1.157.208.55,20.28.179.29"
-
-  - name: vendorName
-    displayName: Name of third party sFtp Vendor. Only Applicable for External transfer. Default is 'na'
-    type: string
-    default: "tcs"
-
-  - name: vendorSuppliedPubKey
-    displayName: Default is 'na' (for internal). Name of the secret containing public key shared by Vendor (for destination Sftp)
-    type: string
-    default: "integrationTestSshKey"
-
-  - name: reqEmailAddress
-    displayName: Requester Email Address
-    type: string
-    default: "achroo.batta@dev.cfs.com.au"
-
-  - name: clientEmailAddress
-    displayName: Client Email Address for Passwords
-    type: string
-    default: "achroo.batta@dev.cfs.com.au"
-
-  - name: secretName
-    displayName: Name of the secret which contains password for encrypted input file
-    type: string
-    default: "EncryptionPassword"
-
-  - name: keyVaultNameforSecret
-    displayName: Name of the keyVault where secret is stored
-    type: string
-    default: "kv-np-edc-bkof-dm-0028"
-    values:
-     - "kv-np-edc-bkof-dm-0028"
-     - "kv-prd-edc-bkof-dm-0025"
-
-  - name: warrantyPeriod
-    displayName: Date by which Data needs to be deleted  (in months, 1 to 6)
-    type: string
-    default: "1"
-
-  - name: taskNumber
-    displayName: Task Number
-    type: string
-    default: "123456"
-
-  - name: resourceLocation
-    displayName: Location of the resources (australiaeast or australiasoutheast)
-    type: string
-    default: "australiaeast"
-
-  - name: ultraSSDEnabled
-    displayName: Value for ultraSSDEnabled
-    type: boolean
-    default: false
-    values:
-     - false
-     - true
+    default: "na"
 
   - name: srcSftpCtn
     displayName: Source Sftp Connection (Hostname or ip addreses. Multiple will be comma seperated). Default is 'na'
@@ -151,11 +95,82 @@ parameters:
     type: string
     default: "srcSftpKeyt1234"
 
-  - name: cbaSftpSourcePath
+  - name: CBASFTPSourcePath
     displayName: Source CBA Sftp Folder Path. Multiple Folder paths will be comma seperated. Default is 'na'
     type: string
     default: "srcFolder1,srcFolder2"
 
+  - name: secretName
+    displayName: Name of the secret which contains password for encrypted input file
+    type: string
+    default: "EncryptionPassword"
+
+  - name: keyVaultNameforSecret
+    displayName: Name of the keyVault where secret is stored
+    type: string
+    default: "kv-np-edc-bkof-dm-0028"
+    values:
+     - "kv-np-edc-bkof-dm-0028"
+     - "kv-prd-edc-bkof-dm-0025"
+
+  - name: targetDataType
+    displayName: Target Deployment Environment
+    type: string
+    default: "internal"
+    values:
+     - "internal"
+     - "external"
+
+  - name: vendorName
+    displayName: Name of third party sFtp Vendor. Only Applicable for External transfer. Default is 'na'
+    type: string
+    default: "tcs"
+
+  - name: ipTobeWhiteListed
+    displayName: IP to be whitelisted for external users should be comma seperated for multiple (e.g. 1.157.208.55,20.28.179.29)
+    type: string
+    default: "1.157.208.55,20.28.179.29"
+
+  - name: ExternalHighPortForSFTP
+    displayName: High Port for external users should be comma seperated for multiple (e.g. 50001,50002)
+    type: string
+    default: "50001"
+
+  - name: vendorSuppliedPubKey
+    displayName: Default is 'na' (for internal). Name of the secret containing public key shared by Vendor (for destination Sftp)
+    type: string
+    default: "integrationTestSshKey"
+
+  - name: emailAddress
+    displayName: Requester Email Address
+    type: string
+    default: "achroo.batta@dev.cfs.com.au"
+
+  - name: ExternalVendorEmailContact
+    displayName: Client Email Address for Passwords
+    type: string
+    default: "achroo.batta@dev.cfs.com.au"
+
+  - name: taskNumber
+    displayName: Task Number
+    type: string
+    default: "123456"
+
+  - name: resourceLocation
+    displayName: Location of the resources (australiaeast or australiasoutheast)
+    type: string
+    default: "australiaeast"
+    values:
+     - "australiaeast"
+     - "australiasoutheast"
+
+  - name: ultraSSDEnabled
+    displayName: Value for ultraSSDEnabled
+    type: boolean
+    default: false
+    values:
+     - false
+     - true
 
 variables:
 
@@ -187,9 +202,15 @@ variables:
    ${{ else }}:
     value: "sdc"
 
-#Fetch variables from Variable Group
  - name: appName
    value: ${{ parameters.appName }}
+
+#Fetch variables from Variable Group
+ - name: userAppName
+   value: $[replace('${{ parameters.appName}}', '*', '')]
+
+ - name: emailAppName
+   value: $[replace('${{ parameters.appName}}', '*', ' ')]
 
  - name: owner
    value: ${{ parameters.owner }}
@@ -206,21 +227,28 @@ variables:
  - name: sourceDataType
    value: ${{ parameters.sourceDataType }}
 
+ - name: sourceStorageAccountFromPipeline
+   value: ${{ parameters.sourceStorageAccountFromPipeline }}
+
  - name: sourceLocation
    value:  ${{ parameters.sourceLocation }}
 
  - name: ipTobeWhiteListed
-   ${{ if eq(parameters.targetDataType, 'external') }}:
+   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
     value: ${{ parameters.ipTobeWhiteListed }}
 
+ - name: ExternalHighPortForSFTP
+   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
+    value: ${{ parameters.ExternalHighPortForSFTP }}
+
  - name: rootContainerName
-   ${{ if and(eq(parameters.destStorageAccount, 'new'), eq(parameters.runType, 'Dryrun')) }}:
+   ${{ if and(eq(parameters.destStorageAccount, 'new'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
      value: 'container$(Build.BuildId)'
    ${{ else }}:
        value: 'existing'
 
  - name: sshKeyName
-   ${{ if eq(parameters.targetDataType, 'external') }}:
+   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
     value: '${{ parameters.vendorName }}sshKey$(Build.BuildId)'
    ${{ else }}:
     value: 'na'
@@ -235,7 +263,7 @@ variables:
       value: "prd"
 
  - name: destStorageAccountName
-   ${{ if and(eq(parameters.destStorageAccount, 'new'), eq(parameters.runType, 'Dryrun')) }}:
+   ${{ if and(eq(parameters.destStorageAccount, 'new'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun')))  }}:
       ${{ if eq(parameters.targetDataType, 'external') }}:
          value: 'dsftp$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
       ${{ if eq(parameters.targetDataType, 'internal')  }}:
@@ -243,23 +271,32 @@ variables:
    ${{ else }}:
         value: ${{ parameters.destStorageAccount }}
 
+ - name: etlDestStorageAccountName
+   ${{ if and(eq(parameters.destStorageAccount, 'new'), eq(parameters.runType, 'ETLPreprocessDryrun'), eq(parameters.targetDataType, 'external')) }}:
+      value: 'dlgen2$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
+   ${{ else }}:
+      value: 'na'
+
  - name: sftpUserName
    ${{ if eq(parameters.targetDataType, 'external') }}:
-    value: '$(appName)$(AzureEnvironmentPrefix)${{ parameters.vendorName }}t$(dmTaskNumber)b$(Build.BuildId)'
+    value: $(userAppName)$(AzureEnvironmentPrefix)t$(dmTaskNumber)
    ${{ else }}:
     value: 'na'
 
  - name: diagStorageAcctName
-   value: 'dsto$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof$(Build.BuildId)'
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      value: 'sto$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof001'
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+      value: 'sto$(AzureEnvironmentPrefix)$(workspaceLocationPrefix)bkof001'
 
  - name: privateEndpointNameForStorage
    value: 'pve-$(resourceLocation)-$(diagStorageAcctName)'
 
  - name: reqEmailAddress
-   value: ${{ parameters.reqEmailAddress }}
+   value: ${{ parameters.emailAddress }}
 
  - name: clientEmailAddress
-   value: ${{ parameters.clientEmailAddress }}
+   value: ${{ parameters.ExternalVendorEmailContact }}
 
  - name: secretName
    value: ${{ parameters.secretName }}
@@ -376,6 +413,15 @@ variables:
  - name: deploymentName
    value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
 
+ - name: deploymentVMName
+   value: '$(System.StageDisplayName)VM_$(Build.BuildNumber)'
+
+ - name: deploymentDATALAKEName
+   value: '$(System.StageDisplayName)DATALAKE_$(Build.BuildNumber)'
+
+ - name: deploymentSFTPName
+   value: '$(System.StageDisplayName)SFTP_$(Build.BuildNumber)'
+
  - name: adminP
    value: '$(adminPassword)'
 
@@ -480,6 +526,9 @@ variables:
    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
      value: '$(subsc-prd-connectivity-sid)'
 
+ - name: techEmailAddress
+   value: '$(techSupportEmailAddress)'
+
  - name: vendor
    value: ${{ parameters.vendorName }}
 
@@ -488,6 +537,18 @@ variables:
     value: $(npFromEmail)
    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
     value: $(prdFromEmail)
+
+ - name: externalIP
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+      ${{ if eq(parameters.resourceLocation, 'australiaeast') }}:
+        value: $(npedcExternalIP)
+      ${{ else }}:
+        value: $(npsdcExternalIP)
+   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
+     ${{ if eq(parameters.resourceLocation, 'australiaeast') }}:
+       value: $(prdedcExternalIP)
+     ${{ else }}:
+        value: $(prdsdcExternalIP)
 
  - name: ClientID
    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
@@ -514,16 +575,17 @@ variables:
     value: 'depstoprdedcbkofdm001'
 
  - name: destSftpSshKeySecret
-   ${{ if eq(parameters.targetDataType, 'external') }}:
+   ${{ if and(eq(parameters.targetDataType, 'external'), or(eq(parameters.runType, 'Dryrun'), eq(parameters.runType, 'ETLPreprocessDryrun'))) }}:
     value: ${{ parameters.vendorSuppliedPubKey }}
    ${{ else }}:
     value: 'na'
 
  - name: connRg
    value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-hub-netw-001'
+   #value: 'rg-$(AzureEnvironmentPrefix)-edc-hub-netw-001'
 
  - name: CBASFTPSourcePath
-   value: ${{ parameters.cbaSftpSourcePath }}
+   value: ${{ parameters.CBASFTPSourcePath }}
 
  - name: runType
    value: ${{ parameters.runType }}
@@ -536,18 +598,20 @@ stages:
 
 # Deploy VM
     jobs:
-    - deployment: DeployVM
+    # - deployment: DeployVM
+    - job: DeployVM
       condition: eq('${{ parameters.machineName }}', 'new')
       workspace:
         clean: all
       pool:
-        vmImage: windows-latest
+        name: $(agentPool)
 
-      environment: $(AzureDevOpsEnvironments)
-      strategy:
-        runOnce:
-          deploy:
-            steps:
+      # environment: $(AzureDevOpsEnvironments)
+      # strategy:
+      #   runOnce:
+      #     deploy:
+      #       steps:
+      steps:
 
             - checkout: self
 
@@ -571,10 +635,10 @@ stages:
                 securitySubscriptionId: '$(securitySubscriptionId)'
                 vmName: '$(dmVMName)'
                 vmLocation: '$(resourceLocation)'
-                deploymentName: '$(deploymentName)'
+                deploymentName: '$(deploymentVMName)'
                 owner: '$(owner)'
                 costCenterCode: '$(costCenterCode)'
-                appName: '$(appName)'
+                appName: '$(emailAppName)'
                 AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
                 AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
                 adminP: '$(adminP)'
@@ -584,8 +648,8 @@ stages:
                 diagStorageAcctName: '$(diagStorageAcctName)'
                 ultraSSDEnabled: '$(ultraSSDEnabled)'
                 workspaceLocationPrefix: '$(workspaceLocationPrefix)'
-                connRg: '$(connRg)'
                 connSubId: '$(connSubId)'
+                connRg: '$(connRg)'
 
   - stage: copySoftwareFilesOnVM
     displayName: CopySoftwareFilesOnVM
@@ -633,7 +697,7 @@ stages:
                    $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force
                    $Credential = [pscredential]::new($User,$Password)
                    # $ToSession = New-PSSession -ComputerName "$computervm" -Credential $Credential
-                    for ($i=1; $i -le 20; $i++)
+                    for ($i=1; $i -le 40; $i++)
                     {
                       try
                       {
@@ -796,7 +860,7 @@ stages:
       condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'Dryrun'), eq('${{parameters.targetDataType }}', 'internal'))
 
       pool:
-        vmImage: 'windows-latest'
+        name: $(agentPool)
 
       steps:
             - checkout: self
@@ -819,10 +883,10 @@ stages:
                 deploymentType: '$(deploymentType)'
                 serviceId: '$(landingZoneServiceId)'
                 resourceLocation: '$(resourceLocation)'
-                deploymentName: '$(deploymentName)'
+                deploymentName: '$(deploymentDATALAKEName)'
                 owner: '$(owner)'
                 costCenterCode: '$(costCenterCode)'
-                appName: '$(appName)'
+                appName: '$(emailAppName)'
                 AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
                 AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
                 destStorageAccountName: '$(destStorageAccountName)'
@@ -837,9 +901,9 @@ stages:
       workspace:
         clean: all
 
-      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'Dryrun'), eq('${{parameters.targetDataType }}', 'external'))
+      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), or(eq('${{ parameters.runType }}', 'Dryrun'), eq('${{ parameters.runType }}', 'ETLPreprocessDryrun')), eq('${{parameters.targetDataType }}', 'external'))
       pool:
-        vmImage: 'windows-latest'
+        name: $(agentPool)
 
       steps:
         - checkout: self
@@ -862,10 +926,10 @@ stages:
               deploymentType: '$(deploymentType)'
               serviceId: '$(landingZoneServiceId)'
               resourceLocation: '$(resourceLocation)'
-              deploymentName: '$(deploymentName)'
+              deploymentName: '$(deploymentSFTPName)'
               owner: '$(owner)'
               costCenterCode: '$(costCenterCode)'
-              appName: '$(appName)'
+              appName: '$(emailAppName)'
               AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
               AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
               destStorageAccountName: '$(destStorageAccountName)'
@@ -879,7 +943,7 @@ stages:
     - job: AddLocalUser
       workspace:
         clean: all
-      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'Dryrun'), eq('${{parameters.targetDataType }}', 'external'))
+      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), or(eq('${{ parameters.runType }}', 'Dryrun'), eq('${{ parameters.runType }}', 'ETLPreprocessDryrun')), eq('${{parameters.targetDataType }}', 'external'))
       dependsOn: [DeploySftp]
       pool:
         name: $(agentPool)
@@ -908,6 +972,58 @@ stages:
               destSftpSshKeySecret: '$(destSftpSshKeySecret)'
               subId: '$(subId)'
               tenantId: '$(subTenantId)'
+              ExternalHighPortForSFTP: '$(ExternalHighPortForSFTP)'
+              externalIP: '$(externalIP)'
+              connRg: '$(connRg)'
+              connSubId: '$(connSubId)'
+              runType: '$(runType)'
+              appName: '$(emailAppName)'
+              serviceConnection: '$(landingZoneServiceConnection)'
+
+    - job: DeployInternalDataLake
+      dependsOn: [AddLocalUser]
+      workspace:
+        clean: all
+      condition: and(succeeded(), eq('${{ parameters.destStorageAccount }}', 'new'), eq('${{ parameters.runType }}', 'ETLPreprocessDryrun'), eq('${{parameters.targetDataType }}', 'external'))
+
+      pool:
+        name: $(agentPool)
+
+      steps:
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #DataLake
+            - template: 'templates/deploy-DataLake.yml'
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceId)'
+                resourceLocation: '$(resourceLocation)'
+                deploymentName: '$(deploymentDATALAKEName)'
+                owner: '$(owner)'
+                costCenterCode: '$(costCenterCode)'
+                appName: '$(emailAppName)'
+                AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
+                AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
+                destStorageAccountName: '$(etlDestStorageAccountName)'
+                rootContainerName: '$(rootContainerName)'
+                warrantyPeriod: '$(warrantyPeriod)'
+                rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                subId: '$(subId)'
+                connSubId: '$(connSubId)'
+
 
 
   - stage: triggerMaster
@@ -937,12 +1053,25 @@ stages:
                    $Password = ConvertTo-SecureString -String $(serviceAccountP) -AsPlainText -Force
                    $Credential = [pscredential]::new($User,$Password)
                    echo 'Computer Name: ' $computervm
+                   #  $sftpUsername ='$(sftpUserName)'
+                   #  echo 'Before sftpUserName: ' $sftpUsername
+                   #  $sftpUsername = ($sftpUsername).Replace("-","")
+                   #  $sftpUsername = ($sftpUsername).Replace("_","")
+                   #  $sftpUsername = $sftpUsername.ToLower()
+                   #  echo 'After sftpUserName: ' $sftpUsername
                    $ScriptBlock = {
+                        $sftpUsername ='$(sftpUserName)'
+                        echo 'Before sftpUserName: ' $sftpUsername
+                        $sftpUsername = ($sftpUsername).Replace("-","")
+                        $sftpUsername = ($sftpUsername).Replace("_","")
+                        $sftpUsername = $sftpUsername.ToLower()
+                        echo 'After sftpUserName: ' $sftpUsername
                         # original script, both below lines should be uncommented (test line above should be commented)
-                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$(sftpUserName)" -Wait -Verb RunAs -PassThru 2>&1
-                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$(sftpUserName)" -Wait -Verb RunAs -PassThru 2>&1
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceStorageAccountFromPipeline","$(sourceStorageAccountFromPipeline)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)","-etlDestStorageAccountName","$(etlDestStorageAccountName)" -Wait -Verb RunAs -PassThru 2>&1
+                        #Start-Job -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\parametersTest.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceStorageAccountFromPipeline","$(sourceStorageAccountFromPipeline)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)","-etlDestStorageAccountName","$(etlDestStorageAccountName)" -AsJob
+                        Start-Process -FilePath Powershell.exe -ArgumentList "-File","$env:USERPROFILE\scripts\Master.ps1","-taskNumber","$(dmTaskNumber)","-resourceLocation","$(resourceLocation)","-deployEnvironment","$(dmEnvironment)","-sourceDataType","$(sourceDataType)","-sourceStorageAccountFromPipeline","$(sourceStorageAccountFromPipeline)","-sourceLocation","$(sourceLocation)","-targetDataType","$(dmTargetDataType)","-secretName","$(secretName)","-keyVaultNameforSecret","$(keyVaultNameforSecret)","-emailAddress","$(reqEmailAddress)","-destStorageAccount","$(destStorageAccountName)","-destContainerName","$(rootContainerName)","-vmName","$(dmVMName)","-diagStorageAccount","$(diagStorageAcctName)","-buildId","$(Build.BuildId)","-commRG","$(commRG)","-vmRG","$(vmRG)","-srcSftpCtn","$(srcSftpCtn)","-srcSftpAcctNm","$(srcSftpAcctNm)","-srcSftpPass","$(srcSftpPass)","-srcSftpKey","$(srcSftpKey)","-CBASFTPSourcePath","$(CBASFTPSourcePath)","-clientEmailAddress","$(clientEmailAddress)","-runType","$(runType)","-subId","$(subId)","-subTenantId","$(subTenantId)","-sftpUserName","$sftpUserName","-appName","$(appName)","-etlDestStorageAccountName","$(etlDestStorageAccountName)" -Wait -Verb RunAs -PassThru 2>&1
                    }
-                   Invoke-Command -ComputerName "$computervm" -Credential $Credential -ScriptBlock $ScriptBlock -AsJob
+                   Invoke-Command -ComputerName "$computervm" -Credential $Credential -ScriptBlock $ScriptBlock -InDisconnectedSession -SessionOption (New-PSSessionOption -IdleTimeout 2147483647)
                    $j = Get-Job
                    $j | Format-List -Property *
                    $result = $j | Receive-Job
@@ -953,8 +1082,8 @@ stages:
           inputs:
             To: '$(reqEmailAddress)' # The Business User who will receive the email
             From: '$(fromEmailAddress)'
-            Subject: 'OnDemand Pipeline Completed Successfully for taskNumber $(dmTaskNumber)!!!' # Email Subject
-            Body: '<p>Master PowerShell Script triggered for taskNumber $(dmTaskNumber). Extraction process started!!</p>' # Email Body
+            Subject: 'Execution for $(emailAppName) has commenced for TaskNumber $(dmTaskNumber)!' # Email Subject
+            Body: '<p>Master PowerShell Script has been triggered for $(emailAppName) with taskNumber $(dmTaskNumber).</p><p>The Master Powershell script will be calling multiple child Powershell scripts that will complete E2E process. This email confirms that Extraction process for $(emailAppName) has started.</p>' # Email Body
             BodyAsHtml: true
             ShowClientSecret: false
             ClientID: '$(ClientID)'
@@ -977,8 +1106,8 @@ stages:
         inputs:
            To: '$(reqEmailAddress)' # The Business User who will receive the email
            From: '$(fromEmailAddress)'
-           Subject: 'OnDemand Pipeline Failed. DMT Extraction Process Stopped for taskNumber $(dmTaskNumber)!!!' # Email Subject
-           Body: '<p>OnDemand Pipeline Failed. Extraction processs is stopped. Please refer OpsGuide for common failed scenario and fix. </p> <p> Please Contact Tech Support to look at failed pipeline <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)">$(Build.BuildId)</a></p>' # Email Body
+           Subject: 'OnDemand Pipeline for $(emailAppName) has failed. DMT Extraction process has stopped for Tasknumber $(dmTaskNumber)!' # Email Subject
+           Body: '<p>OnDemand Pipeline Failed. Extraction processs is stopped.</p><p> Please refer OpsGuide for common failed scenario and fix.</p><p>Please Contact Tech Support $(techEmailAddress) to look at <a href="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)">$(Build.BuildId)</a></p><p>This task is for $(emailAppName).</p>' # Email Body
            BodyAsHtml: true
            ShowClientSecret: false
            ClientID: '$(ClientID)'

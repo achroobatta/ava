@@ -6,7 +6,11 @@ param
     [Parameter(Mandatory=$true)]
     [String]$keyVaultNameforSecret,
     [Parameter(Mandatory=$true)]
-    [int]$taskNumber
+    [int]$taskNumber,
+    [Parameter(Mandatory=$true)]
+    [string]$subId,
+    [Parameter(Mandatory=$true)]
+    [string]$subTenantId
 )
 
 function azconnect()
@@ -93,7 +97,7 @@ Function Add_WorkItemComment(){
       return "Failed to Log to Task: $taskNumber"
     }
 }
-
+Set-Item -path WSMan:\localhost\Shell\IdleTimeout -Value '2147483647'
 $logFilePath = "$PSScriptRoot\logging_LoggingDevOps.txt"
 Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Start") >> $logFilePath
 

@@ -1,0 +1,28 @@
+#deploy-NSGRules.yml
+
+parameters:
+
+- name: serviceId
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: deploymentType
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName : Delete NSG Rules in ${{ parameters.serviceId }} Subscription
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+         # az login
+         $rg = "rg-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-netw-001"
+         $nsgName = "nsg-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-vmsub-003"
+         $nsgruleName = "AllowRDPForBastion"
+
+         az network nsg rule delete --resource-group $rg --nsg-name $nsgName --name $nsgruleName
+         # az logout

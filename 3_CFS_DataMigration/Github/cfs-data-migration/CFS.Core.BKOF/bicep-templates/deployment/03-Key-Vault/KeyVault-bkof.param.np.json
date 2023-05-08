@@ -27,14 +27,38 @@
                         "virtualNetwork2Name": "vnet-np-sdc-bkof-dm-001",
                         "subnet2Name": "sub-np-sdc-bkof-dm-com-002",
                         "privateDnsZoneName": "privatelink.vaultcore.azure.net",
-                        "defaultAction": "Allow",
+                        "defaultAction": "Deny",
+                        "action" : "Allow",
                         "enabledForDeployment":true,
                         "enabledForDiskEncryption":true,
                         "enabledForTemplateDeployment":true,
                         "enableSoftDelete":true,
                         "enablePurgeProtection":true,
                         "enableRbacAuthorization":true,
-                        "publicNetworkAccess": "Enabled"
+                        "publicNetworkAccess": "Enabled",
+                        "StorageAccountRgInstance": 1,
+                        "StorageAccountInstance": 3,
+                        "workspaceRgInstance": 1,
+                        "workspaceInstance": 1,
+                        "virtualNetworkRules": [
+                            {
+                                "virtualNetworkResourceGroup": "rg-np-edc-bkof-dm-001",
+                                "virtualNetworkName_RG": "vnet-np-edc-bkof-dm-001",
+                                "virtualNetworksubnetName": "sub-np-edc-bkof-dm-vmsub-003"
+                            }
+                        ],
+                        "virtualNetwork2Rules": [
+                            {
+                                "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                "virtualNetworkName_RG": "vnet-np-sdc-bkof-dm-001",
+                                "virtualNetworksubnetName": "sub-np-sdc-bkof-dm-vmsub-003"
+                            },
+                            {
+                                "virtualNetworkResourceGroup": "rg-np-sdc-bkof-dm-001",
+                                "virtualNetworkName_RG": "vnet-np-sdc-bkof-dm-001",
+                                "virtualNetworksubnetName": "sub-np-sdc-bkof-001"
+                            }
+                        ]
                     }
                 ]
             }

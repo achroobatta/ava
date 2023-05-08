@@ -66,19 +66,14 @@ function azconnect()
 
 Function get-secret()
 {
-    $azctx = Get-AzContext
-    if($null -eq $azctx)
-    {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"VM is not connected in Azure") >> $logFilePath
-        break
-    }
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unzipping File using stored keys in key vault") >> $logFilePath
 
     $sourcePath = Get-ChildItem -Path $localzippath
     $secret = Get-AzKeyVaultSecret -VaultName $keyVaultNameforSecret -Name $secretName -AsPlainText
     if ($null -eq $secret)
     {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get secret from key vault") >> $logFilePath
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Secret Name: $secretName is not existing in Key Vault") >> $logFilePath
+        return "Secret Name: $secretName is not existing in Key Vault"
     }
 
     try
@@ -86,15 +81,15 @@ Function get-secret()
         foreach($sPath in $sourcePath)
         {
             $uPath = ("$unzipPath\" + $sPath.BaseName).Replace(" ","_")
-            & ${env:ProgramFiles}\7-Zip\7z.exe x $sPath.FullName "-o$($uPath)" -y -p"$secret" | Out-Null
+            $extract = & ${env:ProgramFiles}\7-Zip\7z.exe x $sPath.FullName "-o$($uPath)" -y -p"$secret"
         }
     }
     catch
     {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable process to unzipped file") >> $logFilePath
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable process to unzipped file: $_") >> $logFilePath
     }
 
-    if((Get-ChildItem -Path $unzipPath))
+    if($extract -contains "Everything is Ok")
     {
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Successfully Unzip and extract to Disk2") >> $logFilePath
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
@@ -102,9 +97,9 @@ Function get-secret()
     }
     else
     {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unzip and extract to Disk2 Failed") >> $logFilePath
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unzip and extract to Disk2 Failed, Secret Name: $secretName has incorrect value") >> $logFilePath
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
-        return "Unzip and extract to Disk2 Failed"
+        return "Unzip and extract to Disk2 Failed, Secret Name: $secretName has incorrect value"
     }
 }
 

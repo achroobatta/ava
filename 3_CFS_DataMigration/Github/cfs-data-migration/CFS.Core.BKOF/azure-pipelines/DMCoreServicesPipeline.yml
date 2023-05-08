@@ -58,6 +58,11 @@ parameters:
      - false
      - true
 
+  - name: principalIdUser
+    displayName: "Email ID of the Person to Assign KeyVault Secret Offcier Role"
+    type: string
+    default: "aa-Rhodalyn.Noceja@dev.cfs.com.au"
+
 variables:
 
  - group: var-azure-tenant-id
@@ -93,6 +98,9 @@ variables:
  # Artifact Package Version Value
  - name: artifactVersion
    value: ${{ parameters.artifactVersion }}
+
+ - name: principalIdUser
+   value: ${{ parameters.principalIdUser }}
 
  # Azure DevOps Environments
  - name: AzureDevOpsEnvironments
@@ -137,12 +145,6 @@ variables:
 
  - name: kvRG
    value: 'rg-$(AzureEnvironmentPrefix)-$(resourceLocationPrefix)-$(landingZoneServiceIdsm)-dm-001'
-
- - name: keyVaultNameforSecret
-   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
-     value: "kv-np-edc-bkof-dm-0028"
-   ${{ if eq(parameters.deployEnvironment, 'Production') }}:
-     value: "kv-prd-edc-bkof-dm-0025"
 
  - name: operationSubscriptionId
    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
@@ -208,9 +210,9 @@ variables:
       ${{ if eq(parameters.landingZoneServiceId, 'BKOF')}}:
         value: "sc-subsc-np-bkof-001"
       ${{ else }}:
-        value: "sc-subsc-np-${{ parameters.landingZoneServiceId }}-001"      
+        value: "sc-subsc-np-${{ parameters.landingZoneServiceId }}-001"
    ${{ if eq(parameters.deployEnvironment, 'Production') }}:
-      ${{ if eq(parameters.landingZoneServiceId, 'BKOF')}}: 
+      ${{ if eq(parameters.landingZoneServiceId, 'BKOF')}}:
         value: "sc-subsc-prd-bkof-001"
       ${{ else }}:
         value: "sc-subsc-prd-${{ parameters.landingZoneServiceId }}-001"
@@ -230,6 +232,7 @@ variables:
 
  - name: connRg
    value: 'rg-$(AzureEnvironmentPrefix)-$(workspaceLocationPrefix)-hub-netw-001'
+   #value: 'rg-$(AzureEnvironmentPrefix)-edc-hub-netw-001'
 
  - name: rgName
    ${{ if eq(parameters.landingZoneServiceId, 'BKOF') }}:
@@ -268,8 +271,8 @@ variables:
 
  # Azure CLI Deployment Names Dynamically Applied Per Stage
  - name: deploymentName
-   value: '$(System.StageDisplayName)_$(Build.BuildNumber)' 
- 
+   value: '$(System.StageDisplayName)_$(Build.BuildNumber)'
+
  - name: resourceLocation
    value: ${{ parameters.resourceLocation }}
 
@@ -315,43 +318,43 @@ stages:
                 serviceId: '$(landingZoneServiceIdsm)'
 
 # Deploy PrivateDnsZone
-  # - stage: deployPrivateDnsZone
-  #   displayName: DeployPrivateDnsZone
+  - stage: deployPrivateDnsZone
+    displayName: DeployPrivateDnsZone
 
-  #   pool:
-  #     vmImage: windows-latest
+    pool:
+      vmImage: windows-latest
 
-  #   dependsOn: [deployResourceGroup]
-  #   jobs:
-  #   - deployment: DeployPrivateDnsZone
-  #     workspace:
-  #       clean: all
+    dependsOn: [deployResourceGroup]
+    jobs:
+    - deployment: DeployPrivateDnsZone
+      workspace:
+        clean: all
 
-  #     environment: $(AzureDevOpsEnvironments)
-  #     strategy:
-  #       runOnce:
-  #         deploy:
-  #           steps:
+      environment: $(AzureDevOpsEnvironments)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
 
-  #           - checkout: self
+            - checkout: self
 
-  #           - task: DownloadPackage@1
-  #             displayName: DownloadArtifacts
-  #             inputs:
-  #               packageType: 'nuget'
-  #               feed: '$(artifactFeed)'
-  #               definition: '$(artifactDefinition)'
-  #               version: '$(artifactVersion)'
-  #               extract: true
-  #               downloadPath: '$(System.ArtifactsDirectory)'
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
 
-  #           #PrivateDnsZone
-  #           - template: templates/deploy-PrivateDnsZoneAll.yml
-  #             parameters:
-  #               serviceName: '$(subscriptionServiceName)'
-  #               serviceConnection: '$(landingZoneServiceConnection)'
-  #               deploymentType: '$(deploymentType)'
-  #               serviceId: '$(landingZoneServiceIdsm)'
+            #PrivateDnsZone
+            - template: templates/deploy-PrivateDnsZoneAll.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
 
 # Deploy Route Table and NSG
   - stage: deployRTandNSG
@@ -449,7 +452,7 @@ stages:
       vmImage: windows-latest
 
     condition: succeeded()
-    dependsOn: []
+    dependsOn: [deployPrivateDnsZone]
     jobs:
     - deployment: DeployStorageAccount
       workspace:
@@ -480,9 +483,9 @@ stages:
                 serviceConnection: '$(landingZoneServiceConnection)'
                 deploymentType: '$(deploymentType)'
                 serviceId: '$(landingZoneServiceIdsm)'
-                connSubId: '$(connSubId)'
-                connRg: '$(connRg)'
                 rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                connSubId: '$(connSubId)'
                 resourceLocation: '$(resourceLocation)'
 
 # Deploy Dependency StorageAccount
@@ -493,7 +496,7 @@ stages:
       vmImage: windows-latest
 
     condition: succeeded()
-    dependsOn: []
+    dependsOn: [deployPrivateDnsZone]
     jobs:
     - deployment: DeployDepStorageAccount
       workspace:
@@ -524,9 +527,9 @@ stages:
                 serviceConnection: '$(landingZoneServiceConnection)'
                 deploymentType: '$(deploymentType)'
                 serviceId: '$(landingZoneServiceIdsm)'
-                connSubId: '$(connSubId)'
-                connRg: '$(connRg)'
                 rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                connSubId: '$(connSubId)'
                 resourceLocation: '$(resourceLocation)'
 
 
@@ -538,7 +541,7 @@ stages:
       vmImage: windows-latest
 
     condition: succeeded()
-    dependsOn: []
+    dependsOn: [deployPrivateDnsZone]
     jobs:
     - deployment: DeployKeyVault
       workspace:
@@ -569,50 +572,51 @@ stages:
                 serviceConnection: '$(landingZoneServiceConnection)'
                 deploymentType: '$(deploymentType)'
                 serviceId: '$(landingZoneServiceIdsm)'
-                connSubId: '$(connSubId)'
-                connRg: '$(connRg)'
                 rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                connSubId: '$(connSubId)'
                 resourceLocation: '$(resourceLocation)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
 
-# Deploy RoleAssignment
-  - stage: deployRoleAssignment
-    displayName: DeployRoleAssignment
+# # Deploy RoleAssignment
+#   - stage: deployRoleAssignment
+#     displayName: DeployRoleAssignment
 
-    pool:
-      vmImage: windows-latest
+#     pool:
+#       vmImage: windows-latest
 
-    condition: succeeded()
-    dependsOn: []
-    jobs:
-    - deployment: DeployRoleAssignment
-      workspace:
-        clean: all
+#     condition: succeeded()
+#     dependsOn: []
+#     jobs:
+#     - job: DeployRoleAssignment
+#       workspace:
+#         clean: all
 
-      environment: $(AzureDevOpsEnvironments)
-      strategy:
-        runOnce:
-          deploy:
-            steps:
+#       # environment: $(AzureDevOpsEnvironments)
+#       # strategy:
+#       #   runOnce:
+#       #     deploy:
+#       steps:
 
-            - checkout: self
+#             - checkout: self
 
-            - task: DownloadPackage@1
-              displayName: DownloadArtifacts
-              inputs:
-                packageType: 'nuget'
-                feed: '$(artifactFeed)'
-                definition: '$(artifactDefinition)'
-                version: '$(artifactVersion)'
-                extract: true
-                downloadPath: '$(System.ArtifactsDirectory)'
+#             - task: DownloadPackage@1
+#               displayName: DownloadArtifacts
+#               inputs:
+#                 packageType: 'nuget'
+#                 feed: '$(artifactFeed)'
+#                 definition: '$(artifactDefinition)'
+#                 version: '$(artifactVersion)'
+#                 extract: true
+#                 downloadPath: '$(System.ArtifactsDirectory)'
 
-            #KeyVault
-            - template: templates/deploy-RoleAssignment.yml
-              parameters:
-                serviceName: '$(subscriptionServiceName)'
-                serviceConnection: '$(operationsServiceConnection)'
-                deploymentType: '$(deploymentType)'
-                serviceId: '$(landingZoneServiceIdsm)'
+#             #KeyVault
+#             - template: templates/deploy-RoleAssignment.yml
+#               parameters:
+#                 serviceName: '$(subscriptionServiceName)'
+#                 serviceConnection: '$(operationsServiceConnection)'
+#                 deploymentType: '$(deploymentType)'
+#                 serviceId: '$(landingZoneServiceIdsm)'
 
   # Deploy Landing Zone UDR Rules
   - stage: removedeleteUdrRules
@@ -772,11 +776,11 @@ stages:
             #Landing Zone UDR Rules
             - template: templates/deploy-ARecord.yml
               parameters:
-                serviceId: '$(landingZoneServiceIdsm)'
                 serviceConnection: '$(landingZoneServiceConnection)'
+                resourceLocation: '${{ parameters.resourceLocation}}'
                 destStorageAccountName: '${{ parameters.destStorageAccount}}'
                 rgName: '$(rgName)'
                 connRg: '$(connRg)'
+                subId: '$(subId)'
                 connSubId: '$(connSubId)'
-                privateDnsZoneName: '$(dnsZoneName)'
-                resourceLocation: '$(resourceLocation)'
+                dnsZoneName: '$(dnsZoneName)'

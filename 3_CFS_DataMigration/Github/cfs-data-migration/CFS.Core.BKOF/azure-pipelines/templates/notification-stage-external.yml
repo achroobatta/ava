@@ -20,6 +20,7 @@ parameters:
     adEmailSubject: ''
     adEmailBody: ''
     runType: ''
+    appName: ''
 
 stages:
 - stage: ${{ parameters.stage}}
@@ -30,10 +31,8 @@ stages:
     - name: keyVaultSecretValue
       value: $[ stageDependencies.download_key_vault_secret.get_kvsecret.outputs['get_kv_secret_value.KvSecretValue'] ]
     - name: emailBody
-      ${{ if eq(parameters.runType, 'Dryrun') }}:
-        value: '<p> Hi,</p> <p> Please save the following password. This is the password for the extracted dummy file. </p><p><b> Password: </b> $(keyVaultSecretValue) </p> <p>Please validate if you can access file using these credentials. </p>On completion of Extraction process, actual filename along with the same password will be shared to access the file. </p>'
-      ${{ if eq(parameters.runType, 'Production') }}:
-        value: '<p> Hi, </p> <p> Please save the password below. This is the password for the extracted file. The file information will be shared in a separate email. </p> <p> <b> Password: </b> $(keyVaultSecretValue) </p>'
+      value: '<p>Please save the password below. This is the password for the extracted file. The file information will be shared in a separate email.</p><p></p><p>Password: $(keyVaultSecretValue)</p> <p></p><p>This task if for ${{ parameters.appName}}</p><p></p><p>This mailbox is not monitored, please direct all requests to ${{ parameters.receiverEmailAddress}}</p>'
+
   jobs:
   - template: updateworkitem.yml
     parameters:

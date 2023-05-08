@@ -8,9 +8,9 @@ param costCenter string
 param createOnDate string
 param deleteByDate string
 
-param virtualNetworkResourceGroup string
-param virtualNetworkName_RG string
-param virtualNetworksubnetName string
+// param virtualNetworkResourceGroup string
+// param virtualNetworkName_RG string
+// param virtualNetworksubnetName string
 param dlstorageAccountName string
 param dlRootContainterName string
 
@@ -27,6 +27,8 @@ param allowSharedKeyAccess bool
 param isHnsEnabled bool
 param largeFileSharesState string
 param isNfsV3Enabled bool
+param dlWhiteListedIps array
+param virtualNetworkRules array
 
 
 resource dlStorageAccountNameArray 'Microsoft.Storage/storageAccounts@2021-08-01' = {
@@ -47,12 +49,16 @@ resource dlStorageAccountNameArray 'Microsoft.Storage/storageAccounts@2021-08-01
   properties: {
     networkAcls: {
       resourceAccessRules: []
-      bypass: 'AzureServices,Logging,Metrics' 
-      virtualNetworkRules: [{
-        id: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName_RG, virtualNetworksubnetName)            
+      bypass: 'AzureServices,Logging,Metrics'
+      virtualNetworkRules: [for (vr,i) in virtualNetworkRules: {
+          id: resourceId(vr.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vr.virtualNetworkName_RG, vr.virtualNetworksubnetName)
+          action: action
+        }]
+      defaultAction: defaultAction
+      ipRules: [for dlWhiteListip in dlWhiteListedIps: {
+        value: dlWhiteListip
         action: action
       }]
-      defaultAction: defaultAction
       /*
       virtualNetworkRules: [for vnetSubnetResourceId in vnetSubnetResourceIds: {
         id: vnetSubnetResourceId

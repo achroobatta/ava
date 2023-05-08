@@ -37,9 +37,21 @@
     [Parameter(Mandatory=$false)]
     [String]$unzipPath,
     [Parameter(Mandatory=$false)]
+    [string]$appName,
+    [Parameter(Mandatory=$false)]
     [string]$subId,
     [Parameter(Mandatory=$false)]
-    [string]$subTenantId
+    [string]$subTenantId,
+    [Parameter(Mandatory=$false)]
+    [string]$realTimeMonitoringEmail,
+    [Parameter(Mandatory=$false)]
+    [string]$threatLogs,
+    [Parameter(Mandatory=$false)]
+    [string]$stgMisMatch,
+    [Parameter(Mandatory=$false)]
+    [string]$sourceDatatype,
+    [Parameter(Mandatory=$false)]
+    [string]$etlDestStorageAccountName
 )
 
 function azconnect()
@@ -114,10 +126,16 @@ Function Start_Pipeline
         $clientEmailAddress,
         $runType,
         $manualVerificationEmail,
-        $unzipPath
+        $unzipPath,
+        $appName,
+        $threatLogs,
+        $realTimeMonitoringEmail,
+        $stgMisMatch,
+        $sourceDatatype,
+        $etlDestStorageAccountName
     )
 
-    if($deployEnvironment -eq "external")
+    if($targetDataType -eq "external")
     {
       $keySecret = $sftpUsername + "7ZipPassword"
     }
@@ -168,7 +186,13 @@ Function Start_Pipeline
             "clientEmailAddress": "--clientEmailAddress--",
             "manualVerificationEmail": "--manualVerificationEmail--",
             "runType": "--runType--",
-            "tvtresult": " "
+            "appName": "--appName--",
+            "tvtresult": " ",
+            "threatLogs": "--THREATLOGS--",
+            "realTimeMonitoringEmail": "--REALTIMEMONITORING--",
+            "stgMisMatch": "--stgMisMatch--",
+            "sourceDatatype": "--sourceDatatype--",
+            "etlDestStorageAccountName": "--etlDestStorageAccountName--"
           },
           "resources": {
             "repositories": {
@@ -195,6 +219,12 @@ Function Start_Pipeline
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--clientEmailAddress--", $clientEmailAddress)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--runType--", $runType)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--manualVerificationEmail--", $manualVerificationEmail)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--appName--", $appName)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--THREATLOGS--", $threatLogs)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--REALTIMEMONITORING--", $realTimeMonitoringEmail)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--stgMisMatch--", $stgMisMatch)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--sourceDatatype--", $sourceDatatype)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--etlDestStorageAccountName--", $etlDestStorageAccountName)
 
       Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Executing Invoke-RestMethod") >> $logFilePath
       Invoke-RestMethod -Uri $triggerPipelineApi -Method Post -Headers $header -Body $triggerPipelineReqBod -ContentType 'application/json' -ErrorAction Stop
@@ -220,7 +250,14 @@ function Mismatch_Pipeline
         $emailAddress,
         $deployEnvironment,
         $manualVerificationEmail,
-        $tvtresult
+        $tvtresult,
+        $appName,
+        $threatLogs,
+        $realTimeMonitoringEmail,
+        $stgMisMatch,
+        $sourceDatatype,
+        $taskNumber,
+        $targetDataType
     )
 
     Try{
@@ -232,7 +269,7 @@ function Mismatch_Pipeline
       $triggerPipelineReqBod = '
         {
           "templateParameters": {
-            "taskNumber": " ",
+            "taskNumber": "--taskNumber--",
             "environment": "--environment--",
             "vmName": "--vmName--",
             "vmRgName": " ",
@@ -240,7 +277,7 @@ function Mismatch_Pipeline
             "resourceLocation": " ",
             "receiverEmailAddress": "--receiverEmailAddress--",
             "commRGName": " ",
-            "targetDataType": " ",
+            "targetDataType": "--targetDataType--",
             "destStorageAccount": " ",
             "destContainerName": " ",
             "destFileName": " ",
@@ -249,7 +286,13 @@ function Mismatch_Pipeline
             "clientEmailAddress": " ",
             "manualVerificationEmail": "--manualVerificationEmail--",
             "tvtresult": "--tvtresult--",
-            "runType": " "
+            "appName": "--appName--",
+            "runType": " ",
+            "threatLogs": "--THREATLOGS--",
+            "realTimeMonitoringEmail": "--REALTIMEMONITORING--",
+            "stgMisMatch": "--stgMisMatch--",
+            "sourceDatatype": "--sourceDatatype--",
+            "etlDestStorageAccountName": " "
           },
           "resources": {
             "repositories": {
@@ -260,11 +303,18 @@ function Mismatch_Pipeline
           }
         }'
 
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--taskNumber--", $taskNumber)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--environment--", $deployEnvironment)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--vmName--", $vmName)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--receiverEmailAddress--", $emailAddress)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--manualVerificationEmail--", $manualVerificationEmail)
       $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--tvtresult--", $tvtresult)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--appName--", $appName)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--targetDataType--", $targetDataType)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--THREATLOGS--", $threatLogs)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--REALTIMEMONITORING--", $realTimeMonitoringEmail)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--stgMisMatch--", $stgMisMatch)
+      $triggerPipelineReqBod = $triggerPipelineReqBod.Replace("--sourceDatatype--", $sourceDatatype)
 
       Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Executing Invoke-RestMethod") >> $logFilePath
       Invoke-RestMethod -Uri $triggerPipelineApi -Method Post -Headers $header -Body $triggerPipelineReqBod -ContentType 'application/json' -ErrorAction Stop
@@ -274,7 +324,7 @@ function Mismatch_Pipeline
     }
     Catch
     {
-      Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while running Invoke-RestMethod") >> $logFilePath
+      Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while running Invoke-RestMethod: $_") >> $logFilePath
       return $false
     }
 }
@@ -303,15 +353,24 @@ try
     {
         Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get PAT from key vault") >> $logFilePath
     }
-
-    if($manualVerificationEmail -eq "false")
+    if($manualVerificationEmail -eq "true")
     {
-      Start_Pipeline -PAT $PAT -taskNumber $taskNumber -resourceLocation $resourceLocation -vmName $vmName -vmRG $vmRG -diagStorageAccount $diagStorageAccount -emailAddress $emailAddress -deployEnvironment $deployEnvironment -commRG $commRG -destStorageAccount $destStorageAccount -destContainerName $destContainerName -keyVaultNameforSecret $keyVaultNameforSecret -targetDataType $targetDataType -project $project -url $url -clientEmailAddress $clientEmailAddress -runType $runType -manualVerificationEmail $manualVerificationEmail -sftpUsername $sftpUsername -unzipPath $unzipPath
+      Mismatch_Pipeline -PAT $PAT -taskNumber $taskNumber -vmName $vmName -emailAddress $emailAddress -deployEnvironment $deployEnvironment -manualVerificationEmail $manualVerificationEmail -tvtresult $tvtresult -project $project -url $url -appName $appName -realTimeMonitoringEmail $realTimeMonitoringEmail -threatLogs $threatLogs -stgMisMatch $stgMisMatch -sourceDatatype $sourceDatatype -targetDataType $targetDataType
+      Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
+    }
+    elseif($realTimeMonitoringEmail -eq "true")
+    {
+      Mismatch_Pipeline -PAT $PAT -taskNumber $taskNumber -vmName $vmName -emailAddress $emailAddress -deployEnvironment $deployEnvironment -manualVerificationEmail $manualVerificationEmail -tvtresult $tvtresult -project $project -url $url -appName $appName -realTimeMonitoringEmail $realTimeMonitoringEmail -threatLogs $threatLogs -stgMisMatch $stgMisMatch -sourceDatatype $sourceDatatype -targetDataType $targetDataType
+      Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
+    }
+    elseif($stgMisMatch -ne "na")
+    {
+      Mismatch_Pipeline -PAT $PAT -taskNumber $taskNumber -vmName $vmName -emailAddress $emailAddress -deployEnvironment $deployEnvironment -manualVerificationEmail $manualVerificationEmail -tvtresult $tvtresult -project $project -url $url -appName $appName -realTimeMonitoringEmail $realTimeMonitoringEmail -threatLogs $threatLogs -stgMisMatch $stgMisMatch -sourceDatatype $sourceDatatype -targetDataType $targetDataType
       Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
     }
     else
     {
-      Mismatch_Pipeline -PAT $PAT -vmName $vmName -emailAddress $emailAddress -deployEnvironment $deployEnvironment -manualVerificationEmail $manualVerificationEmail -tvtresult $tvtresult -project $project -url $url
+      Start_Pipeline -PAT $PAT -taskNumber $taskNumber -resourceLocation $resourceLocation -vmName $vmName -vmRG $vmRG -diagStorageAccount $diagStorageAccount -emailAddress $emailAddress -deployEnvironment $deployEnvironment -commRG $commRG -destStorageAccount $destStorageAccount -destContainerName $destContainerName -keyVaultNameforSecret $keyVaultNameforSecret -targetDataType $targetDataType -project $project -url $url -clientEmailAddress $clientEmailAddress -runType $runType -manualVerificationEmail $manualVerificationEmail -sftpUsername $sftpUsername -unzipPath $unzipPath -appName $appName -threatLogs $threatLogs -realTimeMonitoringEmail $realTimeMonitoringEmail -stgMisMatch $stgMisMatch -sourceDatatype $sourceDatatype -etlDestStorageAccountName $etlDestStorageAccountName
       Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"End") >> $logFilePath
     }
 }

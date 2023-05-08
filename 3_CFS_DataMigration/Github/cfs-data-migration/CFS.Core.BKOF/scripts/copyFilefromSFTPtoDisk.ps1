@@ -85,19 +85,19 @@ function connectSFTP()
         $sshKey = Get-AzKeyVaultSecret -vaultName $keyVaultNameforSecret -name $srcSftpKey -AsPlainText
         if ($null -eq $sshKey)
         {
-            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get key from Keyvault") >> $logFilePath
-            break
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get SSH Key from Keyvault") >> $logFilePath
+            return "Unable to get SSH Key from Keyvault"
         }
 
         #Password from Keyvault
         $pass = Get-AzKeyVaultSecret -vaultName $keyVaultNameforSecret -name $srcSftpPass
+        if ($null -eq $pass)
+        {
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get SFTP Password from Keyvault") >> $logFilePath
+            return "Unable to get SFTP Password from Keyvault"
+        }
         $Get_My_Scret = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pass.SecretValue)
         $Enpassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($Get_My_Scret)
-        if ($null -eq $Enpassword)
-        {
-            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get password key from Keyvault") >> $logFilePath
-            break
-        }
     }
     catch
     {
@@ -116,7 +116,7 @@ function connectSFTP()
         $ctnIPs = $srcSftpCtn.Split(",")
         foreach($ctnIP in $ctnIPs)
         {
-            $sftpSession = New-SFTPSession -ComputerName $ctnIP -Credential $pscred -KeyString $sshKey -OperationTimeout -1 -AcceptKey
+            $sftpSession = New-SFTPSession -ComputerName $ctnIP -Credential $pscred -KeyString $sshKey -AcceptKey
             if($null -eq $sftpSession)
             {
                 continue
@@ -129,7 +129,7 @@ function connectSFTP()
     }
     catch
     {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to Connect SFTP with Provided Credentials") >> $logFilePath
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to Connect SFTP with Provided Credentials: $_") >> $logFilePath
         return "Unable to Connect SFTP with Provided Credentials"
     }
 
@@ -190,11 +190,10 @@ function connectSFTP()
     }
     catch
     {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to Copy File from SFTP to Disk1") >> $logFilePath
+        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to Copy File from SFTP to Disk1: $_") >> $logFilePath
         return "Unable to Copy File from SFTP to Disk1"
     }
 }
-
 $logFilePath = "$PSScriptRoot\logging_copyFilefromSFTPtoDisk.txt"
 try
 {

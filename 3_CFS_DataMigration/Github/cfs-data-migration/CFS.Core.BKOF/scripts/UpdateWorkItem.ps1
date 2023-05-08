@@ -20,7 +20,10 @@ param(
   $PAT,
   $WorkItemState,
   $WorkItemComment,
-  $Processed
+  $Processed,
+  $Tag,
+  $UpdateState,
+  $UpdateComment
 )
 
 
@@ -147,6 +150,65 @@ Function Add_WorkItemComment{
   }
   End{}
 }
+Function Replace_WorkItemTag{
+  <#
+        .SYNOPSIS
+        Updates work item state.
+
+        .DESCRIPTION
+        Updates work item state.
+
+        .PARAMETER WorkItemId
+        ID of the Work Item to be updated.
+
+        .PARAMETER PAT
+        Personal Access Token used for Authentication.
+    #>
+  Param(
+
+    $WorkItemId,
+    $PAT,
+    $Tag
+  )
+  Begin{
+    Write-Information -MessageData "Updating Work Item $WorkItemId..." -InformationAction Continue
+  }
+  Process
+  {
+    Try{
+
+      # Create header with PAT
+      $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($PAT)"))
+
+      $header = @{authorization = "Basic $token"}
+
+      $updateWorkItemApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)_apis/wit/workitems/$WorkItemId" + "?api-version=7.1-preview.3"
+      Write-Information -MessageData $updateWorkItemApi -InformationAction Continue
+      $updateWorkItemReqBod = '
+      [
+        {
+          "op": "replace",
+          "path": "/fields/System.Tags",
+          "value": "--TAG--"
+        }
+      ]'
+
+      $updateWorkItemReqBod = $updateWorkItemReqBod.Replace("--TAG--", $Tag)
+
+      Write-Information -MessageData $updateWorkItemReqBod -InformationAction Continue
+
+      Invoke-RestMethod -Uri $updateWorkItemApi -Method Patch -Headers $header -Body $updateWorkItemReqBod -ContentType 'application/json-patch+json' -ErrorAction Stop
+
+      return $true
+
+    }
+    Catch
+    {
+      return $false
+    }
+  }
+  End{}
+}
 Function Add_WorkItemTag{
   <#
         .SYNOPSIS
@@ -164,8 +226,8 @@ Function Add_WorkItemTag{
   Param(
 
     $WorkItemId,
-    $PAT
-
+    $PAT,
+    $Tag
   )
   Begin{
     Write-Information -MessageData "Updating Work Item $WorkItemId..." -InformationAction Continue
@@ -186,9 +248,11 @@ Function Add_WorkItemTag{
         {
           "op": "add",
           "path": "/fields/System.Tags",
-          "value": "processed"
+          "value": "--TAG--"
         }
       ]'
+
+      $updateWorkItemReqBod = $updateWorkItemReqBod.Replace("--TAG--", $Tag)
 
       Write-Information -MessageData $updateWorkItemReqBod -InformationAction Continue
 
@@ -208,10 +272,10 @@ Function Add_WorkItemTag{
 
 Write-Information -MessageData $Processed -InformationAction Continue
 
-#Set Work Item Tag
-if($Processed -eq 'true')
+#Set Work Item Tag Processed
+if($Processed -eq 'false')
 {
-  $UpdateWorkItemTag = Add_WorkItemTag -WorkItemId $WorkItemId -PAT $PAT
+  $UpdateWorkItemTag = Add_WorkItemTag -WorkItemId $WorkItemId -PAT $PAT -Tag "no attachment"
   if($UpdateWorkItemTag -contains $false)
   {
     Write-Error "There is an error in updating the work item tag."
@@ -222,25 +286,52 @@ if($Processed -eq 'true')
   }
 
 }
-#Call Update-WorkItemState
-#Change Task State
-$UpdateWorkItemState = Set_WorkItemState -WorkItemId $WorkItemId -PAT $PAT -WorkItemState $WorkItemState
-if($UpdateWorkItemState -contains $false)
+elseif($Processed -eq 'true')
 {
-  Write-Error "There is an error in updating the work item state."
+  if($Tag -eq "Non-Production")
+  {
+    $Tag = 'request: non-production;processed'
+  }
+  elseif($Tag -eq "Production")
+  {
+    $Tag = 'request: production;processed'
+  }
+  $ReplaceWorkItemTag = Replace_WorkItemTag -WorkItemId $WorkItemId -PAT $PAT -Tag $Tag
+  if($ReplaceWorkItemTag -contains $false)
+  {
+    Write-Error "There is an error in updating the work item tag."
+  }
+  elseif($ReplaceWorkItemTag -contains $true)
+  {
+    Write-Information -MessageData "Updating work item tag for $WorkItemId is successful" -InformationAction Continue
+  }
+
 }
-elseif($UpdateWorkItemState -contains $true)
+if($UpdateState -ne 'false')
 {
-  Write-Information -MessageData "Updating work item state for $WorkItemId is successful" -InformationAction Continue
+  #Call Update-WorkItemState
+  #Change Task State
+  $UpdateWorkItemState = Set_WorkItemState -WorkItemId $WorkItemId -PAT $PAT -WorkItemState $WorkItemState
+  if($UpdateWorkItemState -contains $false)
+  {
+    Write-Error "There is an error in updating the work item state."
+  }
+  elseif($UpdateWorkItemState -contains $true)
+  {
+    Write-Information -MessageData "Updating work item state for $WorkItemId is successful" -InformationAction Continue
+  }
 }
-#Call Add-WorkItemComment
-#Add Comments to Task
-$addWorkItemComment = Add_WorkItemComment -WorkItemId $WorkItemId -PAT $PAT -WorItemComment $WorkItemComment
-if($addWorkItemComment -contains $false)
+if($UpdateComment -ne 'false')
 {
-  Write-Error "There is an error in adding a new the work item comment."
-}
-elseif($UpdateWorkItemState -contains $true)
-{
-  Write-Information -MessageData "Added work item comment for $WorkItemId is successful." -InformationAction Continue
+  #Call Add-WorkItemComment
+  #Add Comments to Task
+  $addWorkItemComment = Add_WorkItemComment -WorkItemId $WorkItemId -PAT $PAT -WorItemComment $WorkItemComment
+  if($addWorkItemComment -contains $false)
+  {
+    Write-Error "There is an error in adding a new the work item comment."
+  }
+  elseif($UpdateWorkItemState -contains $true)
+  {
+    Write-Information -MessageData "Added work item comment for $WorkItemId is successful." -InformationAction Continue
+  }
 }

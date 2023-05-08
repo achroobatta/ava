@@ -14,9 +14,9 @@ param sftpRootContainerName string
 // @secure()
 // param sshKeyName string
 
-param virtualNetworkResourceGroup string
-param virtualNetworkName_RG string
-param virtualNetworksubnetName string
+// param virtualNetworkResourceGroup string
+// param virtualNetworkName_RG string
+// param virtualNetworksubnetName string
 
 param performance string
 param kind string
@@ -49,9 +49,10 @@ param isNfsV3Enabled bool
 //   'subscriptionResourceId(\'subsc-np-operations-001', 'Microsoft.Network/virtualNetworks/subnets', 'rg-np-sdc-oper-netw-001', 'sub-np-sdc-operations-001\')'
 //   'subscriptionResourceId(\'subsc-np-operations-001', 'Microsoft.Network/virtualNetworks/subnets', 'rg-np-sdc-oper-netw-001', 'sub-np-sdc-operations-002\')'
 // ]
-// @description('An array of IPv4 addresses to be whitelisted for access to this SFTP storage account and container. Do not specify RFC 1918 addresses nor CIDRs smaller than /30. This should be a list of the IPs representing machines at the other end of the SFTP transfer.')
-// param sftpWhiteListedIps array
-// param ipRulesaction string
+@description('An array of IPv4 addresses to be whitelisted for access to this SFTP storage account and container. Do not specify RFC 1918 addresses nor CIDRs smaller than /30. This should be a list of the IPs representing machines at the other end of the SFTP transfer.')
+param sftpWhiteListedIps array
+param ipRulesaction string
+param virtualNetworkRules array
 param virtualNetworkRulesaction string
 param defaultAction string
 // = [
@@ -91,10 +92,14 @@ resource sftpStorageAccountNameArray 'Microsoft.Storage/storageAccounts@2021-08-
       //   value: sftpWhiteListip
       //   action: ipRulesaction
       // }]
-      virtualNetworkRules: [{
-        id: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName_RG, virtualNetworksubnetName)            
+      virtualNetworkRules: [for (vr,i) in virtualNetworkRules: {
+        id: resourceId(vr.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vr.virtualNetworkName_RG, vr.virtualNetworksubnetName)            
         action: virtualNetworkRulesaction
       }]
+      ipRules: [for sftpWhiteListip in sftpWhiteListedIps: {
+          value: sftpWhiteListip
+          action: ipRulesaction
+        }]
     //   ipRules: [
     //     {
     //     value: sftpWhiteListip

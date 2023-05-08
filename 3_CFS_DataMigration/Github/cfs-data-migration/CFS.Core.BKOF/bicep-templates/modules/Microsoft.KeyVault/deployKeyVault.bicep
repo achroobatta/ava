@@ -34,6 +34,20 @@ param enablePurgeProtection bool
 param enableRbacAuthorization bool
 param publicNetworkAccess string
 
+@description('Parameters for Diagnostic Log')
+param storageAccountResourceGroup string
+param storageAccountName string
+param workspaceResourceGroup string
+param workspaceName string
+param storageAccountSubscriptionId string
+param workspaceSubscriptionId string
+param virtualNetworkRules array
+param action string
+
+var storageAccountId = resourceId(storageAccountSubscriptionId, storageAccountResourceGroup, 'Microsoft.Storage/storageAccounts', storageAccountName)
+var workspaceId = resourceId(workspaceSubscriptionId, workspaceResourceGroup, 'Microsoft.OperationalInsights/workspaces', workspaceName)
+
+
 resource keyVaultResource 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: keyVaultName
   location: keyVaultResourceGroupLocation
@@ -58,17 +72,59 @@ resource keyVaultResource 'Microsoft.KeyVault/vaults@2022-07-01' = {
     enableRbacAuthorization: enableRbacAuthorization
     publicNetworkAccess: publicNetworkAccess
     networkAcls: {
-      bypass: 'AzureServices' 
-      virtualNetworkRules: [{
-        id: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, virtualNetworksubnetName)            
+      bypass: 'AzureServices'
+      // virtualNetworkRules: [{
+      //   id: resourceId(virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, virtualNetworksubnetName)
+      // }]
+      virtualNetworkRules: [for (vr,i) in virtualNetworkRules: {
+        id: resourceId(vr.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vr.virtualNetworkName_RG, vr.virtualNetworksubnetName)
+        action: action
       }]
       defaultAction: defaultAction
     }
   }
 }
 
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'diag-${keyVaultResource.name}'
+  scope: keyVaultResource
+  properties: {
+    logs: [
+      {
+        category: 'AuditEvent'
+        enabled: true
+        retentionPolicy: {
+          days: 365
+          enabled: true
+        }
+      }
+      {
+        category: 'AzurePolicyEvaluationDetails'
+        enabled: true
+        retentionPolicy: {
+          days: 365
+          enabled: true
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          days: 365
+          enabled: true
+        }
+      }
+    ]
+    storageAccountId: storageAccountId
+    workspaceId: workspaceId
+  }
+}
+
+
 /*
-resource vaultkeyEncrypt 'Microsoft.KeyVault/vaults/keys@2021-06-01-preview' = { 
+resource vaultkeyEncrypt 'Microsoft.KeyVault/vaults/keys@2021-06-01-preview' = {
   parent: keyVaultResource
   name: vaultkeyEncryptName
   properties: {

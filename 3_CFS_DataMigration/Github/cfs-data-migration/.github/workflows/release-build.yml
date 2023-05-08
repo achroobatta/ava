@@ -1,0 +1,92 @@
+name:  Release Build
+
+on:
+  push:
+    branches: [ main ]
+
+  #pull_request:
+  #  branches: [ develop ]
+
+env:
+  AZURE_ARTIFACTS_FEED_URL: https://pkgs.dev.azure.com/AUSUP/core-it/_packaging/cfs-infra-release/nuget/v3/index.json
+  BUILD_CONFIGURATION: 'Release'    # set this to the appropriate build configuration
+  DOTNET_VERSION: '6.0.x' 
+  VERSION_MAJOR_MINOR_PATCH: '1.0.0' #The major.minor.patch part of Semantic version 2 (major.minor.patch.revision)
+  SOLUTION_FILE_RELATIVE_PATH: './CFS.Core.BKOF.sln'
+  PROJECT_FILE_RELATIVE_PATH: './CFS.Core.BKOF/CFS.Core.BKOF.csproj'
+  NUGET_OUTPUT_FOLDER_RELATIVE_PATH: './CFS.Core.BKOF/bin/packed'
+  BICEP_FOLDER_RELATIVE_PATH: './CFS.Core.BKOF/bicep-templates/'
+  TAG_PREFIX: 'release-'
+
+jobs:
+  #run in one job - so it checks out code once, so the working directory is preserved as-is between steps (needed for the "Generate ARM files" and "Run Checkov" steps).
+  lint-build-publishnuget:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repo
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: ${{ env.AZURE_ARTIFACTS_FEED_URL }}
+        env:
+           NUGET_AUTH_TOKEN: ${{ secrets.AZURE_ARTIFACTS_PAT }}
+           #NUGET_AUTH_TOKEN: ${{ secrets.CFS_DM_PAT }}
+
+      # Run dotnet build and test
+      - name: dotnet build and test
+        run: |
+          dotnet restore
+          dotnet build "${{ env.SOLUTION_FILE_RELATIVE_PATH }}" --configuration "${{ env.BUILD_CONFIGURATION }}"
+          dotnet test "${{ env.SOLUTION_FILE_RELATIVE_PATH }}" --configuration "${{ env.BUILD_CONFIGURATION }}"
+
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.1810.0
+        with:
+          directory: ${{ env.BICEP_FOLDER_RELATIVE_PATH }}
+          #check: CKV_AZURE_* # optional: run only a specific check_id. can be comma separated list
+          #skip_check: CKV_AWS_2 # optional: skip a specific check_id. can be comma separated list
+          quiet: false # optional: display only failed checks
+          soft_fail: false # optional: do not return an error code if there are failed checks
+          framework: bicep # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,arm,bicep,all}
+          #output_format: json # optional: the output format, one of: cli, json, junitxml, github_failed_only
+          #download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
+          #log_level: DEBUG # optional: set log level. Default WARNING
+          #config_file: path/this_file
+          #baseline: cloudformation/.checkov.baseline # optional: Path to a generated baseline file. Will only report results not in the baseline.
+          #container_user: 1000 # optional: Define what UID and / or what GID to run the container under to prevent permission issues
+          skip_check: CKV_AZURE_25,CKV_AZURE_27,CKV_AZURE_1,CKV_AZURE_23,CKV_AZURE_24,CKV_AZURE_26,CKV_AZURE_35,CKV_AZURE_41,CKV_AZURE_42,CKV_AZURE_2,CKV_AZURE_14,CKV_AZURE_15,CKV_AZURE_16,CKV_AZURE_17,CKV_AZURE_18,CKV_AZURE_131,CKV_AZURE_34,CKV_AZURE_36,CKV_AZURE_3,
+
+      - name: Super Linter
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true #false will run on changes only
+          DEFAULT_BRANCH: develop
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_JSCPD: false #too many to fix - many of the parameter files have copy-pasted sections
+          VALIDATE_YAML: false
+          
+
+      # tag build
+      - name: tag build
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git tag -a "${{ env.TAG_PREFIX }}${{ env.VERSION_MAJOR_MINOR_PATCH }}.${{ github.run_number }}" -m "CI build ${{ env.VERSION_MAJOR_MINOR_PATCH }}.${{ github.run_number }}"
+          git push -f -v origin "refs/tags/${{ env.TAG_PREFIX }}${{ env.VERSION_MAJOR_MINOR_PATCH }}.${{ github.run_number }}"
+
+      # Run dotnet build and pack
+      - name: dotnet build and pack
+        run: |
+          dotnet restore
+          dotnet build "${{ env.SOLUTION_FILE_RELATIVE_PATH }}" --configuration "${{ env.BUILD_CONFIGURATION }}" -p:Version="${{ env.VERSION_MAJOR_MINOR_PATCH }}.${{ github.run_number }}"
+          dotnet pack "${{ env.PROJECT_FILE_RELATIVE_PATH }}" --output "${{ env.NUGET_OUTPUT_FOLDER_RELATIVE_PATH }}" --configuration "${{ env.BUILD_CONFIGURATION }}" -p:PackageVersion="${{ env.VERSION_MAJOR_MINOR_PATCH }}.${{ github.run_number }}"
+
+      # Publish the package to Azure Artifacts
+      - name: dotnet publish
+        run: dotnet nuget push --skip-duplicate --api-key AzureArtifactsKey "${{ env.NUGET_OUTPUT_FOLDER_RELATIVE_PATH }}/*.nupkg"

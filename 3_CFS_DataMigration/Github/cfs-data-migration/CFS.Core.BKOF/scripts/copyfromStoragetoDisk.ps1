@@ -67,21 +67,26 @@ Function copy_storage()
     Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Copying file from storage to disk") >> $logFilePath
 
     $ctx = New-AzStorageContext -storageAccountName $sourceStorageAccount -UseConnectedAccount
-    $names = @(Get-AzStorageContainer -Name $sourceLocation* -Context $ctx | Get-AzStorageBlob)
-    if ($null -eq $names)
-    {
-        Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get storage blob in the container") >> $logFilePath
-    }
 
-    foreach ($name in $names)
+    $containers = $sourceLocation.Split(",")
+    foreach($container in $containers)
     {
-        try
+        $names = @(Get-AzStorageContainer -Name $container* -Context $ctx | Get-AzStorageBlob) | Where-Object {$_.ContentType -eq 'application/octet-stream'}
+        if ($null -eq $names)
         {
-            Get-AzStorageBlobContent -Blob $name.name -Container $sourceLocation -Destination $localTargetDirectory -Context $ctx -ErrorAction Stop -Force | Out-Null
+            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to get storage blob in the container") >> $logFilePath
         }
-        catch
+
+        foreach ($name in $names)
         {
-            Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to copy $($name.name) to the destination") >> $logFilePath
+            try
+            {
+                Get-AzStorageBlobContent -Blob $name.name -Container $container -Destination $localTargetDirectory -Context $ctx -ErrorAction Stop -Force | Out-Null
+            }
+            catch
+            {
+                Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Unable to copy $($name.name) to the destination: $_") >> $logFilePath
+            }
         }
     }
 
@@ -99,7 +104,6 @@ Function copy_storage()
         return "Copy Zip (password protected file) from Storage to Disk1 Failed"
     }
 }
-
 $logFilePath = "$PSScriptRoot\logging_copyfromStoragetoDisk.txt"
 
 try

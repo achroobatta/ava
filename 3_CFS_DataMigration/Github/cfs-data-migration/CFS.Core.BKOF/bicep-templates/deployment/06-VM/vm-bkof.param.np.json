@@ -2,9 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters":  {
-        "kv_location": {
-            "value": "australiaeast"
-        },
         "kv_component": {
             "value": "kv"
         },
@@ -20,7 +17,7 @@
         "kv_service": {
             "value": "bkof"
         },
-        "vnetRG": 
+        "vnetRG":
         {
             "value": "rg-np-edc-bkof-dm-001"
         },
@@ -87,8 +84,11 @@
                         "privateIPAllocationMethod": "Dynamic",
                         "privateIPAddress": "",
                         "vnetResourceGroup": "rg-np-edc-bkof-dm-001",
+                        "vnet2ResourceGroup": "rg-np-sdc-bkof-dm-001",
                         "virtualNetworkName": "vnet-np-edc-bkof-dm-001",
+                        "virtualNetwork2Name": "vnet-np-sdc-bkof-dm-001",
                         "subnetName": "sub-np-edc-bkof-dm-vmsub-003",
+                        "subnet2Name": "sub-np-sdc-bkof-dm-vmsub-003",
                         "isEnableAutoShutdown": false,
                         "autoShutdownTime": "",
                         "autoShutdownNotificationEmail": "",
@@ -96,8 +96,8 @@
                         "domainName":"dev.cfs.com.au",
                         "domainUserName":"ADM-AD-DOM-ADD@dev.cfs.com.au",
                         "isEnableDomainJoin": true,
-                        "OUPAth": "OU=Applications,OU=T2-Servers,OU=Servers,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au", 
-                        "dataDiskResources": {                                                  
+                        "OUPAth": "OU=Applications,OU=T2-Servers,OU=Servers,OU=DEVCFS,DC=dev,DC=cfs,DC=com,DC=au",
+                        "dataDiskResources": {
                                     "createOption": "attach",
                                     "deleteOption": "Delete",
                                     "caching": "None",
@@ -112,7 +112,7 @@
                                         "creationData": {
                                             "createOption": "empty"
                                         }
-                                    }                               
+                                    }
                         }
                     }
                 ]

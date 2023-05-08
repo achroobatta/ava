@@ -5,8 +5,9 @@ parameters:
     continueOnError: ''
     dependsOn: ''
     landingZoneServiceConnection: ''
-    prvtEndpointName: ''
     vmRgName: ''
+    resourceLocation: ''
+    vmName: ''
 
 jobs:
 - job: ${{ parameters.name }}
@@ -23,6 +24,12 @@ jobs:
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
       inlineScript: |
-        az network private-endpoint show --name ${{ parameters.prvtEndpointName }} --resource-group ${{ parameters.vmRgName}}
-        az network private-endpoint delete -n ${{ parameters.prvtEndpointName }} -g ${{ parameters.vmRgName}}
+        $vmInfo = az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName }} | ConvertFrom-Json
+        $vmResources = $vmInfo.resources | Where-Object {$_.publisher -eq "Microsoft.Azure.Diagnostics"}
+        $strAccName = $vmResources.settings.StorageAccount
+        $strAccName
+        $privateEndpointName = 'pve-${{ parameters.resourceLocation}}-' + $strAccName
+        $privateEndpointName
+        az network private-endpoint show --name $privateEndpointName --resource-group ${{ parameters.vmRgName}}
+        az network private-endpoint delete -n $privateEndpointName -g ${{ parameters.vmRgName}}
       failOnStandardError: true

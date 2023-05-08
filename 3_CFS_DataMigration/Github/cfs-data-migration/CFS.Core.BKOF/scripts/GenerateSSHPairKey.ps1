@@ -3,7 +3,7 @@ param(
     [string] $env,
     [Parameter(Mandatory=$True)]
     [string] $appName,
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory=$True)]
     [string] $keyVaultName
 )
 
@@ -41,7 +41,6 @@ function connect_azure()
 
     return $azctx
 }
-
 try
 {
    $logDirectory = 'C:/temp/SSHKey-Logs'

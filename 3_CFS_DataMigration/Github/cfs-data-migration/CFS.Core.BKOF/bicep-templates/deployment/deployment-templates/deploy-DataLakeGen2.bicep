@@ -31,14 +31,10 @@ param dlRootContainterName string
 param connSubId string
 param connRg string
 
-//var contributorRoleDefId = 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-
 @batchSize(1)
 module dlstorageAccount '../../modules/Microsoft.Storage/deploydatalakegen2.bicep' = [for rg in resourceGroupObject.resourceGroups: {
-  //name: 'deploy-${dlstorageAccountName}'
   name: 'deploy-${dlstorageAccountName}-${rg.instance}'
   scope: resourceGroup(rgName)
-  //scope: resourceGroup('rg-${environmentPrefix}-${(rg.location == 'australiaeast') ? 'edc' : 'sdc' }-${rg.serviceAbbrv}-${rg.component}-00${rg.instance}')
   params: {
     appName: appName
     costCenter: costCenter
@@ -47,9 +43,9 @@ module dlstorageAccount '../../modules/Microsoft.Storage/deploydatalakegen2.bice
     owner: owner
     dllocation: resourceLocation
     environmentPrefix: environmentPrefix
-    virtualNetworkResourceGroup: rg.virtualNetworkResourceGroup
-    virtualNetworkName_RG: rg.virtualNetworkName_RG
-    virtualNetworksubnetName: rg.virtualNetworksubnetName
+    // virtualNetworkResourceGroup: (resourceLocation == 'australiaeast') ? rg.virtualNetworkResourceGroup : rg.virtualNetwork2ResourceGroup
+    // virtualNetworkName_RG: (resourceLocation == 'australiaeast') ? rg.virtualNetworkName_RG : rg.virtualNetwork2Name_RG
+    // virtualNetworksubnetName: (resourceLocation == 'australiaeast') ? rg.virtualNetworksubnetName : rg.virtualNetwork2subnetName
     action: rg.action
     defaultAction: rg.defaultAction
     publicNetworkAccess: rg.publicNetworkAccess
@@ -64,6 +60,8 @@ module dlstorageAccount '../../modules/Microsoft.Storage/deploydatalakegen2.bice
     kind: rg.kind
     dlstorageAccountName: dlstorageAccountName
     dlRootContainterName: dlRootContainterName
+    dlWhiteListedIps: rg.dlWhiteListedIps
+    virtualNetworkRules: (resourceLocation == 'australiaeast') ? rg.virtualNetworkRules : rg.virtualNetwork2Rules
   }
 }]
 

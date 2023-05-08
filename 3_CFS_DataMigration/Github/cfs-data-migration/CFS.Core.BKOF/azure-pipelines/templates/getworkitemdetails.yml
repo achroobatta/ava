@@ -24,7 +24,7 @@ jobs:
         inputs:
           targetType: 'filePath'
           filePath: ${{ parameters.scriptFilePath}}
-          arguments: -NonProdSubIdCreation $(nonProdSubIdCreation) -NonProdSubIdUpdate $(nonProdSubIdUpdate) -prodSubIdCreation $(prodSubIdCreation) -ProdSubIdUpdate $(prodSubIdUpdate) -PAT $(PAT)
+          arguments: -PAT $(PAT) -WebHookServiceConnName $(WebHookServiceConnName)
           errorActionPreference: 'stop'
           warningPreference: 'default'
           informationPreference: 'default'

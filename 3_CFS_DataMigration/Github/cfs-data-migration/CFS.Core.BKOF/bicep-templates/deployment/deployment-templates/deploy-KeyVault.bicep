@@ -33,6 +33,9 @@ param servicesRequiringAbbreviationForKeyVaultName array = [
 	'operations'
 ]
 
+param storageAccountSubscriptionId string
+param workspaceSubscriptionId string
+
 @batchSize(1)
 module keyVault '../../modules/Microsoft.KeyVault/deployKeyVault.bicep' = [for rg in keyVaultObject.keyVault: {
   name: 'kvdeploy-kv-${environmentPrefix}-${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }-${ contains(servicesRequiringAbbreviationForKeyVaultName, rg.service) ? rg.serviceAbbrv : rg.service}-00${rg.instance}'
@@ -57,6 +60,14 @@ module keyVault '../../modules/Microsoft.KeyVault/deployKeyVault.bicep' = [for r
     enablePurgeProtection: rg.enablePurgeProtection
     enableRbacAuthorization: rg.enableRbacAuthorization
     publicNetworkAccess: rg.publicNetworkAccess
+    storageAccountSubscriptionId: storageAccountSubscriptionId
+    storageAccountResourceGroup: 'rg-${environmentPrefix}-${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }-sec-stor-00${rg.StorageAccountRgInstance}'
+    storageAccountName: 'sto${environmentPrefix}${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }diagnlogs00${rg.StorageAccountInstance}'
+    workspaceResourceGroup: 'rg-${environmentPrefix}-${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }-sec-sec-00${rg.workspaceRgInstance}'
+    workspaceSubscriptionId: workspaceSubscriptionId
+    workspaceName: 'ws-${environmentPrefix}-${(resourceLocation == 'australiaeast') ? 'edc' : 'sdc' }-00${rg.workspaceInstance}'
+    virtualNetworkRules: (resourceLocation == 'australiaeast') ? rg.virtualNetworkRules : rg.virtualNetwork2Rules
+    action: rg.action
   }
 }]
 

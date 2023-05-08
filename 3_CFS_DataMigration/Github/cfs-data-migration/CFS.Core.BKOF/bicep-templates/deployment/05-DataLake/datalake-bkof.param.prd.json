@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters":  {
         "resourceGroupObject": {
-            "value": { 
+            "value": {
                 "resourceGroups": [
                     {
                         "location": "australiaeast",
@@ -14,13 +14,11 @@
                         "stoprefix": "dlgen2",
                         "locationAbbrv": "edc",
                         "instance": 1,
-                        "virtualNetworkName_RG":"vnet-prd-edc-bkof-001",
-                        "virtualNetworksubnetName":"sub-prd-edc-bkof-dm-vmsub-003",
                         "virtualNetworkResourceGroup": "rg-prd-edc-bkof-netw-001",
-                        "virtualNetworkName":"vnet-prd-edc-bkof-001",
-                        "subnetName":"sub-prd-edc-bkof-dm-blob-001",
                         "virtualNetwork2ResourceGroup": "rg-prd-sdc-bkof-netw-001",
+                        "virtualNetworkName":"vnet-prd-edc-bkof-001",
                         "virtualNetwork2Name":"vnet-prd-sdc-bkof-001",
+                        "subnetName":"sub-prd-edc-bkof-dm-blob-001",
                         "subnet2Name":"sub-prd-sdc-bkof-dm-blob-001",
                         "rgname": "rg-prd-edc-bkof-dm-001",
                         "rgname2": "rg-prd-sdc-bkof-dm-001",
@@ -31,13 +29,37 @@
                         "defaultAction" : "Deny",
                         "action" : "Allow",
                         "allowBlobPublicAccess": false,
-                        "virtualNetworkRules": [],
                         "minimumTlsVersion": "TLS1_2",
                         "supportsHttpsTrafficOnly": true,
                         "isHnsEnabled": true,
                         "largeFileSharesState": "Disabled",
                         "isNfsV3Enabled": false,
-                        "allowSharedKeyAccess": true
+                        "allowSharedKeyAccess": true,
+                        "virtualNetworkRules": [
+                            {
+                                "virtualNetworkResourceGroup": "rg-prd-edc-bkof-netw-001",
+                                "virtualNetworkName_RG": "vnet-prd-edc-bkof-001",
+                                "virtualNetworksubnetName": "sub-prd-edc-bkof-dm-vmsub-003"
+                            },
+                            {
+                                "virtualNetworkResourceGroup": "rg-prd-edc-bkof-netw-001",
+                                "virtualNetworkName_RG": "vnet-prd-edc-bkof-001",
+                                "virtualNetworksubnetName": "sub-prd-edc-bkof-001"
+                            }
+                        ],
+                        "virtualNetwork2Rules": [
+                            {
+                                "virtualNetworkResourceGroup": "rg-prd-sdc-bkof-netw-001",
+                                "virtualNetworkName_RG": "vnet-prd-sdc-bkof-001",
+                                "virtualNetworksubnetName": "sub-prd-sdc-bkof-dm-vmsub-003"
+                            },
+                            {
+                                "virtualNetworkResourceGroup": "rg-prd-sdc-bkof-netw-001",
+                                "virtualNetworkName_RG": "vnet-prd-sdc-bkof-001",
+                                "virtualNetworksubnetName": "sub-prd-sdc-bkof-001"
+                            }
+                        ],
+                        "dlWhiteListedIps":[]
                     }
                 ]
             }

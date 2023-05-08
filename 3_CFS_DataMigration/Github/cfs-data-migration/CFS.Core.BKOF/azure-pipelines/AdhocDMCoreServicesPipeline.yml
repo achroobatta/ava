@@ -44,17 +44,14 @@ parameters:
      - "privatelink.blob.core.windows.net"
 
   - name: destStorageAccountName
-    displayName: Name of Storage Account Resource. 'na' means nothing to create. {Adhoc Step to create PE and A record for this Resource}
+    displayName: Name of Storage Account Resource to Fix. 'na' means nothing to create/Fix. {Adhoc Step to create PE and A record for this Resource}
     type: string
     default: 'na'
 
-  # - name: dnsZoneName
-  #   displayName: Name of DNS Zone. {Private DNS Zone in hub related to Adhoc step above}
-  #   type: string
-  #   default: 'privatelink.blob.core.windows.net'
-  #   values:
-  #    - 'privatelink.vaultcore.azure.net'
-  #    - 'privatelink.blob.core.windows.net'
+  - name: rootContainerName
+    displayName: Name of Container for Storage Account Resource to Fix. 'na' means nothing to create/Fix. {Adhoc Step to create PE and A record for this Resource}
+    type: string
+    default: 'na'
 
   - name: isDayLightSavings
     displayName: Enable DayLight Savings Time
@@ -166,6 +163,12 @@ variables:
     value: 'sc-subsc-np-operations-001'
    ${{ else }}:
     value: 'sc-subsc-prd-operations-001'
+
+ - name: ConnectivityServiceConnection
+   ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
+    value: 'sc-subsc-np-connectivity-001'
+   ${{ else }}:
+    value: 'sc-subsc-prd-connectivity-001'
 
  - name: subId
    ${{ if eq(parameters.deployEnvironment, 'Non-Production') }}:
@@ -291,6 +294,12 @@ variables:
 
  - name: destStorageAccountName
    value: ${{ parameters.destStorageAccountName }}
+
+ - name: rootContainerName
+   value: ${{ parameters.rootContainerName }}
+
+ - name: warrantyPeriod
+   value: 1
 
 stages:
 
@@ -459,3 +468,317 @@ stages:
                 connRg: '$(connRg)'
                 subId: '$(subId)'
                 connSubId: '$(connSubId)'
+
+ # Deploy Landing Zone UDR Rules
+  - stage: removedeleteUdrRules
+    displayName: RemoveUDRRules - specific to Location
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: RemoveUDRRules
+      workspace:
+        clean: all
+
+      steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone UDR Rules
+            - template: templates/remove-UDRRules.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+
+# Add A Record in existing DNS Zone
+  # - stage: deployARecord
+  #   displayName: DeployARecord
+  #   pool:
+  #     vmImage: windows-latest
+  #   dependsOn: []
+  #   jobs:
+  #   - deployment: DeployARecord
+  #     workspace:
+  #       clean: all
+
+  #     environment: $(AzureDevOpsEnvironments)
+  #     strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+
+  #           - checkout: self
+
+  #           - task: DownloadPackage@1
+  #             displayName: DownloadArtifacts
+  #             inputs:
+  #               packageType: 'nuget'
+  #               feed: '$(artifactFeed)'
+  #               definition: '$(artifactDefinition)'
+  #               version: '$(artifactVersion)'
+  #               extract: true
+  #               downloadPath: '$(System.ArtifactsDirectory)'
+
+  #           #Landing Zone UDR Rules
+  #           - template: templates/deploy-ARecord.yml
+  #             parameters:
+  #               serviceId: '$(landingZoneServiceIdsm)'
+  #               serviceConnection: '$(landingZoneServiceConnection)'
+  #               destStorageAccountName: '${{ parameters.destStorageAccountName}}'
+  #               rgName: '$(rgName)'
+  #               connRg: '$(connRg)'
+  #               connSubId: '$(connSubId)'
+  #               privateDnsZoneName: '$(dnsZoneName)'
+  #               resourceLocation: '$(resourceLocation)'
+
+  - stage: fixDataLake
+    displayName: FixDataLake
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: FixDataLake
+      workspace:
+        clean: all
+
+      pool:
+        vmImage: 'windows-latest'
+
+      steps:
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #DataLake
+            - template: 'templates/deploy-DataLake.yml'
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+                resourceLocation: '$(resourceLocation)'
+                deploymentName: '$(deploymentName)'
+                owner: '$(owner)'
+                costCenterCode: '$(costCenterCode)'
+                appName: '$(appName)'
+                AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
+                AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
+                destStorageAccountName: '$(destStorageAccountName)'
+                rootContainerName: '$(rootContainerName)'
+                warrantyPeriod: '$(warrantyPeriod)'
+                rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                subId: '$(subId)'
+                connSubId: '$(connSubId)'
+
+  - stage: fixSftp
+    displayName: FixSftp
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: FixSftp
+      workspace:
+        clean: all
+
+      pool:
+        vmImage: 'windows-latest'
+
+      steps:
+        - checkout: self
+
+        - task: DownloadPackage@1
+          displayName: DownloadArtifacts
+          inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Sftp
+        - template: 'templates/deploy-Sftp.yml'
+          parameters:
+              serviceName: '$(subscriptionServiceName)'
+              serviceConnection: '$(landingZoneServiceConnection)'
+              deploymentType: '$(deploymentType)'
+              serviceId: '$(landingZoneServiceIdsm)'
+              resourceLocation: '$(resourceLocation)'
+              deploymentName: '$(deploymentName)'
+              owner: '$(owner)'
+              costCenterCode: '$(costCenterCode)'
+              appName: '$(appName)'
+              AustraliaEastOffsetSymbol: '$(AustraliaEastOffsetSymbol)'
+              AzureEnvironmentPrefix: '$(AzureEnvironmentPrefix)'
+              destStorageAccountName: '$(destStorageAccountName)'
+              rootContainerName: '$(rootContainerName)'
+              warrantyPeriod: '$(warrantyPeriod)'
+              rgName: '$(rgName)'
+              connRg: '$(connRg)'
+              subId: '$(subId)'
+              connSubId: '$(connSubId)'
+
+# Deploy PrivateDnsZone
+  - stage: deployPrivateDnsZone
+    displayName: DeployPrivateDnsZone
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: DeployPrivateDnsZone
+    # - deployment: DeployPrivateDnsZone
+      workspace:
+        clean: all
+
+      # environment: $(AzureDevOpsEnvironments)
+      # strategy:
+      #   runOnce:
+      #     deploy:
+      steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #PrivateDnsZone
+            - template: templates/deploy-PrivateDnsZoneKV.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(ConnectivityServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+
+# Deploy KeyVault
+  - stage: deployKeyVault
+    displayName: DeployKeyVault
+
+    pool:
+      vmImage: windows-latest
+
+    # condition: succeeded()
+    dependsOn: [deployPrivateDnsZone]
+    jobs:
+    - job: DeployKeyVault
+      workspace:
+        clean: all
+
+      # environment: $(AzureDevOpsEnvironments)
+      # strategy:
+      #   runOnce:
+      #     deploy:
+      steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #KeyVault
+            - template: templates/deploy-KeyVault.yml
+              parameters:
+                serviceName: '$(subscriptionServiceName)'
+                serviceConnection: '$(landingZoneServiceConnection)'
+                deploymentType: '$(deploymentType)'
+                serviceId: '$(landingZoneServiceIdsm)'
+                rgName: '$(rgName)'
+                connRg: '$(connRg)'
+                connSubId: '$(connSubId)'
+                resourceLocation: '$(resourceLocation)'
+                securitySubscriptionId: '$(securitySubscriptionId)'
+
+# Deploy Landing Zone NSG Rules
+  - stage: removedeleteNsgRules
+    displayName: RemoveNsgRules - specific to Location
+
+    variables:
+    - group: var-azure-platform
+    - group: var-service-principle-secrets
+    - group: lz-var-service-principle-secrets
+
+    pool:
+      vmImage: windows-latest
+
+    dependsOn: []
+    jobs:
+    - job: RemoveNSGRules
+      workspace:
+        clean: all
+
+      steps:
+
+            - checkout: self
+
+            - task: DownloadPackage@1
+              displayName: DownloadArtifacts
+              inputs:
+                packageType: 'nuget'
+                feed: '$(artifactFeed)'
+                definition: '$(artifactDefinition)'
+                version: '$(artifactVersion)'
+                extract: true
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            #Landing Zone Nsg Rules
+            - template: templates/remove-NSGRules.yml
+              parameters:
+                serviceId: '$(landingZoneServiceIdsm)'
+                deploymentType: '$(deploymentType)'
+                serviceConnection: '$(landingZoneServiceConnection)'

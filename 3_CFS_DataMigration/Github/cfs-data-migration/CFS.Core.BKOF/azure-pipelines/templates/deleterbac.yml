@@ -6,7 +6,6 @@ parameters:
     dependsOn: ''
     landingZoneServiceConnection: ''
     vmName: ''
-    commRGName: ''
     subId: ''
     vmRgName: ''
 
@@ -19,13 +18,30 @@ jobs:
 
 
   steps:
-  - task: AzureCLI@2
-    displayName: Remove VM RBAC
+  # - task: AzureCLI@2
+  #   displayName: Remove VM RBAC
+  #   inputs:
+  #     azureSubscription: ${{ parameters.landingZoneServiceConnection}}
+  #     scriptType: 'pscore'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: |
+  #       az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName}}
+  #       az identity delete --name ${{ parameters.vmName}} --resource-group ${{ parameters.commRGName}} --subscription ${{parameters.subId}}
+  #     failOnStandardError: true
+
+  - task: AzurePowerShell@5
+    displayName: 'Remove VM RBAC'
     inputs:
       azureSubscription: ${{ parameters.landingZoneServiceConnection}}
-      scriptType: 'pscore'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        az vm show -n ${{ parameters.vmName}} -g ${{ parameters.vmRgName}}
-        az identity delete --name ${{ parameters.vmName}} --resource-group ${{ parameters.commRGName}} --subscription ${{parameters.subId}}
-      failOnStandardError: true
+      ScriptType: InlineScript
+      Inline: |
+        $getVm = Get-AzVM -ResourceGroupName ${{ parameters.vmRgName}} -Name ${{ parameters.vmName}}
+        $getVm
+        $getRoleAssignment= Get-AzRoleAssignment -Scope "/subscriptions/${{parameters.subId}}" -ObjectId $getVm.Identity.PrincipalId
+        $getRoleAssignment | ForEach-Object {
+          $object = $_.ObjectId
+          $roleDef = $_.RoleDefinitionName
+          $roleScope = $_.Scope
+          Remove-AzRoleAssignment -ObjectId $object -RoleDefinitionName $roleDef -Scope $roleScope
+        }
+      azurePowerShellVersion: LatestVersion

@@ -63,7 +63,11 @@ steps:
       azureSubscription: ${{ parameters.serviceConnection }}
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
-      inlineScript: az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.resourceLocation }} `
+      inlineScript: |
+                    $appName = '${{ parameters.appName }}'
+                    $appName = $appName.Replace("*"," ")
+
+                    az deployment sub ${{ parameters.deploymentType }} --location ${{ parameters.resourceLocation }} `
                     --name ${{ parameters.deploymentName }} `
                     --template-file $(System.ArtifactsDirectory)\content\bicep-templates\deployment\deployment-templates\deploy-DataLakeGen2.bicep `
                     --parameters environmentPrefix='${{ parameters.AzureEnvironmentPrefix }}' `
@@ -71,14 +75,14 @@ steps:
                     --parameters costCenter='${{ parameters.costCenterCode }}' `
                     --parameters australiaEastOffsetSymbol='${{ parameters.AustraliaEastOffsetSymbol }}' `
                     --parameters $(System.ArtifactsDirectory)\content\bicep-templates\deployment\05-DataLake\datalake-${{ parameters.serviceId }}.param.${{ parameters.AzureEnvironmentPrefix }}.json `
-                    --parameters appName='${{ parameters.appName }}' `
+                    --parameters appName=$appName `
                     --parameters resourceLocation='${{ parameters.resourceLocation }}' `
                     --parameters dlstorageAccountName='${{ parameters.destStorageAccountName }}' `
                     --parameters dlRootContainterName='${{ parameters.rootContainerName }}' `
                     --parameters warrantyPeriod='${{ parameters.warrantyPeriod }}' `
                     --parameters connSubId='${{ parameters.connSubId }}' `
                     --parameters connRg='${{ parameters.connRg }}' `
-                    --parameters rgName='${{ parameters.rgName }}'
+                    --parameters rgName='${{ parameters.rgName }}' --debug
 
   # - task: AzureCLI@2
   #   #condition: eq('${{ parameters.deployEnvironment }}', 'Non-Production')

@@ -1,0 +1,24 @@
+name: Branch Name Check
+#todo - 
+#update branch policy so that disallowed branch names will prevent the push,
+#at which point this action can then be removed.
+
+on:
+  push:
+    branches-ignore: [ main, hotfix/**, release/**, develop, feature/**, bugfix/**, support/** ]
+
+jobs:
+  branch-name-check:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repo
+      - uses: actions/checkout@v2
+
+      # Error message and exit with errorcode
+      - name: Show disallowed branch name error and exit
+        shell: bash
+        run: |
+          git branch --show-current
+          currentBranch=$(git branch --show-current)
+          >&2 echo "Disallowed branch name: '$currentBranch'"
+          exit 1

@@ -5,141 +5,22 @@
   This script will be used to check for the task state
 
 .NOTES
-  Version:        1.0
+  Version:        2.0
   Author:         Abaigail Rose Artagame
-  Creation Date:  23/01/2023
-  Purpose/Change: Initial script development
-
+  Creation Date:  25/02/2023
+  Purpose/Change: Change Getting of Work Item Id
 
 #>
 
 
 #-----------------------------------------------------------[Declarations]------------------------------------------------------------
 param(
-  $NonProdSubIdCreation,
-  $NonProdSubIdUpdate,
-  $ProdSubIdCreation,
-  $ProdSubIdUpdate,
-  $PAT
+  $PAT,
+  $WebHookServiceConnName
 )
 
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
-Function Get_PipelineRuns{
-  <#
-        .SYNOPSIS
-        Returns the latest subscription run id.
-
-        .DESCRIPTION
-        Returns the latest subscription run id.
-
-        .PARAMETER TriggerPipelineId
-        Trigger Pipeline Id
-
-        .PARAMETER PAT
-        Personal Access Token used for Authentication.
-
-    #>
-  Param(
-
-    $TriggerPipelineId,
-    $PAT
-
-  )
-  Begin{
-    Write-Information -MessageData "Listing pipeline runs for Trigger Pipeline..." -InformationAction Continue
-  }
-  Process
-  {
-    Try{
-
-      # Create header with PAT
-      $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($PAT)"))
-
-      $header = @{authorization = "Basic $token"}
-
-      $getPipelineRunsApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/pipelines/" + $TriggerPipelineId + "/runs?api-version=7.0"
-
-
-
-      $getPipelineRuns = Invoke-RestMethod -Uri $getPipelineRunsApi -Method Get -Headers $header -ErrorAction Stop
-      $inProgressPipelineRuns = $getPipelineRuns.value | Where-Object {$_.state -eq 'inProgress'} | Sort-Object -Descending -Property 'id'
-
-      return $inProgressPipelineRuns
-
-    }
-    Catch
-    {
-      return $null
-    }
-  }
-  End{}
-}
-Function Get_RunId{
-  <#
-        .SYNOPSIS
-        Returns the latest subscription run id.
-
-        .DESCRIPTION
-        Returns the latest subscription run id.
-
-        .PARAMETER NonProdSubIdCreation
-        Id of the Service Hook Subscription for Non Prod Work Item Creation.
-        .PARAMETER NonProdSubIdUpdate
-        Id of the Service Hook Subscription for Non Prod Work Item Update.
-        .PARAMETER ProdSubIdCreation
-        Id of the Service Hook Subscription for Prod Work Item Creation.
-        .PARAMETER ProdSubIdUpdate
-        Id of the Service Hook Subscription for Prod Work Item Update.
-
-        .PARAMETER PAT
-        Personal Access Token used for Authentication.
-
-    #>
-  Param(
-
-    $NonProdSubIdCreation,
-    $NonProdSubIdUpdate,
-    $ProdSubIdCreation,
-    $ProdSubIdUpdate,
-    $PAT
-
-  )
-  Begin{
-    Write-Information -MessageData "Getting run history for id" -InformationAction Continue
-  }
-  Process
-  {
-    Try{
-
-      # Create header with PAT
-      $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($PAT)"))
-
-      $header = @{authorization = "Basic $token"}
-
-      $getRunHistoryApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)_apis/hooks/notificationsquery?api-version=7.1-preview.1"
-
-      $getRunHistoryReqBod = '
-      {
-          "subscriptionIds": ["--NonProdSubIdCreation--","--NonProdSubIdUpdate--","--ProdSubIdCreation--","--ProdSubIdUpdate--"]
-      }'
-
-      $getRunHistoryReqBod = $getRunHistoryReqBod.Replace("--NonProdSubIdCreation--", $NonProdSubIdCreation)
-      $getRunHistoryReqBod = $getRunHistoryReqBod.Replace("--NonProdSubIdUpdate--", $NonProdSubIdUpdate)
-      $getRunHistoryReqBod = $getRunHistoryReqBod.Replace("--ProdSubIdCreation--", $ProdSubIdCreation)
-      $getRunHistoryReqBod = $getRunHistoryReqBod.Replace("--ProdSubIdUpdate--", $ProdSubIdUpdate)
-      $getRunHistory = Invoke-RestMethod -Uri $getRunHistoryApi -Method Post -Headers $header -Body $getRunHistoryReqBod -ContentType 'application/json' -ErrorAction Stop
-
-      return $getRunHistory
-
-    }
-    Catch
-    {
-      return $null
-    }
-  }
-  End{}
-}
 Function Get_WorkItemId{
   <#
         .SYNOPSIS
@@ -148,21 +29,12 @@ Function Get_WorkItemId{
         .DESCRIPTION
         Returns the work item id that triggered the service hook.
 
-        .PARAMETER SubsriptionId
-        Id of the Service Hook Subscription.
-
-        .PARAMETER RunId
-        Id of the latest Service Hook Subscription Run.
-
         .PARAMETER PAT
         Personal Access Token used for Authentication.
     #>
   Param(
-
-    $SubscriptionId,
-    $RunId,
-    $PAT
-
+    $PAT,
+    $WebHookServiceConnName
   )
   Begin{
     Write-Information -MessageData "Getting work item id..." -InformationAction Continue
@@ -175,20 +47,25 @@ Function Get_WorkItemId{
       $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($PAT)"))
 
       $header = @{authorization = "Basic $token"}
-
-      $getWorkItemIdApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)_apis/hooks/subscriptions/$SubscriptionId/notifications/$RunId" + "?api-version=7.1-preview.1"
+      $getWorkItemIdApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/build/builds/$env:BUILD_BUILDID" + "?api-version=7.0"
+      Write-Information -MessageData $getWorkItemIdApi -InformationAction Continue
       $getworkItemId = Invoke-RestMethod -Uri $getWorkItemIdApi -Method Get -Headers $header -ErrorAction Stop
-      if($getworkItemId.details.eventType -eq 'workitem.created')
+      Write-Information -MessageData $getworkItemId -InformationAction Continue
+      $triggerPipeline = $getworkItemId.templateParameters.$WebHookServiceConnName | ConvertFrom-Json
+      Write-Information -MessageData $triggerPipeline -InformationAction Continue
+
+      if($triggerPipeline.eventType -eq 'workitem.created')
       {
-        return $getworkItemId.details.event.resource.id
+        return $triggerPipeline.resource.id
       }
-      elseif($getworkItemId.details.eventType -eq 'workitem.updated')
+      elseif($triggerPipeline.eventType -eq 'workitem.updated')
       {
-        return $getworkItemId.details.event.resource.workItemId
+        return $triggerPipeline.resource.workItemId
       }
     }
     Catch
     {
+      Write-Information -MessageData $_ -InformationAction Continue
       return $null
     }
   }
@@ -237,7 +114,6 @@ Function Get_WorkItemState{
   }
   End{}
 }
-
 Function Get_WorkItemTag{
   <#
         .SYNOPSIS
@@ -272,13 +148,58 @@ Function Get_WorkItemTag{
 
       $getWorkItemIdApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/wit/workitems/$WorkItemId" + '?$expand=all&api-version=7.1-preview.3'
       $getworkItemId = Invoke-RestMethod -Uri $getWorkItemIdApi -Method Get -Headers $header -ErrorAction Stop
-      if($getworkItemId.fields.'System.Tags'.contains("non-production"))
+      return $getworkItemId.fields.'System.Tags'
+
+    }
+    Catch
+    {
+      return $null
+    }
+  }
+  End{}
+}
+Function Get_WorkItemUpdates{
+  <#
+        .SYNOPSIS
+        Returns the work item id that triggered the service hook.
+
+        .DESCRIPTION
+        Returns the work item id that triggered the service hook.
+
+        .PARAMETER WorkItemId
+        Id of the Work Item
+
+        .PARAMETER PAT
+        Personal Access Token used for Authentication.
+    #>
+  Param(
+
+    $WorkItemId,
+    $PAT
+
+  )
+  Begin{
+    Write-Information -MessageData "Getting work item updates..." -InformationAction Continue
+  }
+  Process
+  {
+    Try{
+
+      # Create header with PAT
+      $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($PAT)"))
+
+      $header = @{authorization = "Basic $token"}
+
+      $getWorkItemUpdatesApi = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/wit/workItems/$WorkItemId" + '/updates'
+      $getWorkItemUpdates = Invoke-RestMethod -Uri $getWorkItemUpdatesApi -Method Get -Headers $header -ErrorAction Stop
+      $getWorkItemUpdates = $getWorkItemUpdates.value | Sort-Object -Property id -Descending
+      if(![string]::IsNullOrEmpty($getWorkItemUpdates[0].fields.'System.Tags'.newValue))
       {
-        return 'Non-Production'
+        return 'true'
       }
-      elseif ($getworkItemId.fields.'System.Tags'.contains("production"))
+      else
       {
-        return 'Production'
+        return 'false'
       }
     }
     Catch
@@ -289,17 +210,8 @@ Function Get_WorkItemTag{
   End{}
 }
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
-#Call Get_RunId Function
-$Run = Get_RunId -NonProdSubIdCreation $NonProdSubIdCreation -NonProdSubIdUpdate $NonProdSubIdUpdate -ProdSubIdCreation $ProdSubIdCreation -ProdSubIdUpdate $ProdSubIdUpdate -PAT $PAT
-if($null -eq $Run)
-{
-  Write-Error "There is an error in getting the service hook subscription latest run id."
-}
-
-$SubId = $Run.results[0].subscriptionId
-$RunId = $Run.results[0].id
 #Call Get_WorkItemId Function
-$WorkItemId = Get_WorkItemId -SubscriptionId $SubId -RunId $RunId -PAT $PAT
+$WorkItemId = Get_WorkItemId -PAT $PAT -WebHookServiceConnName $WebHookServiceConnName
 if($null -eq $WorkItemId)
 {
   Write-Error "There is an error in getting the work item id."
@@ -317,9 +229,27 @@ Write-Output "##vso[task.setvariable variable=WorkItemState;isOutput=true]$WorkI
 
 #Call Get_WorkItemTag Function
 $WorkItemTag = Get_WorkItemTag -WorkItemId $WorkItemId -PAT $PAT
+Write-Information -MessageData $WorkItemTag -InformationAction Continue
 if($null -eq $WorkItemTag)
 {
   Write-Error "There is an error in getting the work item tag."
 }
-#Save Work Item Tag as Stage Output Variable
-Write-Output "##vso[task.setvariable variable=WorkItemTag;isOutput=true]$WorkItemTag"
+if($WorkItemTag.contains("no attachment"))
+{
+  $CheckUpdate = Get_WorkItemUpdates -WorkItemId $WorkItemId -PAT $PAT
+  Write-Output "##vso[task.setvariable variable=SkippedDownload;isOutput=true]$CheckUpdate"
+}
+if($WorkItemTag.contains("non-production"))
+{
+  $WorkItemTag = 'Non-Production'
+  Write-Output "##vso[task.setvariable variable=WorkItemTag;isOutput=true]$WorkItemTag"
+  #Save Work Item Tag as Stage Output Variable
+  Write-Output "##vso[task.setvariable variable=WorkItemTag;isOutput=true]$WorkItemTag"
+}
+elseif($WorkItemTag.contains("production"))
+{
+  $WorkItemTag = 'Production'
+  Write-Output "##vso[task.setvariable variable=WorkItemTag;isOutput=true]$WorkItemTag"
+  #Save Work Item Tag as Stage Output Variable
+  Write-Output "##vso[task.setvariable variable=WorkItemTag;isOutput=true]$WorkItemTag"
+}

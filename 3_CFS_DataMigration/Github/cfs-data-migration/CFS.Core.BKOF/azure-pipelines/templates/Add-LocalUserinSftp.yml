@@ -56,6 +56,28 @@ parameters:
 
 - name: tenantId
   type: string
+
+- name: ExternalHighPortForSFTP
+  type: string
+
+- name: externalIP
+  type: string
+
+- name: connRg
+  type: string
+
+- name: connSubId
+  type: string
+
+- name: runType
+  type: string
+
+- name: appName
+  type: string
+
+- name: serviceConnection
+  type: string
+
 steps:
   - task: PowerShell@2
     name: AddLocalUserPS
@@ -93,8 +115,15 @@ steps:
                    echo 'FromEmailAddress: ${{ parameters.fromEmailAddress }}'
                    echo 'EmailAddress: ${{ parameters.emailAddress }}'
                    echo 'TaskNumber: ${{ parameters.dmTaskNumber }}'
+                   $sftpUsername ='${{ parameters.sftpUserName }}'
+                   echo 'Before sftpUserName: ' $sftpUsername
+                   $sftpUsername = ($sftpUsername).Replace("-","")
+                   $sftpUsername = ($sftpUsername).Replace("_","")
+                   $sftpUsername = $sftpUsername.ToLower()
+                   echo 'Modified sftpUserName: ' $sftpUsername
                    echo '***************************************************************************'
-                   $returnValues=Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\AddLocalUserinSftp.ps1" -ArgumentList  "${{ parameters.commRG }}","${{ parameters.destStorageAccountName }}","${{ parameters.rootContainerName }}","${{ parameters.sftpUserName }}","${{ parameters.keyVaultNameforSecret }}","${{ parameters.destSftpSshKeySecret }}","${{ parameters.tenantId}}","${{ parameters.subId}}"
+                   # $returnValues=Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\AddLocalUserinSftp.ps1" -ArgumentList  "${{ parameters.commRG }}","${{ parameters.destStorageAccountName }}","${{ parameters.rootContainerName }}","${{ parameters.sftpUserName }}","${{ parameters.keyVaultNameforSecret }}","${{ parameters.destSftpSshKeySecret }}","${{ parameters.tenantId}}","${{ parameters.subId}}"
+                   $returnValues=Invoke-Command -Session $ToSession -FilePath "$(System.DefaultWorkingDirectory)\CFS.Core.BKOF\scripts\AddLocalUserinSftp.ps1" -ArgumentList  "${{ parameters.commRG }}","${{ parameters.destStorageAccountName }}","${{ parameters.rootContainerName }}","$sftpUserName","${{ parameters.keyVaultNameforSecret }}","${{ parameters.destSftpSshKeySecret }}","${{ parameters.tenantId}}","${{ parameters.subId}}"
                    if ($returnValues -contains "Failed. Unable to*"){
                     Write-Output $returnValues
                     Write-Error "Error encountered executing script."
@@ -103,23 +132,42 @@ steps:
                    $jsonprint = ($returnValues | ConvertTo-Json)
                    Write-Output $jsonprint
                    $returnValuesJson = ($returnValues | ConvertTo-Json) | ConvertFrom-Json
-                   $localUserPass = $returnValuesJson[0].SshPassword
-                   Write-Output "##vso[task.setvariable variable=localUserPassword]$localUserPass"
+                   $sshPwd1 = $returnValuesJson | Where-Object {![string]::IsNullOrEmpty($_.SshPassword)}
+                   $sshPwd = $sshPwd1.SshPassword
+                   Write-Output "##vso[task.setvariable variable=localUserPassword]$sshPwd"
+                   Write-Output "##vso[task.setvariable variable=sftpUser]$sftpUsername"
                    }
 
-  - task: PowerShell@2
+  - task: AzureCLI@2
+    displayName : Fetch private IP Address
     inputs:
-      targetType: 'inline'
-      script: |
-        Write-Host $(localUserPassword)
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                   $conRgName = '${{ parameters.connRg }}'
+                   $connSubId = '${{ parameters.connSubId }}'
+                   $dnsZoneGrp = 'privatelink.blob.core.windows.net'
+                   $storage = '${{ parameters.destStorageAccountName }}'
+                   az account set --subscription $connSubId
+                   $privateIp = az network private-dns record-set a show --resource-group $conRgName --zone-name $dnsZoneGrp --name $storage --query aRecords[0].ipv4Address --output tsv
+                   Write-Output "##vso[task.setvariable variable=internalPrivateIp]$privateIp"
+
+  # - task: PowerShell@2
+  #   inputs:
+  #     targetType: 'inline'
+  #     script: |
+  #       Write-Output $(localUserPassword)
+  #       Write-Output $(internalPrivateIp)
 
   - task: GraphEmail@0
     displayName: 'Sending sFtp Username'
     inputs:
       To: '${{ parameters.emailAddress }}' # The Business User who will receive the email
       From: '${{ parameters.fromEmailAddress }}'
-      Subject: 'Sftp Local Username for taskNumber ${{ parameters.dmTaskNumber }}' # Email Subject
-      Body: "Username for sFTP is: ${{ parameters.destStorageAccountName }}.${{ parameters.sftpUserName }}. Hostname is: ${{ parameters.ipTobeWhiteListed }}. Ssh Password will be sent in seperate email. Please save these credentials for future." # Email Body
+      Subject: '${{ parameters.appName }} SFTP credentials and connectivity information to retrieve data for taskNumber ${{ parameters.dmTaskNumber }}' # Email Subject
+      #Body: "<p>This email contains the key information to allow the ${{ parameters.appName }} team to connect to DMT MLZ SFTP/HTTPS server. In order for the connectivity to work the appropiate Firewall Rule changes are required to enable such connectivity. To complete, a new SR is required to enable the key items described below.</p><p>Username for sFTP is: ${{ parameters.destStorageAccountName }}.$(sftpUser)</p><p>Hostname is: ${{ parameters.externalIP }}</p><p>Port number: ${{ parameters.ExternalHighPortForSFTP }}</p><p>Ssh Password will be sent in seperate email. Please save these credentials for future.</p><p>${{ parameters.appName }} IP to whitelist at Fortigate = $(ipTobeWhiteListed)</p><p>New NAT Firewall Rule to be logged to allow connectivity to new storage account hosting SFTP</p><p>From = $(externalIP)</p><p>Port = ${{ parameters.ExternalHighPortForSFTP }}</p><p>To = $(internalPrivateIp)</p><p>Port = 22</p><p>Vendor IP whitelisting = ${{ parameters.ipTobeWhiteListed }} - This IP/'s needs to be a whitelisted at Fortigate Firewall to allow access.</p><p>This task is for ${{ parameters.appName }}.</p>" # Email Body
+      Body: "<p>This email contains the key information to allow the ${{ parameters.appName }} team to connect to DMT MLZ SFTP/HTTPS server. In order for the connectivity to work the appropiate Firewall Rule changes are required to enable such connectivity. To complete, a new SR is required to enable the key items described below.</p><p>Username for sFTP is: ${{ parameters.destStorageAccountName }}.$(sftpUser)</p><p>Hostname is: ${{ parameters.externalIP }}</p><p>Port number: ${{ parameters.ExternalHighPortForSFTP }}</p><p>Ssh Password will be sent in seperate email. Please save these credentials for future.</p><p>${{ parameters.appName }} IP to whitelist at Fortigate = $(ipTobeWhiteListed)</p><p>----------------------------------------</p><p>If you are accessing via SFTP</p><p>New NAT Firewall Rule to be logged to allow connectivity to new storage account hosting SFTP</p><p>From = $(externalIP)</p><p>Port = ${{ parameters.ExternalHighPortForSFTP }}</p><p>To = $(internalPrivateIp)</p><p>Port = 22</p><p>-------------------------------------------</p><p>If you are accessing via HTTPS</p><p>New NAT Firewall Rule to be logged to allow connectivity to new storage account hosting HTTPS</p><p>From = $(externalIP)</p><p>Port = ${{ parameters.ExternalHighPortForSFTP }}</p><p>To = $(internalPrivateIp)</p><p>Port = 443</p><p>-------------------------------------------</p><p>Vendor IP whitelisting = ${{ parameters.ipTobeWhiteListed }} - This IP/'s needs to be a whitelisted at Fortigate Firewall to allow access.</p><p>This task is for ${{ parameters.appName }}.</p>"
       BodyAsHtml: true
       ShowClientSecret: false
       ClientID: '${{ parameters.ClientID }}'
@@ -131,8 +179,8 @@ steps:
     inputs:
       To: '${{ parameters.clientEmailAddress }}' # The Client person who will receive the email
       From: '${{ parameters.fromEmailAddress }}'
-      Subject: 'Sftp password for taskNumber ${{ parameters.dmTaskNumber }}' # Email Subject
-      Body: "Password for sFTP is: $(localUserPassword). Please save these credentials for future."  # Email Body
+      Subject: '${{ parameters.appName }} SFTP password for Tasknumber ${{ parameters.dmTaskNumber }}' # Email Subject
+      Body: "Password for sFTP is: $(localUserPassword) <p>Please save these credentials for future.</p><p>This task is for ${{ parameters.appName }}</p><p>This mailbox is not monitored, please direct all requests to ${{ parameters.emailAddress }}</p>"  # Email Body
       BodyAsHtml: true
       ShowClientSecret: false
       ClientID: '${{ parameters.ClientID }}'

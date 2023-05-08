@@ -100,7 +100,7 @@ try
             }
             catch
             {
-                Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while installing 7zip") >> $logFilePath
+                Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while installing 7zip: $_") >> $logFilePath
             }
 
             Remove-Item -Path "$env:HOMEDRIVE\Temp\$7Name"
@@ -142,7 +142,7 @@ try
             }
             catch
             {
-                Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while installing treesize") >> $logFilePath
+                Write-Output ("{0} - {1}" -f $((Get-Date).ToString()),"Error encountered while installing treesize: $_") >> $logFilePath
             }
 
             Remove-Item -Path "$env:HOMEDRIVE\Temp\$TreeName"
